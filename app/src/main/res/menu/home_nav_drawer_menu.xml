@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/my_records"
+            android:icon="@drawable/ic_folder"
+            android:title="My Records" />
+        <item
+            android:id="@+id/recently_accessed"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:title="Recently Accessed" />
+        <item
+            android:id="@+id/to_be_indexed"
+            android:icon="@drawable/ic_to_be_indexed"
+            android:title="To Be Indexed (2)" />
+        <item
+            android:id="@+id/shared_with_me"
+            android:icon="@drawable/ic_shared_with_me"
+            android:title="Shared with me" />
+        <item
+            android:id="@+id/offline"
+            android:icon="@drawable/ic_offline"
+            android:title="Offline" />
+        <item
+            android:id="@+id/reports"
+            android:icon="@drawable/ic_reports"
+            android:title="Reports" />
+        <item
+            android:id="@+id/trash"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:title="Trash" />
+    </group>
+
+    <item android:title="Others">
+        <menu>
+            <item
+                android:id="@+id/about"
+                android:icon="@drawable/ic_about"
+                android:title="About" />
+            <item
+                android:id="@+id/help"
+                android:icon="@drawable/ic_about"
+                android:title="Help" />
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/log_out"
+        android:icon="@drawable/ic_log_out"
+        android:title="Log Out" />
+
+</menu>

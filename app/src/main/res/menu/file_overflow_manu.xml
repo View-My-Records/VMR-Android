@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/ofm_share"
+        android:title="Share"
+    />
+    <item
+        android:id="@+id/ofm_rename"
+        android:title="Rename"
+    />
+    <item
+        android:id="@+id/ofm_download"
+        android:title="Download"
+    />
+    <item
+        android:id="@+id/ofm_move"
+        android:title="Move"
+    />
+    <item
+        android:id="@+id/ofm_copy"
+        android:title="Copy"
+    />
+    <item
+        android:id="@+id/ofm_duplicate"
+        android:title="Duplicate"
+    />
+    <item
+        android:id="@+id/ofm_properties"
+        android:title="Properties"
+    />
+    <item
+        android:id="@+id/ofm_delete"
+        android:title="Trash"
+    />
+
+</menu>

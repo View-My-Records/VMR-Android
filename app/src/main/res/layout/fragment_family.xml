@@ -1,0 +1,92 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".LoginFragments.FragmentFamily">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/logo"
+            android:layout_marginBottom="30dp"
+            android:id="@+id/VMRLogo"
+            android:contentDescription="VMR Logo" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilFamilyEmail"
+            android:layout_below="@id/VMRLogo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" >
+            <EditText
+                android:id="@+id/etFamilyEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:inputType="textEmailAddress"
+                android:hint="E-mail"
+                android:ems="15" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilFamilyPassword"
+            android:layout_below="@id/tilFamilyEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" >
+            <EditText
+                android:id="@+id/etFamilyPassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:singleLine="true"
+                android:inputType="textPassword"
+                android:hint="Password"
+                android:ems="15" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilFamilyId"
+            android:layout_below="@id/tilFamilyPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" >
+            <EditText
+                android:id="@+id/etFamilyID"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:singleLine="true"
+                android:inputType="textPassword"
+                android:hint="Family ID"
+                android:ems="15" />
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/cbFamilyRememberPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tilFamilyId"
+            android:layout_marginLeft="50dp"
+            android:text="Remember me"
+            android:layout_marginTop="5dp"
+            />
+
+        <Button
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50dp"
+            android:layout_below="@id/cbFamilyRememberPassword"
+            android:id="@+id/btnFamilySignIn"
+            android:text="Sign In"
+            android:background="@color/colorPrimary"/>
+
+    </RelativeLayout>
+
+</FrameLayout>
