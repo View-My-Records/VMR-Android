@@ -2,7 +2,6 @@ package com.vmr.LoginFragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,22 +12,12 @@ import android.widget.Toast;
 
 import com.vmr.AsyncTasksForRequests.LoginCorporate;
 import com.vmr.R;
+import com.vmr.Utilities.JsonParserForLogin;
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.SocketTimeoutException;
-import java.net.URL;
+import java.util.concurrent.ExecutionException;
 
 
 public class FragmentCorporate extends Fragment {
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,7 +25,7 @@ public class FragmentCorporate extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_corporate, container, false);
 
-        final EditText etEmail = (EditText) rootView.findViewById(R.id.etCorpEmail);
+        final EditText etUsername = (EditText) rootView.findViewById(R.id.etCorpUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etCorpPassword);
         final EditText etCorpId = (EditText) rootView.findViewById(R.id.etCorpID);
         CheckBox cbRememberMe = (CheckBox) rootView.findViewById(R.id.cbCorpRememberPassword);
@@ -45,11 +34,41 @@ public class FragmentCorporate extends Fragment {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                Log.e("Login", "Sign in clicked");
-
-                new LoginCorporate().execute("Login Corporate");
-
+                LoginCorporate loginCorporate = new LoginCorporate();
+                String response;
+                try {
+//                    response = loginCorporate.execute("admin","Qwer!234","crpid").get();
+                    response = loginCorporate
+                            .execute(etUsername.getText().toString(),
+                                    etPassword.getText().toString(),
+                                    etCorpId.getText().toString())
+                            .get();
+                    JsonParserForLogin jsonParser = new JsonParserForLogin(response);
+                    if(jsonParser.isValid()){
+                        if(jsonParser.getKey("result").equals("success")) {
+                            Toast.makeText(getContext(),
+                                    "Login success.",
+                                    Toast.LENGTH_SHORT)
+                                    .show();
+                        } else {
+                            Toast.makeText(getContext(),
+                                    "Invalid credentials.",
+                                    Toast.LENGTH_SHORT)
+                                    .show();
+                        }
+                    } else {
+                        Toast.makeText(getContext(),
+                                "Invalid JSON.",
+                                Toast.LENGTH_SHORT)
+                                .show();
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(),
+                            "Something is wrong.",
+                            Toast.LENGTH_SHORT)
+                            .show();
+                }
             }
         });
         return rootView;
