@@ -4,10 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.vmr.LoginFragments.FragmentCorporate;
-import com.vmr.LoginFragments.FragmentFamily;
-import com.vmr.LoginFragments.FragmentIndividual;
-import com.vmr.LoginFragments.FragmentProfessional;
+import com.vmr.LoginFragments.FragmentLoginCorporate;
+import com.vmr.LoginFragments.FragmentLoginFamily;
+import com.vmr.LoginFragments.FragmentLoginIndividual;
+import com.vmr.LoginFragments.FragmentLoginProfessional;
 
 
 /*
@@ -26,17 +26,17 @@ public class PagerAdapterLogin extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                FragmentIndividual fragmentIndividual = new FragmentIndividual();
-                return fragmentIndividual;
+                FragmentLoginIndividual fragmentLoginIndividual = new FragmentLoginIndividual();
+                return fragmentLoginIndividual;
             case 1:
-                FragmentFamily fragmentFamily = new FragmentFamily();
-                return fragmentFamily;
+                FragmentLoginFamily fragmentLoginFamily = new FragmentLoginFamily();
+                return fragmentLoginFamily;
             case 2:
-                FragmentProfessional fragmentProfessional = new FragmentProfessional();
-                return fragmentProfessional;
+                FragmentLoginProfessional fragmentLoginProfessional = new FragmentLoginProfessional();
+                return fragmentLoginProfessional;
             case 3:
-                FragmentCorporate fragmentCorporate = new FragmentCorporate();
-                return fragmentCorporate;
+                FragmentLoginCorporate fragmentLoginCorporate = new FragmentLoginCorporate();
+                return fragmentLoginCorporate;
             default:
                 return null;
         }

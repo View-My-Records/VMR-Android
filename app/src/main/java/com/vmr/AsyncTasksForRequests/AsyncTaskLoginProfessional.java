@@ -11,17 +11,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 
-
 /*
- * Created by abhijit on 8/3/16.
+ * Created by abhijit on 8/7/16.
  */
 
-public class LoginCorporate extends AsyncTask<String,Void, String> {
-
+public class AsyncTaskLoginProfessional extends AsyncTask<String,Void, String> {
     /*
         param[0] username
         param[1] password
-        param[2] corp id
+        param[2] professional id
      */
     @Override
     protected String doInBackground(String... params) {
@@ -29,7 +27,6 @@ public class LoginCorporate extends AsyncTask<String,Void, String> {
         StringBuilder response = new StringBuilder();
         try {
             URL url = new URL("http://vmrdev.cloudapp.net:8080/vmr/mlogin.do");
-
 
             // Create connection for request
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -43,17 +40,17 @@ public class LoginCorporate extends AsyncTask<String,Void, String> {
 
             // Create body for request
             String formBody =
-                    URLEncoder.encode("corpEmailID", "UTF-8") + "=" +
+                    URLEncoder.encode("profEmailid", "UTF-8") + "=" +
                         URLEncoder.encode(params[0], "UTF-8");
             formBody += "&" +
-                    URLEncoder.encode("corpPassword", "UTF-8") + "=" +
+                    URLEncoder.encode("profpswd", "UTF-8") + "=" +
                         URLEncoder.encode(params[1], "UTF-8");
             formBody += "&" +
-                    URLEncoder.encode("corpName", "UTF-8") + "=" +
+                    URLEncoder.encode("profName", "UTF-8") + "=" +
                         URLEncoder.encode(params[2], "UTF-8");
             formBody += "&" +
                     URLEncoder.encode("domain", "UTF-8") + "=" +
-                        URLEncoder.encode("CORP", "UTF-8");
+                        URLEncoder.encode("PROF", "UTF-8");
 
             DataOutputStream outputStreamForBody = new DataOutputStream(connection.getOutputStream());
             outputStreamForBody.write(formBody.getBytes());
@@ -82,6 +79,6 @@ public class LoginCorporate extends AsyncTask<String,Void, String> {
     }
 
     protected void onPostExecute(String s){
-        Log.e("LoginCorporate", "Completed");
+        Log.e("AsyncTaskLoginProfessional", "Completed");
     }
 }

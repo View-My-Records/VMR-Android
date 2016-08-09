@@ -1,4 +1,4 @@
-package com.vmr.Utilities;
+package com.vmr.JSONParsers;
 
 /*
  * Created by abhijit on 8/7/16.
@@ -9,12 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-public class JsonParserForLogin {
+public class JSONParserLogin {
 
     private JSONObject  jsonObject;
     private String jsonString;
 
-    public JsonParserForLogin(String json) {
+    public JSONParserLogin(String json) {
         jsonString = json;
     }
 

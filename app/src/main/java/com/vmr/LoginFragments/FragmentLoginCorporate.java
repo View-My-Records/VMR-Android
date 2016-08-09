@@ -10,14 +10,15 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.vmr.AsyncTasksForRequests.LoginCorporate;
+import com.vmr.AsyncTasksForRequests.AsyncTaskLoginCorporate;
+import com.vmr.AsyncTasksForRequests.AsyncTaskLoginParseJSON;
 import com.vmr.R;
-import com.vmr.Utilities.JsonParserForLogin;
+import com.vmr.JSONParsers.JSONParserLogin;
 
 import java.util.concurrent.ExecutionException;
 
 
-public class FragmentCorporate extends Fragment {
+public class FragmentLoginCorporate extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -34,34 +35,23 @@ public class FragmentCorporate extends Fragment {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginCorporate loginCorporate = new LoginCorporate();
-                String response;
+                AsyncTaskLoginCorporate asyncTaskLoginCorporate = new AsyncTaskLoginCorporate();
+                AsyncTaskLoginParseJSON asyncTaskLoginParseJSON = new AsyncTaskLoginParseJSON();
+                String response, result;
                 try {
-//                    response = loginCorporate.execute("admin","Qwer!234","crpid").get();
-                    response = loginCorporate
+//                    response = asyncTaskLoginCorporate.execute("admin","Qwer!234","crpid").get();
+                    response = asyncTaskLoginCorporate
                             .execute(etUsername.getText().toString(),
                                     etPassword.getText().toString(),
                                     etCorpId.getText().toString())
                             .get();
-                    JsonParserForLogin jsonParser = new JsonParserForLogin(response);
-                    if(jsonParser.isValid()){
-                        if(jsonParser.getKey("result").equals("success")) {
-                            Toast.makeText(getContext(),
-                                    "Login success.",
-                                    Toast.LENGTH_SHORT)
-                                    .show();
-                        } else {
-                            Toast.makeText(getContext(),
-                                    "Invalid credentials.",
-                                    Toast.LENGTH_SHORT)
-                                    .show();
-                        }
-                    } else {
-                        Toast.makeText(getContext(),
-                                "Invalid JSON.",
-                                Toast.LENGTH_SHORT)
-                                .show();
-                    }
+                    result = asyncTaskLoginParseJSON
+                            .execute(response)
+                            .get();
+                    Toast.makeText(getContext(),
+                            result,
+                            Toast.LENGTH_SHORT)
+                            .show();
                 } catch (InterruptedException | ExecutionException e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(),
