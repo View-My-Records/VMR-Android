@@ -3,21 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragments.FragmentLoginCorporate">
+    tools:context=".login.fragment.FragmentLoginCorporate">
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical" >
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo"
-            android:layout_marginBottom="30dp"
-            android:id="@+id/VMRLogo"
-            android:contentDescription="VMR Logo" />
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/tilCorpEmail"
@@ -32,7 +24,8 @@
                 android:layout_centerHorizontal="true"
                 android:singleLine="true"
                 android:inputType="textEmailAddress"
-                android:hint="E-mail"
+                android:hint="Username"
+                android:text="admin"
                 android:ems="15" />
         </android.support.design.widget.TextInputLayout>
 
@@ -50,6 +43,7 @@
                 android:singleLine="true"
                 android:inputType="textPassword"
                 android:hint="Password"
+                android:text="Qwer!234"
                 android:ems="15" />
         </android.support.design.widget.TextInputLayout>
 
@@ -67,6 +61,7 @@
                 android:singleLine="true"
                 android:inputType="textPassword"
                 android:hint="Corporate-ID"
+                android:text="crpid"
                 android:ems="15" />
         </android.support.design.widget.TextInputLayout>
 

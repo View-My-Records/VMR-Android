@@ -2,24 +2,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragments.FragmentLoginIndividual">
+    tools:context=".login.fragment.FragmentLoginIndividual">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical">
 
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/logo"
-            android:layout_marginBottom="30dp"
-            android:id="@+id/VMRLogo"
-            android:contentDescription="VMR Logo" />
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/tilIndividualEmail"
-            android:layout_below="@id/VMRLogo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true" >
@@ -28,11 +19,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:singleLine="true"
                 android:inputType="textEmailAddress"
-                android:hint="E-mail"
-                android:text="abhijit@vmr.com"
-                android:ems="15" />
+                android:hint="Username"
+                android:text="induser"
+                android:ems="15"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -45,11 +36,11 @@
                 android:id="@+id/etIndividualPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:inputType="textPassword"
                 android:hint="Password"
-                android:text="password"
-                android:ems="15" />
+                android:text="Qwer!234"
+                android:ems="15"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <CheckBox
@@ -72,7 +63,6 @@
             android:background="@color/colorPrimary"
             android:text="Sign In"
             />
-        <!--android:background="#3b8898"-->
     </RelativeLayout>
 
 </FrameLayout>
