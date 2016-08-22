@@ -1,4 +1,4 @@
-package com.vmr.myrecords.fragments;
+package com.vmr.home.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,12 +13,12 @@ import com.vmr.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentOffline.OnFragmentInteractionListener} interface
+ * {@link FragmentAbout.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentOffline#newInstance} factory method to
+ * Use the {@link FragmentAbout#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentOffline extends Fragment {
+public class FragmentAbout extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +30,7 @@ public class FragmentOffline extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FragmentOffline() {
+    public FragmentAbout() {
         // Required empty public constructor
     }
 
@@ -40,11 +40,11 @@ public class FragmentOffline extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentOffline.
+     * @return A new instance of fragment FragmentAbout.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentOffline newInstance(String param1, String param2) {
-        FragmentOffline fragment = new FragmentOffline();
+    public static FragmentAbout newInstance(String param1, String param2) {
+        FragmentAbout fragment = new FragmentAbout();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,10 +65,10 @@ public class FragmentOffline extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (mListener != null) {
-            mListener.onFragmentInteraction("Offline");
+            mListener.onFragmentInteraction("About");
         }
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_offline, container, false);
+        return inflater.inflate(R.layout.fragment_about, container, false);
     }
 
     @Override

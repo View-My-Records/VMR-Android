@@ -6,11 +6,11 @@ package com.vmr.login.interfaces;
 
 public interface LoginFragmentInterface {
 
-    void onIndividualLoginClick(String email, String password, String domain);
+    void onIndividualLoginClick(String email, String password, String domain, boolean remember);
 
-    void onFamilyLoginClick(String email, String password, String name, String domain);
+    void onFamilyLoginClick(String email, String password, String name, String domain, boolean remember);
 
-    void onProfessionalLoginClick(String email, String password, String name, String domain);
+    void onProfessionalLoginClick(String email, String password, String name, String domain, boolean remember);
 
-    void onCorporateLoginClick(String email, String password, String name, String domain);
+    void onCorporateLoginClick(String email, String password, String name, String domain, boolean remember);
 }

@@ -24,10 +24,10 @@ public abstract class NetworkRequest<T> extends Request<T> {
         successListener.onResponse(response);
     }
 
-    @Override
-    public String getBodyContentType() {
-        return "application/x-www-form-urlencoded;charset=UTF-8";
-    }
+//    @Override
+//    public String getBodyContentType() {
+//        return "application/x-www-form-urlencoded;charset=UTF-8";
+//    }
 
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {

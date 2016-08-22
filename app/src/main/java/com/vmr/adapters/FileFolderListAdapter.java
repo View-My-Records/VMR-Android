@@ -1,4 +1,4 @@
-package com.vmr;/*
+package com.vmr.adapters;/*
  * Created by abhijit on 6/15/16.
  */
 
@@ -13,6 +13,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.vmr.R;
 
 import java.io.File;
 import java.util.Date;

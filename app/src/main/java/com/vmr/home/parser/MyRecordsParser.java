@@ -1,4 +1,4 @@
-package com.vmr.myrecords.parser;
+package com.vmr.home.parser;
 
 /*
  * Created by abhijit on 8/16/16.

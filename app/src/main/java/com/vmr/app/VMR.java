@@ -4,6 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 
+import com.vmr.utils.Constants;
+
+import java.util.Map;
+
 /*
  * Created by abhijit on 8/16/16.
  */
@@ -11,17 +15,24 @@ import android.content.res.Configuration;
 public class VMR extends Application {
 
     private static VMR appInstance;
+    private static Context appContext;
+
+    private static Map<String, String > userMap;
+
+    public static Map<String, String> getUserMap() {
+        return userMap;
+    }
+
+    public static void setUserMap( Map<String , String > map) {
+        userMap = map;
+    }
 
     public static VMR getInstance() {
         return appInstance;
     }
 
-    public static Context getContext(){
-        return appInstance;
-    }
-
     public static Context getVMRContext(){
-        return appInstance;
+        return VMR.appContext;
     }
 
     @Override
@@ -31,8 +42,9 @@ public class VMR extends Application {
 
     @Override
     public void onCreate() {
-        appInstance = this;
+//        appInstance = this;
         super.onCreate();
+        VMR.appContext = getApplicationContext();
     }
 
     @Override

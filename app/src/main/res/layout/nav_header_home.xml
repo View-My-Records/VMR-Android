@@ -13,9 +13,12 @@
 
     <ImageView
         android:id="@+id/accountLogo"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
-        android:src="@drawable/logo" />
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/logo"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
 
     <LinearLayout
         android:id="@+id/accountInfo"
@@ -32,10 +35,16 @@
             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         <TextView
-            android:id="@+id/accountLastAccess"
+            android:id="@+id/accountEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Last login : 10 June, 2016" />
+            android:text="a@b.com" />
+
+        <!--<TextView-->
+            <!--android:id="@+id/accountLastAccessed"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="Last login : 10 June, 2016" />-->
     </LinearLayout>
 
     <LinearLayout
@@ -43,11 +52,13 @@
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/accountInfo"
         android:layout_marginTop="72dp"
-        android:layout_alignParentEnd="true" >
+        android:layout_alignParentEnd="true"
+        android:layout_alignRight="@id/accountInfo"
+        android:layout_alignParentRight="true">
         <ImageButton
             android:id="@+id/action_notifications"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="2dp"
             android:src="@drawable/ic_notifications"
             android:scaleType="centerCrop"
@@ -56,8 +67,8 @@
 
         <ImageButton
             android:id="@+id/action_settings"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:layout_margin="2dp"
             android:src="@drawable/ic_settings"
             android:scaleType="centerCrop"

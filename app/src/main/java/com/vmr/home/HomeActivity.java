@@ -1,8 +1,8 @@
-package com.vmr.myrecords;
+package com.vmr.home;
 
 import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -18,20 +18,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.google.android.gms.appindexing.Action;
 import com.vmr.R;
-import com.vmr.settings.SettingsActivity;
-import com.vmr.myrecords.fragments.FragmentAbout;
-import com.vmr.myrecords.fragments.FragmentHelp;
-import com.vmr.myrecords.fragments.FragmentMyRecords;
-import com.vmr.myrecords.fragments.FragmentOffline;
-import com.vmr.myrecords.fragments.FragmentRecentlyAccessed;
-import com.vmr.myrecords.fragments.FragmentReports;
-import com.vmr.myrecords.fragments.FragmentSharedWithMe;
-import com.vmr.myrecords.fragments.FragmentToBeIndexed;
-import com.vmr.myrecords.fragments.FragmentTrash;
+import com.vmr.app.VMR;
+import com.vmr.home.fragments.FragmentAbout;
+import com.vmr.home.fragments.FragmentHelp;
+import com.vmr.home.fragments.FragmentMyRecords;
+import com.vmr.home.fragments.FragmentOffline;
+import com.vmr.home.fragments.FragmentRecentlyAccessed;
+import com.vmr.home.fragments.FragmentReports;
+import com.vmr.home.fragments.FragmentSharedWithMe;
+import com.vmr.home.fragments.FragmentToBeIndexed;
+import com.vmr.home.fragments.FragmentTrash;
+import com.vmr.model.UserInfo;
+import com.vmr.utils.PrefUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -46,6 +50,17 @@ public class HomeActivity extends AppCompatActivity
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener {
+
+    private static final String KEY_USER_DETAILS = "KEY_USER_DETAILS";
+
+    private UserInfo userInfo;
+
+
+    public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
+        Intent intent = new Intent(context, HomeActivity.class);
+        intent.putExtra(KEY_USER_DETAILS, userInfo);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +80,15 @@ public class HomeActivity extends AppCompatActivity
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
+
+            userInfo = getIntent().getParcelableExtra(KEY_USER_DETAILS);
+
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         assert drawer != null;
-        drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -80,22 +97,21 @@ public class HomeActivity extends AppCompatActivity
         navigationView.setCheckedItem(R.id.my_records);
         View headerView = navigationView.getHeaderView(0);
 
-        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
-        settingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent settingsIntent = new Intent(getBaseContext() , SettingsActivity.class);
-                startActivity(settingsIntent);
-            }
-        });
+        TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
+        TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
+//        TextView accountLastAccessed = (TextView) headerView.findViewById(R.id.accountLastAccessed);
 
+        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
         ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
-        notificationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getBaseContext(), "Notifications clicked.", Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        if (userInfo.getMembershipType().equals("IND")) {
+            accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
+        } else {
+            accountName.setText(userInfo.getCorpName());
+        }
+
+        accountEmail.setText(userInfo.getEmailId());
+
 
     }
 
@@ -135,7 +151,6 @@ public class HomeActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -184,43 +199,24 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(String string) {
-        getSupportActionBar().setTitle(string);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setTitle(string);
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Home Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page Url is correct.
-                // Otherwise, set the Url to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app Url is correct.
-                Uri.parse("android-app://com.vmr.vmrdemo/http/host/path")
-        );
     }
 
     @Override
     public void onStop() {
         super.onStop();
 
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Home Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page Url is correct.
-                // Otherwise, set the Url to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app Url is correct.
-                Uri.parse("android-app://com.vmr.vmrdemo/http/host/path")
-        );
+    }
 
+    public UserInfo getUserInfo(){
+        return userInfo;
     }
 }

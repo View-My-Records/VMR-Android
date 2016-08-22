@@ -1,4 +1,4 @@
-package com.vmr.myrecords.fragments;
+package com.vmr.home.fragments;
 
 import android.content.Context;
 import android.os.Bundle;

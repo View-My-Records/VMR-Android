@@ -56,8 +56,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:singleLine="true"
-                android:inputType="textPassword"
+                android:inputType="text"
                 android:hint="Professional-ID"
                 android:text="proid"
                 android:ems="15" />

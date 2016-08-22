@@ -1,0 +1,19 @@
+package com.vmr.utils;
+
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
+import com.vmr.app.VMR;
+
+/**
+ * Created by abhijit on 8/17/16.
+ */
+
+public class ConnectionDetector {
+    public static boolean isOnline() {
+        ConnectivityManager cm = (ConnectivityManager) VMR.getVMRContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnected();
+    }
+}

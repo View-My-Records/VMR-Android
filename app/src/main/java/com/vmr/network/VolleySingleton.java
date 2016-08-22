@@ -40,7 +40,7 @@ public class VolleySingleton {
     }
 
     public void cancelAllPending() {
-        getRequestQueue().cancelAll(Constants.LOGIN_REQUEST);
+        getRequestQueue().cancelAll(Constants.VMR_LOGIN_REQUEST_TAG);
     }
 
     public void cancelPendingRequest(String tag) {

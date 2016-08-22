@@ -1,4 +1,4 @@
-package com.vmr.myrecords.fragments;
+package com.vmr.home.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -13,12 +13,12 @@ import com.vmr.R;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link FragmentToBeIndexed.OnFragmentInteractionListener} interface
+ * {@link FragmentReports.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link FragmentToBeIndexed#newInstance} factory method to
+ * Use the {@link FragmentReports#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentToBeIndexed extends Fragment {
+public class FragmentReports extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -30,7 +30,7 @@ public class FragmentToBeIndexed extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public FragmentToBeIndexed() {
+    public FragmentReports() {
         // Required empty public constructor
     }
 
@@ -40,11 +40,11 @@ public class FragmentToBeIndexed extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentToBeIndexed.
+     * @return A new instance of fragment FragmentReports.
      */
     // TODO: Rename and change types and number of parameters
-    public static FragmentToBeIndexed newInstance(String param1, String param2) {
-        FragmentToBeIndexed fragment = new FragmentToBeIndexed();
+    public static FragmentReports newInstance(String param1, String param2) {
+        FragmentReports fragment = new FragmentReports();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -65,11 +65,12 @@ public class FragmentToBeIndexed extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (mListener != null) {
-            mListener.onFragmentInteraction("To Be Indexed");
+            mListener.onFragmentInteraction("Reports");
         }
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
+        return inflater.inflate(R.layout.fragment_reports, container, false);
     }
+
 
     @Override
     public void onAttach(Context context) {

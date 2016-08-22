@@ -14,20 +14,14 @@ import com.vmr.login.interfaces.LoginFragmentInterface;
 /*
  * Created by abhijit on 6/10/16.
  */
-public class PagerAdapterLogin extends FragmentPagerAdapter {
-    int numberOfPages;
-    String[] pages = { "Individual", "Family", "Professional", "Corporate" };
+class PagerAdapterLogin extends FragmentPagerAdapter {
 
-
-    private FragmentLoginIndividual fragmentLoginIndividual;
-    private FragmentLoginFamily fragmentLoginFamily;
-    private FragmentLoginProfessional fragmentLoginProfessional;
-    private FragmentLoginCorporate fragmentLoginCorporate;
-
+    private int numberOfPages;
+    private String[] pages = { "Individual", "Family", "Professional", "Corporate" };
 
     private LoginFragmentInterface loginFragmentInterface ;
 
-    public PagerAdapterLogin(FragmentManager fm, LoginFragmentInterface loginFragmentInterface) {
+    PagerAdapterLogin(FragmentManager fm, LoginFragmentInterface loginFragmentInterface) {
         super(fm);
         this.numberOfPages = pages.length;
         this.loginFragmentInterface = loginFragmentInterface;
@@ -37,19 +31,19 @@ public class PagerAdapterLogin extends FragmentPagerAdapter {
     public Fragment getItem(int position) {
         switch (position) {
             case 0:
-                fragmentLoginIndividual = new FragmentLoginIndividual();
+                FragmentLoginIndividual fragmentLoginIndividual = new FragmentLoginIndividual();
                 fragmentLoginIndividual.setCallbackInterface(loginFragmentInterface);
                 return fragmentLoginIndividual;
             case 1:
-                fragmentLoginFamily = new FragmentLoginFamily();
+                FragmentLoginFamily fragmentLoginFamily = new FragmentLoginFamily();
                 fragmentLoginFamily.setCallbackInterface(loginFragmentInterface);
                 return fragmentLoginFamily;
             case 2:
-                fragmentLoginProfessional = new FragmentLoginProfessional();
+                FragmentLoginProfessional fragmentLoginProfessional = new FragmentLoginProfessional();
                 fragmentLoginProfessional.setCallbackInterface(loginFragmentInterface);
                 return fragmentLoginProfessional;
             case 3:
-                fragmentLoginCorporate = new FragmentLoginCorporate();
+                FragmentLoginCorporate fragmentLoginCorporate = new FragmentLoginCorporate();
                 fragmentLoginCorporate.setCallbackInterface(loginFragmentInterface);
                 return fragmentLoginCorporate;
             default:

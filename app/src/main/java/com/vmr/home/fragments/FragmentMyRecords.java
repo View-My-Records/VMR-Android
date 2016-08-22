@@ -1,9 +1,8 @@
-package com.vmr.myrecords.fragments;
+package com.vmr.home.fragments;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
@@ -13,28 +12,38 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.vmr.FileFolderListAdapter;
+import com.android.volley.VolleyError;
 import com.vmr.R;
+import com.vmr.app.VMR;
+import com.vmr.home.HomeActivity;
+import com.vmr.home.HomeController;
+import com.vmr.home.interfaces.MyRecordsRequestInterface;
+import com.vmr.model.MyRecords;
+import com.vmr.model.VMRRecord;
+import com.vmr.utils.Constants;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
-import java.io.File;
-import java.io.FileFilter;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
-public class FragmentMyRecords extends Fragment {
+public class FragmentMyRecords extends Fragment
+        implements MyRecordsRequestInterface {
 
-    private List<File> mFileList;
+    private List<VMRRecord> mFileList;
     private OnFragmentInteractionListener fragmentInteractionListener;
     private FloatingActionButton fab;
     private BottomSheetBehavior behavior;
+    private TextView tempTextView;
+    private HomeController homeController;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,8 +54,9 @@ public class FragmentMyRecords extends Fragment {
         }
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_my_records, container, false);
+
         // Get the views from the fragment layout
-        ListView listView = (ListView) view.findViewById(R.id.lvMyRecords);
+        tempTextView = (TextView) view.findViewById(R.id.tvFileFolderList);
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.bottom_sheet_layout);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
         final FrameLayout bottomSheet = (FrameLayout) coordinatorLayout.findViewById(R.id.bottom_sheet_frame);
@@ -57,8 +67,18 @@ public class FragmentMyRecords extends Fragment {
         // Get file list
         mFileList = getFileList();
 
+        homeController = new HomeController(this);
+        HomeActivity homeActivity = (HomeActivity) this.getActivity();
+        String test = PrefUtils.getSharedPreference(this.getContext(), PrefConstants.VMR_ALFRESCO_TICKET);
+        Map<String, String> formData = VMR.getUserMap();
+        formData.put("alfNoderef",homeActivity.getUserInfo().getRootNodref());
+        formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
+        formData.put("alf_ticket",PrefUtils.getSharedPreference(homeActivity.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+
+        homeController.fetchAllFilesAndFolders(formData);
+
         // Set adapter for the ListView
-        FileFolderListAdapter mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
+        //FileFolderListAdapter mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
 
 
         // Set Callback for BottomSheet interaction
@@ -90,35 +110,6 @@ public class FragmentMyRecords extends Fragment {
             }
         });
 
-        listView.setAdapter(mAdapter);
-        listView.setOnScrollListener(new ListView.OnScrollListener(){
-
-            @Override
-            public void onScrollStateChanged(AbsListView absListView, int i) {
-                if (i == AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL){
-                    fab.hide();
-                } else {
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
-
-            }
-        });
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-                String text = mFileList.get(i).getName();
-                Toast.makeText(getActivity(), text + " clicked.", Toast.LENGTH_SHORT).show();
-            }
-
-        });
-
         bottomSheet.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -143,29 +134,21 @@ public class FragmentMyRecords extends Fragment {
         }
     }
 
-    private List<File> getFileList(){
-        File f = new File(Environment.getExternalStorageDirectory().getPath());
-        ArrayList<File> inFiles = new ArrayList<>();
-
-        File[] files = f.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return !file.isDirectory();
-            }
-        });
-
-        File[] dirs = f.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                return file.isDirectory();
-            }
-        });
-
-        Collections.addAll(inFiles, dirs);
-        Collections.sort(inFiles);
-        Collections.addAll(inFiles, files);
+    private List<VMRRecord> getFileList(){
+        ArrayList<VMRRecord> inFiles = new ArrayList<>();
 
         return inFiles;
+    }
+
+    @Override
+    public void fetchFilesAndFoldersSuccess(MyRecords myRecords) {
+        Toast.makeText(VMR.getVMRContext(), "My Records retrieved.", Toast.LENGTH_SHORT).show();
+        System.out.println(myRecords.toString());
+    }
+
+    @Override
+    public void fetchFilesAndFoldersFailure(VolleyError error) {
+        Toast.makeText(VMR.getVMRContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
     }
 
     public interface OnFragmentInteractionListener {

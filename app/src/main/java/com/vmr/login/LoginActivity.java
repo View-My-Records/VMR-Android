@@ -1,8 +1,6 @@
 package com.vmr.login;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -11,16 +9,32 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.login.interfaces.LoginFragmentInterface;
 import com.vmr.login.interfaces.LoginRequestInterface;
+import com.vmr.home.HomeActivity;
+import com.vmr.model.UserInfo;
+import com.vmr.utils.ConnectionDetector;
+import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
-import org.json.JSONObject;
-
-public class LoginActivity extends AppCompatActivity implements LoginRequestInterface, LoginFragmentInterface {
+public class LoginActivity extends AppCompatActivity
+        implements
+        LoginRequestInterface,
+        LoginFragmentInterface {
 
     private LoginController loginController;
+
+    private String username;
+    private String password;
+    private String accountType;
+    private String accountId;
+    private boolean remember;
+    private UserInfo userDetails;
+    private boolean isUserLoggedIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +51,6 @@ public class LoginActivity extends AppCompatActivity implements LoginRequestInte
         assert viewPager != null;
         viewPager.setAdapter(adapter);
 
-
     }
 
     @Override
@@ -50,79 +63,109 @@ public class LoginActivity extends AppCompatActivity implements LoginRequestInte
     protected void onStart() {
         super.onStart();
 
-        if(isOnline()){
-            Snackbar.make(findViewById(android.R.id.content), "Internet available.", Snackbar.LENGTH_SHORT ).show();
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
         } else {
-            Snackbar.make(findViewById(android.R.id.content), "Internet not available.", Snackbar.LENGTH_SHORT ).show();
+            loginController.fetchAlfrescoTicket();
         }
 
     }
 
-    protected boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = cm.getActiveNetworkInfo();
-        return netInfo != null && netInfo.isConnected();
+    @Override
+    public void onLoginSuccess(UserInfo userInfo) {
+        onLoginComplete(userInfo);
+        System.out.println(userInfo);
     }
 
     @Override
-    public void fetchIndividualDetailFailure(VolleyError error) {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+    public void onLoginFailure(VolleyError error) {
+//        Toast.makeText(this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void fetchIndividualDetailSuccess(JSONObject jsonObject) {
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+    public void onFetchTicketFailure(VolleyError error) {
+        Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
     }
 
     @Override
-    public void fetchFamilyDetailFailure(VolleyError error) {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+    public void onFetchTicketSuccess(String ticket) {
+        PrefUtils.setSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET, ticket);
+        if(isUserLoggedIn) {
+            startHomeActivity();
+        }
     }
 
-    @Override
-    public void fetchFamilyDetailSuccess(JSONObject jsonObject) {
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
+    //flow after login is completed
+    private void onLoginComplete(UserInfo userInfo){
+        Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show();
+        if(remember){
+            PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_USERNAME, this.username);
+            PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_PASSWORD, this.password);
+            PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_ACCOUNT_TYPE, this.accountType);
+            PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_ACCOUNT_ID, this.accountId);
+        }
+
+        this.userDetails = userInfo;
+
+        System.out.println(userInfo.getEmailId());
+
+        isUserLoggedIn=true;
+        if(PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
+            loginController.fetchAlfrescoTicket();
+        }else {
+            startHomeActivity();
+        }
+
     }
 
-    @Override
-    public void fetchProfessionalDetailFailure(VolleyError error) {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+    private void startHomeActivity(){
+        Intent intent = HomeActivity.getLaunchIntent(this, userDetails);
+        startActivity(intent);
+        finish();
     }
-
-    @Override
-    public void fetchProfessionalDetailSuccess(JSONObject jsonObject) {
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void fetchCorporateDetailFailure(VolleyError error) {
-        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void fetchCorporateDetailSuccess(JSONObject jsonObject) {
-        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show();
-    }
-
 
     // Handle clicks on fragments buttons
     @Override
-    public void onIndividualLoginClick(String email, String password, String domain) {
+    public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
         loginController.fetchIndividualDetail(email, password, domain);
+        this.username = email;
+        this.password = password;
+        this.accountType = "Individual";
+        this.accountId = null;
+        this.remember = remember;
     }
 
     @Override
-    public void onFamilyLoginClick(String email, String password, String name, String domain) {
-        loginController.fetchFamilyDetail(email, password, name, domain);
+    public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
+        loginController.fetchFamilyDetail(username, password, accountId, domain);
+        this.username = username;
+        this.password = password;
+        this.accountType = "Family";
+        this.accountId = accountId;
+        this.remember = remember;
     }
 
     @Override
-    public void onProfessionalLoginClick(String email, String password, String name, String domain) {
-        loginController.fetchProfessionalDetail(email, password, name, domain);
+    public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
+        loginController.fetchProfessionalDetail(username, password, accountId, domain);
+        this.username = username;
+        this.password = password;
+        this.accountType = "Professional";
+        this.accountId = accountId;
+        this.remember = remember;
     }
 
     @Override
-    public void onCorporateLoginClick(String email, String password, String name, String domain) {
-        loginController.fetchCorporateDetail(email, password, name, domain);
+    public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
+        loginController.fetchCorporateDetail(username, password, accountId, domain);
+        this.username = username;
+        this.password = password;
+        this.accountType = "Corporate";
+        this.accountId = accountId;
+        this.remember = remember;
     }
+
 }

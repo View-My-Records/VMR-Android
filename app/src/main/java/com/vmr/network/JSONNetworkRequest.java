@@ -30,7 +30,6 @@ public abstract class JSONNetworkRequest  extends NetworkRequest<JSONObject>{
             return Response.error(new ParseError());
         }
 
-//        System.out.println(jsonObject.toString());
         return Response.success(jsonObject, getCacheEntry());
     }
 }

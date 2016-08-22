@@ -59,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:singleLine="true"
-                android:inputType="textPassword"
+                android:inputType="text"
                 android:hint="Corporate-ID"
                 android:text="crpid"
                 android:ems="15" />

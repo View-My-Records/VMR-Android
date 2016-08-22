@@ -55,8 +55,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:singleLine="true"
-                android:inputType="textPassword"
-                android:hint="Family ID"
+                android:inputType="text"
+                android:hint="Family-ID"
                 android:text="familyid"
                 android:ems="15" />
         </android.support.design.widget.TextInputLayout>
