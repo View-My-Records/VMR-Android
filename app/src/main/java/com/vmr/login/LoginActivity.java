@@ -62,14 +62,12 @@ public class LoginActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-
         if(!ConnectionDetector.isOnline()){
             PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
             Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
         } else {
             loginController.fetchAlfrescoTicket();
         }
-
     }
 
     @Override

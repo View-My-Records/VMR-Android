@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".home.fragments.FragmentMyRecords">
 
     <RelativeLayout
@@ -18,21 +17,21 @@
             android:id="@+id/tvMyRecords"
             android:layout_gravity="center_horizontal|top" />
 
-        <!--<ListView-->
-            <!--android:id="@+id/lvMyRecords"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_below="@id/tvMyRecords"-->
-            <!--android:paddingBottom="120dp"-->
-            <!--android:clipToPadding="false"-->
-            <!--/>-->
-        <TextView
-            android:id="@+id/tvFileFolderList"
+        <ListView
+            android:id="@+id/lvMyRecords"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/tvMyRecords"
-            android:text="JSONArray"
-            />
+            android:paddingBottom="120dp"
+            android:clipToPadding="false"
+            android:layout_alignParentBottom="true" />
+        <!--<TextView-->
+            <!--android:id="@+id/tvFileFolderList"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:layout_below="@id/tvMyRecords"-->
+            <!--android:text="JSONArray"-->
+            <!--/>-->
 
     </RelativeLayout>
 

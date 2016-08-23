@@ -3,6 +3,7 @@ package com.vmr.utils;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.vmr.network.error.AuthenticationError;
+import com.vmr.network.error.FetchError;
 import com.vmr.network.error.TicketError;
 
 /*
@@ -17,6 +18,8 @@ public class ErrorMessage {
             return "Server timeout";
         } else if(error instanceof TicketError){
             return "Failed to retrieve ticket";
+        } else if(error instanceof FetchError){
+            return "Failed to retrieve files";
         } else {
             return "Something went wrong.";
         }

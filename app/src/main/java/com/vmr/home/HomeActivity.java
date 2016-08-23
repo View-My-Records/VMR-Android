@@ -21,7 +21,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.VMR;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -32,10 +31,6 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.model.UserInfo;
-import com.vmr.utils.PrefUtils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class HomeActivity extends AppCompatActivity
@@ -54,7 +49,6 @@ public class HomeActivity extends AppCompatActivity
     private static final String KEY_USER_DETAILS = "KEY_USER_DETAILS";
 
     private UserInfo userInfo;
-
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -111,7 +105,6 @@ public class HomeActivity extends AppCompatActivity
         }
 
         accountEmail.setText(userInfo.getEmailId());
-
 
     }
 
@@ -216,7 +209,7 @@ public class HomeActivity extends AppCompatActivity
 
     }
 
-    public UserInfo getUserInfo(){
+    public UserInfo getUserInfo() {
         return userInfo;
     }
 }

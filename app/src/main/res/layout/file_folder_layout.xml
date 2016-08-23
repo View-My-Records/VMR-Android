@@ -6,7 +6,6 @@
 
     <ImageView
         android:id="@+id/ivFileIcon"
-        android:src="@drawable/ic_folder"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:contentDescription="File Icon" />
@@ -20,7 +19,9 @@
         android:layout_toEndOf="@+id/ivFileIcon"
         android:layout_marginTop="5dp"
         android:layout_marginStart="5dp"
-        android:text="File Name" />
+        android:text="File Name"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:layout_marginLeft="5dp" />
 
     <TextView
         android:id="@+id/tvFileSize"
@@ -29,30 +30,33 @@
         android:layout_toEndOf="@+id/ivFileIcon"
         android:layout_below="@+id/tvFileName"
         android:layout_marginStart="10dp"
-        android:text="Size / Items" />
+        android:text="Size / Items"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:layout_marginLeft="10dp" />
 
-    <TextView
-        android:id="@+id/tvTimeStamp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Timestamp"
-        android:layout_alignBottom="@+id/ivOverflow"
-        android:layout_toStartOf="@+id/ivOverflow" />
+    <!--<TextView-->
+        <!--android:id="@+id/tvTimeStamp"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="Timestamp"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_alignParentRight="true"-->
+        <!--android:layout_alignParentBottom="true"/>-->
 
-    <ImageView
-        android:id="@+id/ivOverflow"
-        android:src="@drawable/ic_overflow"
-        android:scaleType="fitXY"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="5dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentEnd="true"
-        android:contentDescription="Overflow Menu" />
+    <!--<ImageView-->
+        <!--android:id="@+id/ivOverflow"-->
+        <!--android:src="@drawable/ic_overflow"-->
+        <!--android:scaleType="fitXY"-->
+        <!--android:layout_marginTop="5dp"-->
+        <!--android:layout_marginBottom="5dp"-->
+        <!--android:paddingTop="10dp"-->
+        <!--android:paddingBottom="10dp"-->
+        <!--android:paddingStart="15dp"-->
+        <!--android:paddingEnd="5dp"-->
+        <!--android:layout_width="40dp"-->
+        <!--android:layout_height="40dp"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:contentDescription="Overflow Menu" />-->
 
 </RelativeLayout>

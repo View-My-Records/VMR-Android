@@ -47,7 +47,7 @@
                     android:scaleType="fitXY"
                     android:background="@android:color/transparent"
                     android:layout_toEndOf="@id/ibUpload"
-                    android:src="@drawable/ic_folder_2" />
+                    android:src="@drawable/ic_folder" />
 
             </RelativeLayout>
 

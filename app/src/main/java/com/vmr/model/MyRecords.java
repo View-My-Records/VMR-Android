@@ -18,9 +18,9 @@ import java.util.Locale;
 public class MyRecords {
 
     private ArrayList<File>    indexedFiles ;
+    private ArrayList<Folder>  folders;
     private boolean            writeFlag;
     private String             sharedFolder;
-    private ArrayList<Folder>  folders;
     private boolean            deleteFlag;
     private int                totalUnindexed;
     private ArrayList<File>    unindexedFiles;
@@ -89,9 +89,9 @@ public class MyRecords {
         this.unindexedFiles = unindexedFiles;
     }
 
-    public void setUnindexedFiles(JSONArray unindexedFilesJSON) {
+    public void setUnindexedFiles(JSONArray unIndexedFilesJSON) {
 
-        this.unindexedFiles = parseJSONFileArray(unindexedFilesJSON);
+        this.unindexedFiles = parseJSONFileArray(unIndexedFilesJSON);
     }
 
     private ArrayList<File> parseJSONFileArray(JSONArray indexedFilesJSON ) {

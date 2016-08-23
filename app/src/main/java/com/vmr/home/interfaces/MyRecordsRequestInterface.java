@@ -2,6 +2,7 @@ package com.vmr.home.interfaces;
 
 import com.android.volley.VolleyError;
 import com.vmr.model.MyRecords;
+import com.vmr.model.folder_structure.VmrFolder;
 
 import org.json.JSONObject;
 
@@ -10,6 +11,6 @@ import org.json.JSONObject;
  */
 
 public interface MyRecordsRequestInterface {
-    void fetchFilesAndFoldersSuccess(MyRecords myRecords);
+    void fetchFilesAndFoldersSuccess(VmrFolder vmrFolder);
     void fetchFilesAndFoldersFailure(VolleyError error);
 }

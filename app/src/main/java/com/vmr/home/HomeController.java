@@ -5,6 +5,7 @@ import com.android.volley.VolleyError;
 import com.vmr.home.interfaces.MyRecordsRequestInterface;
 import com.vmr.home.request.MyRecordsRequest;
 import com.vmr.model.MyRecords;
+import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
@@ -23,16 +24,15 @@ public class HomeController {
     public HomeController(MyRecordsRequestInterface myRecordsRequestInterface) {
         this.myRecordsRequestInterface = myRecordsRequestInterface;
     }
-    // TODO: 8/19/16 Create different requests with parsers implemented in it.
 
     public void fetchAllFilesAndFolders(Map<String, String> formData){
         MyRecordsRequest recordsRequest =
                 new MyRecordsRequest(
                         formData,
-                        new Response.Listener<MyRecords>() {
+                        new Response.Listener<VmrFolder>() {
                             @Override
-                            public void onResponse(MyRecords myRecords) {
-                                myRecordsRequestInterface.fetchFilesAndFoldersSuccess(myRecords);
+                            public void onResponse(VmrFolder vmrFolder) {
+                                myRecordsRequestInterface.fetchFilesAndFoldersSuccess(vmrFolder);
                             }
                         },
                         new Response.ErrorListener() {

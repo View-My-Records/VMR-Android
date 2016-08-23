@@ -4,7 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 
-import com.vmr.utils.Constants;
+import com.vmr.model.folder_structure.VmrFolder;
 
 import java.util.Map;
 
@@ -16,6 +16,15 @@ public class VMR extends Application {
 
     private static VMR appInstance;
     private static Context appContext;
+    private static VmrFolder rootVmrFolder;
+
+    public static VmrFolder getRootVmrFolder() {
+        return rootVmrFolder;
+    }
+
+    public static void setRootVmrFolder(VmrFolder rootVmrFolder) {
+        VMR.rootVmrFolder = rootVmrFolder;
+    }
 
     private static Map<String, String > userMap;
 
