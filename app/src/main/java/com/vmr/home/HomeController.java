@@ -2,14 +2,11 @@ package com.vmr.home;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.home.interfaces.MyRecordsRequestInterface;
+import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.home.request.MyRecordsRequest;
-import com.vmr.model.MyRecords;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
-
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -19,10 +16,10 @@ import java.util.Map;
 
 public class HomeController {
 
-    private MyRecordsRequestInterface myRecordsRequestInterface;
+    private VmrRequest.onFetchRecordsListener onFetchRecordsListener;
 
-    public HomeController(MyRecordsRequestInterface myRecordsRequestInterface) {
-        this.myRecordsRequestInterface = myRecordsRequestInterface;
+    public HomeController(VmrRequest.onFetchRecordsListener onFetchRecordsListener) {
+        this.onFetchRecordsListener = onFetchRecordsListener;
     }
 
     public void fetchAllFilesAndFolders(Map<String, String> formData){
@@ -32,13 +29,13 @@ public class HomeController {
                         new Response.Listener<VmrFolder>() {
                             @Override
                             public void onResponse(VmrFolder vmrFolder) {
-                                myRecordsRequestInterface.fetchFilesAndFoldersSuccess(vmrFolder);
+                                onFetchRecordsListener.onFetchRecordsSuccess(vmrFolder);
                             }
                         },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                myRecordsRequestInterface.fetchFilesAndFoldersFailure(error);
+                                onFetchRecordsListener.onFetchRecordsFailure(error);
                             }
                         } );
         VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);

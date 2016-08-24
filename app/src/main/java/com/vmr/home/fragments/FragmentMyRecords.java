@@ -1,9 +1,9 @@
 package com.vmr.home.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -18,18 +18,19 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
-
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.adapters.FileFolderListAdapter;
 import com.vmr.app.VMR;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
-import com.vmr.home.interfaces.MyRecordsRequestInterface;
+import com.vmr.home.interfaces.Interaction;
+import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrNode;
 import com.vmr.utils.Constants;
+import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
@@ -38,17 +39,26 @@ import java.util.List;
 import java.util.Map;
 
 public class FragmentMyRecords extends Fragment
-        implements MyRecordsRequestInterface {
+        implements
+        VmrRequest.onFetchRecordsListener,
+        Interaction.HomeToMyRecordsInterface
+//        HomeActivityInterface
+{
 
+    // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
+    // Views
     private FloatingActionButton fab;
-    private BottomSheetBehavior behavior;
-    private HomeController homeController;
     private ListView mListView;
+    private BottomSheetBehavior behavior;
+    private ProgressDialog progressDialog ;
 
-//    private VmrFolder root;
+    // Controllers
+    private HomeController homeController;
+
+    // Variables
     private VmrFolder head;
-    private List<VmrNode> mFileList;
+    private List<VmrNode> mFileList = new ArrayList<>();
     private FileFolderListAdapter mAdapter;
 
 
@@ -59,55 +69,113 @@ public class FragmentMyRecords extends Fragment
         if (fragmentInteractionListener != null) {
             fragmentInteractionListener.onFragmentInteraction("My Records");
         }
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_my_records, container, false);
-        HomeActivity homeActivity = (HomeActivity) this.getActivity();
-        Map<String, String> formData = VMR.getUserMap();
-        formData.put("alfNoderef",homeActivity.getUserInfo().getRootNodref());
-        formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put("alf_ticket",PrefUtils.getSharedPreference(homeActivity.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        homeController = new HomeController(this);
 
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        setupListView(view);
+        setupBottomSheet(view);
+        setOnBackPress(view);
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Fetching The File...");
+        progressDialog.setCancelable(true);
+
+        return view;
+    }
+
+    private void setupListView(View view) {
         mListView = (ListView) view.findViewById(R.id.lvMyRecords);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(mFileList.get(i) instanceof VmrFolder){
+                    Toast.makeText(getActivity(), "Folder clicked", Toast.LENGTH_SHORT).show();
+                    head=(VmrFolder) mFileList.get(i);
+                    Map<String, String> formData = VMR.getUserMap();
+                    formData.put("alfNoderef", mFileList.get(i).getNodeRef());
+                    formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
+                    formData.put("alf_ticket",PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+                    homeController.fetchAllFilesAndFolders(formData);
+                } else if(mFileList.get(i) instanceof VmrFile){
+                    Toast.makeText(getActivity(), "File clicked", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
-        // Get the views from the fragment layout
+    @Override
+    public void onStart() {
+        super.onStart();
+        progressDialog.show();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            fragmentInteractionListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+
+        ((HomeActivity) getActivity()).setFragmentCommunicator(this);
+    }
+
+    @Override
+    public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
+        progressDialog.dismiss();
+        Toast.makeText(VMR.getVMRContext(), "My Records retrieved.", Toast.LENGTH_SHORT).show();
+        if (head==null) {
+            head = vmrFolder;
+            head.setFolders(vmrFolder.getFolders());
+            head.setIndexedFiles(vmrFolder.getIndexedFiles());
+            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            mFileList = head.getAll();
+            mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
+            mListView.setAdapter(mAdapter);
+
+        } else {
+            head.setFolders(vmrFolder.getFolders());
+            head.setIndexedFiles(vmrFolder.getIndexedFiles());
+            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            mFileList=head.getAll();
+            mAdapter.updateDataset(mFileList);
+        }
+    }
+
+    @Override
+    public void onFetchRecordsFailure(VolleyError error) {
+        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onReceiveFromActivitySuccess(VmrFolder vmrFolder) {
+        head = vmrFolder;
+        mFileList = head.getAll();
+        mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
+        mListView.setAdapter(mAdapter);
+        progressDialog.dismiss();
+    }
+
+    @Override
+    public void onReceiveFromActivityFailure(VolleyError error) {
+        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String title);
+    }
+
+    private void setupBottomSheet(View view){
+        // Get views and set them
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
         CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.bottom_sheet_layout);
         final FrameLayout bottomSheet = (FrameLayout) coordinatorLayout.findViewById(R.id.bottom_sheet_frame);
         behavior = BottomSheetBehavior.from(bottomSheet);
         behavior.setPeekHeight(150);
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-//        if(VMR.getRootVmrFolder() != null) {
-            head = VMR.getRootVmrFolder();
-//            mFileList = new ArrayList<>();
-//        }
-
-        homeController = new HomeController(this);
-        homeController.fetchAllFilesAndFolders(formData);
-
-//        // Set adapter for the ListView
-//        mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-//        mListView.setAdapter(mAdapter);
-
-
-        // Set Callback for BottomSheet interaction
-        // Handle FAB visibility
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-                Log.i("-> BottomSheet Callback", "newState->"+newState);
-                if ( newState == BottomSheetBehavior.STATE_EXPANDED ) {
-                    fab.hide();
-                } else {
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -128,36 +196,36 @@ public class FragmentMyRecords extends Fragment
             }
         });
 
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        // Set Callback for BottomSheet interaction
+        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(mFileList.get(i) instanceof VmrFolder){
-                    Toast.makeText(getActivity(), "Folder clicked", Toast.LENGTH_SHORT).show();
-                    head=(VmrFolder) mFileList.get(i);
-                    Map<String, String> formData = VMR.getUserMap();
-                    formData.put("alfNoderef", mFileList.get(i).getNodeRef());
-                    formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
-                    formData.put("alf_ticket",PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-
-                    homeController.fetchAllFilesAndFolders(formData);
-                } else if(mFileList.get(i) instanceof VmrFile){
-                    Toast.makeText(getActivity(), "File clicked", Toast.LENGTH_SHORT).show();
+            public void onStateChanged(View bottomSheet, int newState) {
+                Log.i("-> BottomSheet Callback", "newState->"+newState);
+                if ( newState == BottomSheetBehavior.STATE_EXPANDED ) {
+                    fab.hide();
+                } else {
+                    fab.show();
                 }
             }
-        });
 
+            @Override
+            public void onSlide(View bottomSheet, float slideOffset) {
+
+            }
+        });
+    }
+
+    private void setOnBackPress(View view){
         view.setFocusableInTouchMode(true);
         view.requestFocus();
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if(i == KeyEvent.KEYCODE_BACK&& keyEvent.getAction() ==KeyEvent.ACTION_UP){
+                if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     if(head !=  VMR.getRootVmrFolder()) {
-                        Toast.makeText(getActivity(), "Back pressed", Toast.LENGTH_SHORT).show();
                         head = (VmrFolder) head.getParent();
                         mFileList=head.getAll();
                         mAdapter.updateDataset(mFileList);
-
                         return true;
                     } else {
 
@@ -168,72 +236,5 @@ public class FragmentMyRecords extends Fragment
                 }
             }
         });
-
-        return view;
     }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            fragmentInteractionListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void fetchFilesAndFoldersSuccess(VmrFolder vmrFolder) {
-        Toast.makeText(VMR.getVMRContext(), "My Records retrieved.", Toast.LENGTH_SHORT).show();
-        System.out.println(vmrFolder.toString());
-//        if (VMR.getRootVmrFolder() == null) {
-//            // Set adapter for the ListView
-//            VMR.setRootVmrFolder(vmrFolder);
-//            head = VMR.getRootVmrFolder();
-//            mFileList.clear();
-//            mFileList.addAll(head.getAll());
-////            mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-////            mListView.setAdapter(mAdapter);
-//            mAdapter.updateDataset(mFileList);
-//        } else {
-//            head.addFolder(vmrFolder);
-//            head = vmrFolder;
-//            mFileList.clear();
-//            mFileList.addAll(head.getAll());
-//            mAdapter.updateDataset(mFileList);
-//        }
-        if (head==null) {
-            // Set adapter for the ListView
-            if (VMR.getRootVmrFolder() == null) {
-                VMR.setRootVmrFolder(vmrFolder);
-            }
-
-            head = vmrFolder;
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList = head.getAll();
-            mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-            mListView.setAdapter(mAdapter);
-
-        } else{
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList=head.getAll();
-            mAdapter.updateDataset(mFileList);
-        }
-
-    }
-
-    @Override
-    public void fetchFilesAndFoldersFailure(VolleyError error) {
-        Toast.makeText(VMR.getVMRContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String title);
-    }
-
 }

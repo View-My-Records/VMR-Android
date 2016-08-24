@@ -52,8 +52,4 @@ public class FragmentLoginCorporate extends Fragment {
     public void setCallbackInterface(LoginFragmentInterface loginFragmentInterface){
         this.loginFragmentInterface = loginFragmentInterface;
     }
-
-
-
-
 }

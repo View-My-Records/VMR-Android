@@ -34,15 +34,14 @@ public class VmrFolder extends VmrNode {
 
 
     public VmrFolder(JSONObject folderJson) {
-
         try {
-            this.setIndexedFiles(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
+            this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
             this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
             this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
-            this.setFolders(folderJson.has("folders") ? folderJson.getJSONArray("folders") : null);
+            this.setFoldersFromJSON(folderJson.has("folders") ? folderJson.getJSONArray("folders") : null);
             this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
             this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
-            this.setUnIndexedFiles(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);
+            this.setUnIndexedFilesFromJSON(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -75,7 +74,7 @@ public class VmrFolder extends VmrNode {
         return folders;
     }
 
-    public void setFolders(JSONArray folders) {
+    public void setFoldersFromJSON(JSONArray folders) {
         if (folders != null && folders.length() > 0) {
             JSONObject jsonobject;
             try {
@@ -130,7 +129,7 @@ public class VmrFolder extends VmrNode {
         return indexedFiles;
     }
 
-    public void setIndexedFiles(JSONArray indexedFiles) {
+    public void setIndexedFilesFromJSON(JSONArray indexedFiles) {
         if (indexedFiles != null && indexedFiles.length() > 0) {
             JSONObject jsonobject;
             try {
@@ -149,7 +148,7 @@ public class VmrFolder extends VmrNode {
         return unIndexedFiles;
     }
 
-    public void setUnIndexedFiles(JSONArray unIndexedFiles) {
+    public void setUnIndexedFilesFromJSON(JSONArray unIndexedFiles) {
         if (unIndexedFiles != null && unIndexedFiles.length() > 0) {
             JSONObject jsonobject;
             try {

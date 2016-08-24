@@ -81,7 +81,7 @@ public class Constants {
         }
     }
 
-    public final static class FolderNavigation{
+    public final static class FolderNavigation {
         public static final String ALFRESCO_NODE_REFERENCE = "alfNoderef";
         public static final String PAGE_MODE = "pageMode";
         public static final String ALFRESCO_TICKET = "alf_ticket";
@@ -92,6 +92,10 @@ public class Constants {
         public static final String FAMILY       = "FAM";
         public static final String PROFESSIONAL = "PROF";
         public static final String CORPORATE    = "CORP";
+    }
+
+    public final static class Keys {
+        public static final String USER_DETAILS = "USER_DETAILS";
     }
 
 

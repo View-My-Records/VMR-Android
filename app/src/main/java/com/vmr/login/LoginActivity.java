@@ -6,11 +6,13 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.vmr.BuildConfig;
 import com.vmr.R;
 import com.vmr.login.interfaces.LoginFragmentInterface;
 import com.vmr.login.interfaces.LoginRequestInterface;
@@ -36,6 +38,8 @@ public class LoginActivity extends AppCompatActivity
     private UserInfo userDetails;
     private boolean isUserLoggedIn = false;
 
+    private String TAG = "LoginActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -50,6 +54,8 @@ public class LoginActivity extends AppCompatActivity
         final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
         assert viewPager != null;
         viewPager.setAdapter(adapter);
+
+        if (BuildConfig.DEBUG) Log.i(this.TAG, "Message");
 
     }
 
@@ -73,7 +79,6 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
         onLoginComplete(userInfo);
-        System.out.println(userInfo);
     }
 
     @Override
@@ -107,8 +112,6 @@ public class LoginActivity extends AppCompatActivity
         }
 
         this.userDetails = userInfo;
-
-        System.out.println(userInfo.getEmailId());
 
         isUserLoggedIn=true;
         if(PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {

@@ -1,9 +1,11 @@
 package com.vmr.home;
 
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,8 +21,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.vmr.R;
+import com.vmr.app.VMR;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -30,8 +35,16 @@ import com.vmr.home.fragments.FragmentReports;
 import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
+import com.vmr.home.interfaces.HomeActivityInterface;
+import com.vmr.home.interfaces.Interaction;
+import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.UserInfo;
+import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.utils.Constants;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
+import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
         implements
@@ -44,15 +57,19 @@ public class HomeActivity extends AppCompatActivity
         FragmentToBeIndexed.OnFragmentInteractionListener,
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
-        FragmentHelp.OnFragmentInteractionListener {
+        FragmentHelp.OnFragmentInteractionListener,
+        VmrRequest.onFetchRecordsListener
+{
 
-    private static final String KEY_USER_DETAILS = "KEY_USER_DETAILS";
 
+    private Interaction.HomeToMyRecordsInterface fragmentCommunicator ;
+
+    // Models
     private UserInfo userInfo;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(KEY_USER_DETAILS, userInfo);
+        intent.putExtra(Constants.Keys.USER_DETAILS, userInfo);
         return intent;
     }
 
@@ -75,7 +92,7 @@ public class HomeActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
 
-            userInfo = getIntent().getParcelableExtra(KEY_USER_DETAILS);
+            userInfo = getIntent().getParcelableExtra(Constants.Keys.USER_DETAILS);
 
         }
 
@@ -93,18 +110,23 @@ public class HomeActivity extends AppCompatActivity
 
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
-//        TextView accountLastAccessed = (TextView) headerView.findViewById(R.id.accountLastAccessed);
-
         ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
         ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
-        if (userInfo.getMembershipType().equals("IND")) {
+        if (userInfo.getMembershipType().equals(Constants.Domain.INDIVIDUAL)) {
             accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
         } else {
             accountName.setText(userInfo.getCorpName());
         }
 
         accountEmail.setText(userInfo.getEmailId());
+
+        Map<String, String> formData = VMR.getUserMap();
+        formData.put("alfNoderef",this.getUserInfo().getRootNodref());
+        formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
+        formData.put("alf_ticket", PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        HomeController homeController = new HomeController(this);
+        homeController.fetchAllFilesAndFolders(formData);
 
     }
 
@@ -145,7 +167,7 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
@@ -211,5 +233,23 @@ public class HomeActivity extends AppCompatActivity
 
     public UserInfo getUserInfo() {
         return userInfo;
+    }
+
+    @Override
+    public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
+        if (VMR.getRootVmrFolder() == null) {
+            VMR.setRootVmrFolder(vmrFolder);
+        }
+        fragmentCommunicator.onReceiveFromActivitySuccess(VMR.getRootVmrFolder());
+    }
+
+    @Override
+    public void onFetchRecordsFailure(VolleyError error) {
+        Toast.makeText(VMR.getVMRContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+        fragmentCommunicator.onReceiveFromActivityFailure(error);
+    }
+
+    public void setFragmentCommunicator(Interaction.HomeToMyRecordsInterface fragmentCommunicator) {
+        this.fragmentCommunicator = fragmentCommunicator;
     }
 }
