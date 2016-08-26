@@ -5,37 +5,21 @@
     tools:context=".home.fragments.FragmentMyRecords">
 
     <RelativeLayout
-        android:id="@+id/frame_layout"
+        android:id="@+id/frame_layout_my_records"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textAlignment="center"
-            android:text="MyRecords"
-            android:id="@+id/tvMyRecords"
-            android:layout_gravity="center_horizontal|top" />
 
-        <ListView
-            android:id="@+id/lvMyRecords"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvMyRecords"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/tvMyRecords"
-            android:paddingBottom="120dp"
+            android:scrollbars="vertical"
+            android:layout_alignParentBottom="true"
             android:clipToPadding="false"
-            android:layout_alignParentBottom="true" />
-        <!--<TextView-->
-            <!--android:id="@+id/tvFileFolderList"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:layout_below="@id/tvMyRecords"-->
-            <!--android:text="JSONArray"-->
-            <!--/>-->
-
+            android:paddingBottom="120dp" />
     </RelativeLayout>
 
     <include layout="@layout/bottom_sheet_layout"
-        android:visibility="gone" />
+        />
 
 </FrameLayout>

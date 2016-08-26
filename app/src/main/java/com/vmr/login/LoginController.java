@@ -33,9 +33,9 @@ public class LoginController {
     void fetchIndividualDetail(String email, String password, String domain){
         final Map<String,String> formData = new HashMap<>(3) ;
 
-        formData.put(Constants.LoginRequest.INDIVIDUAL_EMAIL_ID, Uri.encode(email, "UTF-8") );
-        formData.put(Constants.LoginRequest.INDIVIDUAL_PASSWORD, Uri.encode(password, "UTF-8") );
-        formData.put(Constants.LoginRequest.LOGIN_DOMAIN, Uri.encode(domain, "UTF-8") );
+        formData.put(Constants.Request.Login.INDIVIDUAL_EMAIL_ID, Uri.encode(email, "UTF-8") );
+        formData.put(Constants.Request.Login.INDIVIDUAL_PASSWORD, Uri.encode(password, "UTF-8") );
+        formData.put(Constants.Request.Login.LOGIN_DOMAIN, Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
 
@@ -45,10 +45,10 @@ public class LoginController {
 
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Constants.LoginRequest.FAMILY_EMAIL_ID, Uri.encode(email, "UTF-8") );
-        formData.put(Constants.LoginRequest.FAMILY_PASSWORD, Uri.encode(password, "UTF-8") );
-        formData.put(Constants.LoginRequest.FAMILY_ID, Uri.encode(accountId, "UTF-8") );
-        formData.put(Constants.LoginRequest.LOGIN_DOMAIN, Uri.encode(domain, "UTF-8") );
+        formData.put(Constants.Request.Login.FAMILY_EMAIL_ID, Uri.encode(email, "UTF-8") );
+        formData.put(Constants.Request.Login.FAMILY_PASSWORD, Uri.encode(password, "UTF-8") );
+        formData.put(Constants.Request.Login.FAMILY_ID, Uri.encode(accountId, "UTF-8") );
+        formData.put(Constants.Request.Login.LOGIN_DOMAIN, Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }
@@ -56,10 +56,10 @@ public class LoginController {
     void fetchProfessionalDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }
@@ -67,10 +67,10 @@ public class LoginController {
     void fetchCorporateDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }
@@ -79,9 +79,9 @@ public class LoginController {
 
         final Map<String,String> formData = new HashMap<>(3) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.INDIVIDUAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.INDIVIDUAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.INDIVIDUAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.INDIVIDUAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }
@@ -90,10 +90,10 @@ public class LoginController {
 
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.FAMILY_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.FAMILY_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.FAMILY_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.FAMILY_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.FAMILY_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.FAMILY_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
 
         dispatchRequest(formData);
@@ -102,10 +102,10 @@ public class LoginController {
     void fetchCustomProfessionalDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.PROFESSIONAL_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.PROFESSIONAL_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }
@@ -113,10 +113,10 @@ public class LoginController {
     void fetchCustomCorporateDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.CORPORATE_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
-        formData.put(Uri.encode(Constants.LoginRequest.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_PASSWORD, "UTF-8"), Uri.encode(password, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.CORPORATE_ID, "UTF-8"), Uri.encode(accountId, "UTF-8") );
+        formData.put(Uri.encode(Constants.Request.Login.LOGIN_DOMAIN, "UTF-8"), Uri.encode(domain, "UTF-8") );
 
         dispatchRequest(formData);
     }

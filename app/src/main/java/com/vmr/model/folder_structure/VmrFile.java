@@ -13,7 +13,7 @@ import java.util.Locale;
  * Created by abhijit on 8/20/16.
  */
 
-public class VmrFile extends VmrNode {
+public class VmrFile extends VmrItem {
 
     private String  category; //": "NORM",
     private Date    expiryDate; //": "Sun Aug 20 00:00:00 UTC 2017",

@@ -45,7 +45,7 @@ public class FragmentLoginFamily extends Fragment {
                         etUsername.getText().toString(),
                         etPassword.getText().toString(),
                         etFamilyId.getText().toString(),
-                        Constants.Domain.FAMILY,
+                        Constants.Request.Domain.FAMILY,
                         cbRememberMe.isChecked());
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();

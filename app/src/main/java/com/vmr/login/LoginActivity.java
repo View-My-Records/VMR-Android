@@ -38,7 +38,7 @@ public class LoginActivity extends AppCompatActivity
     private UserInfo userDetails;
     private boolean isUserLoggedIn = false;
 
-    private String TAG = "LoginActivity";
+    public static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

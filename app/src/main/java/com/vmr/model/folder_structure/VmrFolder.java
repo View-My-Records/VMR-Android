@@ -16,7 +16,7 @@ import java.util.Locale;
  * Created by abhijit on 8/20/16.
  */
 
-public class VmrFolder extends VmrNode {
+public class VmrFolder extends VmrItem {
 
     List<VmrFolder>     folders = new ArrayList<>();
     List<VmrFile>       indexedFiles = new ArrayList<>();
@@ -62,10 +62,17 @@ public class VmrFolder extends VmrNode {
         this.unIndexedFiles.add(file);
     }
 
-    public List<VmrNode> getAll(){
-        List<VmrNode> list = new ArrayList<>();
+    public List<VmrItem> getAll(){
+        List<VmrItem> list = new ArrayList<>();
         list.addAll(folders);
         list.addAll(indexedFiles);
+        list.addAll(unIndexedFiles);
+        return list;
+    }
+
+    public List<VmrItem> getAllUnindexed(){
+        List<VmrItem> list = new ArrayList<>();
+        list.addAll(folders);
         list.addAll(unIndexedFiles);
         return list;
     }

@@ -39,10 +39,10 @@ public class FragmentLoginProfessional extends Fragment {
                         etUsername.getText().toString(),
                         etPassword.getText().toString(),
                         etProfessionalId.getText().toString(),
-                        Constants.Domain.PROFESSIONAL,
+                        Constants.Request.Domain.PROFESSIONAL,
                         cbRememberMe.isChecked());
                 } else {
-                    Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.volley_error_internet_not_available , Snackbar.LENGTH_SHORT ).show();
                 }
 
             }

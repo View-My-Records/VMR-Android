@@ -3,16 +3,11 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.vmr.model.MyRecords;
-import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.network.JSONNetworkRequest;
 import com.vmr.network.NetworkRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.Constants;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,11 +17,11 @@ import java.util.Map;
  * Created by abhijit on 8/16/16.
  */
 
-public class MyRecordsRequest extends NetworkRequest<VmrFolder> {
+public class RecordsRequest extends NetworkRequest<VmrFolder> {
 
     private Map<String, String> formData;
 
-    public MyRecordsRequest(
+    public RecordsRequest(
             Map<String, String> formData,
             Response.Listener<VmrFolder> successListener,
             Response.ErrorListener errorListener) {

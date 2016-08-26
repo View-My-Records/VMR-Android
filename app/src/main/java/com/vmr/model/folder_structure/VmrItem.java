@@ -5,9 +5,9 @@ import java.util.Date;
 /*
  * Created by abhijit on 8/22/16.
  */
-public abstract class VmrNode {
+public abstract class VmrItem {
 
-    private VmrNode parent;
+    private VmrItem parent;
 
     private String name;
     private String docType;
@@ -20,11 +20,11 @@ public abstract class VmrNode {
     private Date lastUpdated;
     private String lastUpdatedBy;
 
-    public VmrNode getParent() {
+    public VmrItem getParent() {
         return parent;
     }
 
-    public void setParent(VmrNode parent) {
+    public void setParent(VmrItem parent) {
         this.parent = parent;
     }
 

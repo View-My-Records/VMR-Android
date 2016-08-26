@@ -13,11 +13,8 @@
         <item
             android:id="@+id/to_be_indexed"
             android:icon="@drawable/ic_to_be_indexed"
-            android:title="To Be Indexed (2)" />
-        <item
-            android:id="@+id/shared_with_me"
-            android:icon="@drawable/ic_shared_with_me"
-            android:title="Shared with me" />
+            android:title="To Be Indexed " />
+
         <item
             android:id="@+id/offline"
             android:icon="@drawable/ic_offline"
@@ -31,6 +28,19 @@
             android:icon="@android:drawable/ic_menu_delete"
             android:title="Trash" />
     </group>
+
+    <item android:title="Sharing">
+        <menu>
+            <item
+                android:id="@+id/shared_with_me"
+                android:icon="@drawable/ic_shared_with_me"
+                android:title="Shared with me" />
+            <item
+                android:id="@+id/shared_by_me"
+                android:icon="@drawable/ic_shared_with_me"
+                android:title="Shared By me" />
+        </menu>
+    </item>
 
     <item android:title="Others">
         <menu>

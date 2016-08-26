@@ -4,35 +4,39 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.adapters.FileFolderListAdapter;
 import com.vmr.app.VMR;
+import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
+import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrNode;
+import com.vmr.model.folder_structure.VmrItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,15 +45,15 @@ import java.util.Map;
 public class FragmentMyRecords extends Fragment
         implements
         VmrRequest.onFetchRecordsListener,
-        Interaction.HomeToMyRecordsInterface
-//        HomeActivityInterface
+        Interaction.HomeToMyRecordsInterface,
+        RecordsAdapter.OnItemClickListener
 {
 
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
+
     // Views
     private FloatingActionButton fab;
-    private ListView mListView;
     private BottomSheetBehavior behavior;
     private ProgressDialog progressDialog ;
 
@@ -58,22 +62,32 @@ public class FragmentMyRecords extends Fragment
 
     // Variables
     private VmrFolder head;
-    private List<VmrNode> mFileList = new ArrayList<>();
-    private FileFolderListAdapter mAdapter;
+    private List<VmrItem> mFileList = new ArrayList<>();
+    private RecordsAdapter mAdapter;
 
+    public FragmentMyRecords() {
+        // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((HomeActivity) getActivity()).setSendToMyRecords(this);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // User interface to change the Title in the Activity
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("My Records");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
         }
 
         View view = inflater.inflate(R.layout.fragment_my_records, container, false);
         homeController = new HomeController(this);
+        mAdapter = new RecordsAdapter(mFileList, this);
 
-        setupListView(view);
+        setupRecyclerView(view);
         setupBottomSheet(view);
         setOnBackPress(view);
 
@@ -84,30 +98,17 @@ public class FragmentMyRecords extends Fragment
         return view;
     }
 
-    private void setupListView(View view) {
-        mListView = (ListView) view.findViewById(R.id.lvMyRecords);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(mFileList.get(i) instanceof VmrFolder){
-                    Toast.makeText(getActivity(), "Folder clicked", Toast.LENGTH_SHORT).show();
-                    head=(VmrFolder) mFileList.get(i);
-                    Map<String, String> formData = VMR.getUserMap();
-                    formData.put("alfNoderef", mFileList.get(i).getNodeRef());
-                    formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
-                    formData.put("alf_ticket",PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-                    homeController.fetchAllFilesAndFolders(formData);
-                } else if(mFileList.get(i) instanceof VmrFile){
-                    Toast.makeText(getActivity(), "File clicked", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-    }
-
     @Override
     public void onStart() {
         super.onStart();
-        progressDialog.show();
+        if(VMR.getVmrRootFolder() == null){
+            progressDialog.show();
+        } else {
+            head = VMR.getVmrRootFolder();
+            mFileList = head.getAll();
+            mAdapter.updateDataset(mFileList);
+            progressDialog.dismiss();
+        }
     }
 
     @Override
@@ -120,21 +121,25 @@ public class FragmentMyRecords extends Fragment
                     + " must implement OnFragmentInteractionListener");
         }
 
-        ((HomeActivity) getActivity()).setFragmentCommunicator(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        fragmentInteractionListener = null;
     }
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         progressDialog.dismiss();
-        Toast.makeText(VMR.getVMRContext(), "My Records retrieved.", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLine("My Records retrieved.");
         if (head==null) {
             head = vmrFolder;
             head.setFolders(vmrFolder.getFolders());
             head.setIndexedFiles(vmrFolder.getIndexedFiles());
             head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
             mFileList = head.getAll();
-            mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-            mListView.setAdapter(mAdapter);
+            mAdapter.updateDataset(mFileList);
 
         } else {
             head.setFolders(vmrFolder.getFolders());
@@ -147,6 +152,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
+        progressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -154,14 +160,28 @@ public class FragmentMyRecords extends Fragment
     public void onReceiveFromActivitySuccess(VmrFolder vmrFolder) {
         head = vmrFolder;
         mFileList = head.getAll();
-        mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-        mListView.setAdapter(mAdapter);
+        mAdapter.updateDataset(mFileList);
         progressDialog.dismiss();
     }
 
     @Override
     public void onReceiveFromActivityFailure(VolleyError error) {
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemClick(VmrItem item) {
+        if(item instanceof VmrFolder){
+            VmrDebug.printLine(item.getName() + "Folder clicked");
+            head=(VmrFolder) item;
+            Map<String, String> formData = VMR.getUserMap();
+            formData.put(Constants.Request.FolderNavigation.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
+            formData.put(Constants.Request.FolderNavigation.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+            formData.put(Constants.Request.FolderNavigation.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+            homeController.fetchAllFilesAndFolders(formData);
+        } else if(item instanceof VmrFile) {
+            VmrDebug.printLine(item.getName() + "File clicked");
+        }
     }
 
     public interface OnFragmentInteractionListener {
@@ -199,8 +219,8 @@ public class FragmentMyRecords extends Fragment
         // Set Callback for BottomSheet interaction
         behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
-            public void onStateChanged(View bottomSheet, int newState) {
-                Log.i("-> BottomSheet Callback", "newState->"+newState);
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                VmrDebug.printLine(String.valueOf(newState));
                 if ( newState == BottomSheetBehavior.STATE_EXPANDED ) {
                     fab.hide();
                 } else {
@@ -209,7 +229,7 @@ public class FragmentMyRecords extends Fragment
             }
 
             @Override
-            public void onSlide(View bottomSheet, float slideOffset) {
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
 
             }
         });
@@ -222,13 +242,12 @@ public class FragmentMyRecords extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    if(head !=  VMR.getRootVmrFolder()) {
+                    if(head !=  VMR.getVmrRootFolder()) {
                         head = (VmrFolder) head.getParent();
                         mFileList=head.getAll();
                         mAdapter.updateDataset(mFileList);
                         return true;
                     } else {
-
                         return false;
                     }
                 } else {
@@ -236,5 +255,13 @@ public class FragmentMyRecords extends Fragment
                 }
             }
         });
+    }
+
+    private void setupRecyclerView(View view) {
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mAdapter);
     }
 }

@@ -59,7 +59,7 @@ public class LoginRequest extends NetworkRequest<UserInfo> {
             userInfo.setUserName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERNAME      ));
             userInfo.setLoggedinUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LOGGEDINUSERID));
 
-            if(userInfo.getMembershipType().equalsIgnoreCase(Constants.Domain.INDIVIDUAL) ){
+            if(userInfo.getMembershipType().equalsIgnoreCase(Constants.Request.Domain.INDIVIDUAL) ){
                 userInfo.setLastName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LASTNAME));
                 userInfo.setFirstName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_FIRSTNAME));
             }else {

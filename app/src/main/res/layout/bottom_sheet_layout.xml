@@ -38,7 +38,8 @@
                     android:scaleType="fitXY"
                     android:background="@android:color/transparent"
                     android:layout_toStartOf="@id/ibUpload"
-                    android:src="@drawable/camera"/>
+                    android:src="@drawable/camera"
+                    android:layout_toLeftOf="@id/ibUpload" />
                 <ImageButton
                     android:id="@+id/ibNewFolder"
                     android:layout_width="100dp"
@@ -47,18 +48,20 @@
                     android:scaleType="fitXY"
                     android:background="@android:color/transparent"
                     android:layout_toEndOf="@id/ibUpload"
-                    android:src="@drawable/ic_folder" />
+                    android:src="@drawable/ic_folder"
+                    android:layout_toRightOf="@id/ibUpload" />
 
             </RelativeLayout>
 
         </FrameLayout>
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="@dimen/fab_margin"
-            android:src="@android:drawable/ic_input_add" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_input_add" />
 
 </android.support.design.widget.CoordinatorLayout>
 
