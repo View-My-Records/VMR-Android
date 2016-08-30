@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
-        VmrRequest.onFetchRecordsListener
+        VmrRequest.OnFetchRecordsListener
 {
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
 
@@ -113,6 +113,7 @@ public class HomeActivity extends AppCompatActivity
 
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
+        TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
         ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
         ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
@@ -123,11 +124,12 @@ public class HomeActivity extends AppCompatActivity
         }
 
         accountEmail.setText(userInfo.getEmailId());
+        lastLogin.setText(userInfo.getLastLoginTime().toString());
 
         Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FolderNavigation.ALFRESCO_NODE_REFERENCE,this.getUserInfo().getRootNodref());
-        formData.put(Constants.Request.FolderNavigation.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.FolderNavigation.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,this.getUserInfo().getRootNodref());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(formData);
     }
@@ -242,6 +244,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         if (VMR.getVmrRootFolder() == null) {
+            vmrFolder.setNodeRef(userInfo.getRootNodref());
             VMR.setVmrRootFolder(vmrFolder);
         }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");

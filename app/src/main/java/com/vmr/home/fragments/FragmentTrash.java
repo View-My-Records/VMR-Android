@@ -6,9 +6,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -20,6 +22,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
 import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.request.TrashRequest;
 import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -33,8 +36,9 @@ import java.util.Map;
 
 public class FragmentTrash extends Fragment
         implements
-        VmrRequest.onFetchTrashListener,
-        TrashAdapter.OnItemClickListener
+        VmrRequest.OnFetchTrashListener,
+        TrashAdapter.OnItemClickListener,
+        TrashAdapter.OnItemOptionsClickListener
 {
 
     // FragmentInteractionListener
@@ -79,7 +83,7 @@ public class FragmentTrash extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_trash, container, false);
         homeController = new HomeController(this);
-        mAdapter = new TrashAdapter(mFileList, this);
+        mAdapter = new TrashAdapter(mFileList, this, this);
 
         setupRecyclerView(view);
         setOnBackPress(view);
@@ -94,9 +98,9 @@ public class FragmentTrash extends Fragment
     public void onStart() {
         super.onStart();
         Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FolderNavigation.ALFRESCO_NODE_REFERENCE,VMR.getUserInfo().getRootNodref());
-        formData.put(Constants.Request.FolderNavigation.PAGE_MODE,Constants.PageMode.LIST_TRASH_BIN);
-        formData.put(Constants.Request.FolderNavigation.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getUserInfo().getRootNodref());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_TRASH_BIN);
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         homeController.fetchTrash(formData);
         progressDialog.show();
     }
@@ -149,6 +153,20 @@ public class FragmentTrash extends Fragment
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onItemOptionsClick(VmrTrashItem item, View view) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        popupMenu.inflate(R.menu.file_overflow_manu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(VMR.getVMRContext(), item.getTitle() + " clicked", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        popupMenu.show();
     }
 
     public interface OnFragmentInteractionListener {

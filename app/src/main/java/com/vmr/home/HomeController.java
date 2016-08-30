@@ -3,12 +3,15 @@ package com.vmr.home;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.RecordsRequest;
 import com.vmr.home.request.TrashRequest;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
+
+import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -19,15 +22,20 @@ import java.util.Map;
 
 public class HomeController {
 
-    private VmrRequest.onFetchRecordsListener onFetchRecordsListener;
-    private VmrRequest.onFetchTrashListener onFetchTrashListener;
+    private VmrRequest.OnFetchRecordsListener onFetchRecordsListener;
+    private VmrRequest.OnFetchTrashListener onFetchTrashListener;
+    private VmrRequest.OnCreateFolderListener onCreateFolderListener;
 
-    public HomeController(VmrRequest.onFetchRecordsListener onFetchRecordsListener) {
-        this.onFetchRecordsListener = onFetchRecordsListener;
+    public HomeController(VmrRequest.OnFetchRecordsListener OnFetchRecordsListener) {
+        this.onFetchRecordsListener = OnFetchRecordsListener;
     }
 
-    public HomeController(VmrRequest.onFetchTrashListener onFetchTrashListener) {
-        this.onFetchTrashListener = onFetchTrashListener;
+    public HomeController(VmrRequest.OnFetchTrashListener OnFetchTrashListener) {
+        this.onFetchTrashListener = OnFetchTrashListener;
+    }
+
+    public HomeController(VmrRequest.OnCreateFolderListener onCreateFolderListener) {
+        this.onCreateFolderListener = onCreateFolderListener;
     }
 
     public void fetchAllFilesAndFolders(Map<String, String> formData){
@@ -68,4 +76,26 @@ public class HomeController {
                         } );
         VolleySingleton.getInstance().addToRequestQueue(trashRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
     }
+
+    public void createFolder(Map<String, String> formData){
+        CreateFolderRequest createFolderRequest =
+                new CreateFolderRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onCreateFolderListener.onCreateFolderSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onCreateFolderListener.onCreateFolderFailure(error);
+                            }
+                        }
+                );
+        VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+
 }

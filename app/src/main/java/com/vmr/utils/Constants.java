@@ -25,15 +25,17 @@ public class Constants {
         public final static String LIST_ALL_FILE_FOLDER      = "LIST_ALL_FILE_FOLDER";
         public final static String DOCUMENT_DETAILS          = "DOCUMENT_DETAILS";
         public final static String SET_SAVED_FILE_PROPERTIES = "SET_SAVED_FILE_PROPERTIES";
-        public final static String FILE_PROPERTY_SAVE        = "FILE_PROPERTY_SAVE";
-        public final static String RENAME_FILE_FOLDER        = "RENAME_FILE_FOLDER";
-        public final static String DELETE_FILE_FOLDER        = "DELETE_FILE_FOLDER";
+        public final static String SAVE_FILE_PROPERTY        = "FILE_PROPERTY_SAVE";
+        public final static String RENAME_FILE_OR_FOLDER     = "RENAME_FILE_FOLDER";
+        public final static String DELETE_FILE_OR_FOLDER     = "DELETE_FILE_FOLDER";
         public final static String SEARCH_FILE               = "SEARCH_FILE";
         public final static String LIST_TRASH_BIN            = "LIST_TRASH_BIN";
         public final static String DOWNLOAD_ACTIVITY         = "DOWNLOAD_ACTIVITY";
         public final static String LIST_UN_INDEXED_FILE      = "LIST_UN_INDEXED_FILE";
         public final static String MOVE_OR_LINK_FILE         = "MOVE_OR_LINK_FILE";
-        public final static String LIST_SHARED_RECORDS       = "LIST_ALL_FILE_FOLDER_FOR_SHARED_WITH_ME";
+        public final static String LIST_SHARED_WITH_ME       = "LIST_ALL_FILE_FOLDER_FOR_SHARED_WITH_ME";
+        public final static String LIST_SHARED_BY_ME         = "GET_RECORDS_SHARED_BY_OWNER";
+        public final static String CREATE_FOLDER             = "FOLDER_ADD";
     }
 
     public final static class Request {
@@ -92,10 +94,15 @@ public class Constants {
             public static final String CORPORATE    = "CORP";
         }
 
-        public final static class FolderNavigation {
+        public final static class FormFields {
             public static final String ALFRESCO_NODE_REFERENCE = "alfNoderef";
             public static final String PAGE_MODE = "pageMode";
             public static final String ALFRESCO_TICKET = "alf_ticket";
+            public static final String FOLDER_NAME = "folderName";
+            public static final String TYPE = "type";
+            public static final String PARENT_FOLDER = "parent";
+            public static final String FOLDER_JSON_OBJECT = "folderJsonObj";
+            public static final String LOGGEDIN_USER_ID = "loggedInUserId";
 
         }
 

@@ -47,26 +47,27 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Timestamp"
-        android:layout_alignTop="@+id/tvFileSize"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="2dp" />
+        android:layout_alignBottom="@+id/ivOverflow"
+        android:layout_toLeftOf="@+id/ivOverflow"
+        android:layout_toStartOf="@+id/ivOverflow" />
 
-    <!--<ImageView-->
-        <!--android:id="@+id/ivOverflow"-->
-        <!--android:src="@drawable/ic_overflow"-->
-        <!--android:scaleType="fitXY"-->
-        <!--android:layout_marginTop="5dp"-->
-        <!--android:layout_marginBottom="5dp"-->
-        <!--android:paddingTop="10dp"-->
-        <!--android:paddingBottom="10dp"-->
-        <!--android:paddingStart="15dp"-->
-        <!--android:paddingEnd="5dp"-->
-        <!--android:layout_width="40dp"-->
-        <!--android:layout_height="40dp"-->
-        <!--android:layout_centerHorizontal="true"-->
-        <!--android:layout_alignParentEnd="true"-->
-        <!--android:contentDescription="Overflow Menu" />-->
+    <ImageView
+        android:id="@+id/ivOverflow"
+        android:src="@drawable/ic_overflow"
+        android:scaleType="fitXY"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:paddingStart="15dp"
+        android:paddingEnd="5dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="true"
+        android:contentDescription="Overflow Menu"
+        android:paddingLeft="15dp"
+        android:paddingRight="5dp"
+        android:layout_alignParentRight="true" />
 
 </RelativeLayout>

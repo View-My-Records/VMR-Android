@@ -35,6 +35,7 @@ public class WebApiConstants {
     public static final String JSON_USER_INFO_HTTPSESSIONID = "httpSessionId";
     public static final String JSON_USER_INFO_USERNAME      = "userName";
     public static final String JSON_USER_INFO_LOGGEDINUSERID= "loggedinUserId";
+    public static final String JSON_USER_INFO_LAST_LOGIN_TIME= "lastLoginTime";
 
     public static final String JSON_USER_INFO_CORPID        = "corpId";
     public static final String JSON_USER_INFO_CORPNAME      = "corpName";

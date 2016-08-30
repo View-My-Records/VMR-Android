@@ -7,9 +7,11 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -35,8 +37,9 @@ import java.util.Map;
 
 public class FragmentToBeIndexed extends Fragment
         implements
-        VmrRequest.onFetchRecordsListener,
-        RecordsAdapter.OnItemClickListener
+        VmrRequest.OnFetchRecordsListener,
+        RecordsAdapter.OnItemClickListener,
+        RecordsAdapter.OnItemOptionsClickListener
 {
 
     // FragmentInteractionListener
@@ -84,7 +87,7 @@ public class FragmentToBeIndexed extends Fragment
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
         homeController = new HomeController(this);
-        mAdapter = new RecordsAdapter(mFileList, this);
+        mAdapter = new RecordsAdapter(mFileList, this, this);
 
         setupRecyclerView(view);
         setOnBackPress(view);
@@ -104,9 +107,9 @@ public class FragmentToBeIndexed extends Fragment
             mAdapter.updateDataset(mFileList);
         } else {
             Map<String, String> formData = VMR.getUserMap();
-            formData.put(Constants.Request.FolderNavigation.ALFRESCO_NODE_REFERENCE,VMR.getUserInfo().getRootNodref());
-            formData.put(Constants.Request.FolderNavigation.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-            formData.put(Constants.Request.FolderNavigation.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getUserInfo().getRootNodref());
+            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_UN_INDEXED_FILE);
+            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
             homeController.fetchAllFilesAndFolders(formData);
             progressDialog.show();
         }
@@ -124,9 +127,9 @@ public class FragmentToBeIndexed extends Fragment
             VmrDebug.printLine(item.getName() + " Folder clicked");
             head=(VmrFolder) item;
             Map<String, String> formData = VMR.getUserMap();
-            formData.put(Constants.Request.FolderNavigation.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
-            formData.put(Constants.Request.FolderNavigation.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-            formData.put(Constants.Request.FolderNavigation.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
+            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_UN_INDEXED_FILE);
+            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
             homeController.fetchAllFilesAndFolders(formData);
             progressDialog.show();
         } else if(item instanceof VmrFile){
@@ -164,6 +167,20 @@ public class FragmentToBeIndexed extends Fragment
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onItemOptionsClick(VmrItem item, View view) {
+        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
+        popupMenu.inflate(R.menu.file_overflow_manu);
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                Toast.makeText(VMR.getVMRContext(), item.getTitle() + " clicked", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
+        popupMenu.show();
+    }
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
     }
@@ -197,5 +214,21 @@ public class FragmentToBeIndexed extends Fragment
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void updateFolder(VmrFolder vmrFolder){
+        head.setFolders(vmrFolder.getFolders());
+        head.setIndexedFiles(vmrFolder.getIndexedFiles());
+        head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+        mFileList = head.getAll();
+        mAdapter.updateDataset(mFileList);
+    }
+
+    private void refreshFolder(){
+        Map<String, String> formData = VMR.getUserMap();
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, head.getNodeRef());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        homeController.fetchAllFilesAndFolders(formData);
     }
 }

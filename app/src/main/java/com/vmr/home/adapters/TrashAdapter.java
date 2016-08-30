@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.model.folder_structure.VmrItem;
 import com.vmr.model.folder_structure.VmrTrashItem;
 
 import java.util.List;
@@ -18,11 +19,13 @@ import java.util.List;
 public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHolder>{
 
     private List<VmrTrashItem> itemsList;
-    private final OnItemClickListener listener;
+    private final OnItemClickListener itemClickListener;
+    private final OnItemOptionsClickListener optionsClickListener;
 
-    public TrashAdapter(List<VmrTrashItem> itemsList, OnItemClickListener listener) {
-        this.listener = listener;
+    public TrashAdapter(List<VmrTrashItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
+        this.itemClickListener = itemClickListener;
         this.itemsList = itemsList;
+        this.optionsClickListener = optionsClickListener;
     }
 
     @Override
@@ -42,7 +45,8 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
         } else {
             holder.setItemImage(R.drawable.ic_file);
         }
-        holder.bind(itemsList.get(position), listener);
+        holder.bind(itemsList.get(position), itemClickListener);
+        holder.bind(itemsList.get(position), optionsClickListener);
     }
 
     @Override
@@ -68,14 +72,20 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
         void onItemClick(VmrTrashItem item);
     }
 
+    public interface OnItemOptionsClickListener {
+        void onItemOptionsClick(VmrTrashItem item, View view);
+    }
+
     public class TrashViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemImage ;
         private TextView itemName ;
+        private ImageView itemOptions;
 
         public TrashViewHolder(View itemView) {
             super(itemView);
             this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
+            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
         public void setItemImage(int itemImage) {
@@ -86,6 +96,10 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
             this.itemName.setText(itemName);
         }
 
+        public void setItemOptions(ImageView itemOptions) {
+            this.itemOptions = itemOptions;
+        }
+
         public void bind(final VmrTrashItem item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
@@ -93,6 +107,15 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
                 }
             });
         }
+
+        public void bind(final VmrTrashItem item, final OnItemOptionsClickListener listener) {
+            itemOptions.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemOptionsClick(item, v);
+                }
+            });
+        }
+
     }
 
 }
