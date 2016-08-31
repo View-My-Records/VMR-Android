@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@android:color/darker_gray"
+    android:layout_gravity="bottom"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageButton
+        android:id="@+id/ibUpload"
+        android:text="File"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:layout_centerInParent="true"
+        android:src="@drawable/file" />
+    <ImageButton
+        android:id="@+id/ibCamera"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:layout_toStartOf="@id/ibUpload"
+        android:src="@drawable/camera"
+        android:layout_toLeftOf="@id/ibUpload" />
+    <ImageButton
+        android:id="@+id/ibNewFolder"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="20dp"
+        android:scaleType="fitXY"
+        android:background="@android:color/transparent"
+        android:layout_toEndOf="@id/ibUpload"
+        android:src="@drawable/ic_folder"
+        android:layout_toRightOf="@id/ibUpload" />
+
+</RelativeLayout>

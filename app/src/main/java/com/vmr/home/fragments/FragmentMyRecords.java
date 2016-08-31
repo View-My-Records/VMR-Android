@@ -1,40 +1,18 @@
 package com.vmr.home.fragments;
 
 import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.PopupWindowCompat;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
-import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageButton;
-import android.widget.PopupWindow;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -44,6 +22,8 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
+import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.folder_structure.VmrFile;
@@ -55,9 +35,6 @@ import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,25 +44,27 @@ public class FragmentMyRecords extends Fragment
         VmrRequest.OnFetchRecordsListener,
         Interaction.HomeToMyRecordsInterface,
         RecordsAdapter.OnItemClickListener,
-        RecordsAdapter.OnItemOptionsClickListener
+        RecordsAdapter.OnItemOptionsClickListener,
+        AddItemMenuSheet.OnItemClickListener,
+        OptionsMenuSheet.OnOptionClickListener
 {
 
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
 
     // Views
-    private FloatingActionButton fab;
-    private BottomSheetBehavior behavior;
+    private FloatingActionButton fabAddItem;
+    private AddItemMenuSheet addItemMenu;
+    private OptionsMenuSheet optionsMenuSheet;
     private ProgressDialog progressDialog ;
-    private View fragmentView;
 
     // Controllers
     private HomeController homeController;
-
     // Variables
     private VmrFolder head;
     private List<VmrItem> mFileList = new ArrayList<>();
     private RecordsAdapter mAdapter;
+
 
     public FragmentMyRecords() {
         // Required empty public constructor
@@ -95,6 +74,15 @@ public class FragmentMyRecords extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
+
+        homeController = new HomeController(this);
+        mAdapter = new RecordsAdapter(mFileList, this, this);
+
+        addItemMenu = new AddItemMenuSheet();
+        addItemMenu.setItemClickListener(this);
+
+        optionsMenuSheet = new OptionsMenuSheet();
+        optionsMenuSheet.setOptionClickListener(this);
     }
 
     @Override
@@ -104,12 +92,10 @@ public class FragmentMyRecords extends Fragment
             fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
         }
 
-        fragmentView = inflater.inflate(R.layout.fragment_my_records, container, false);
-        homeController = new HomeController(this);
-        mAdapter = new RecordsAdapter(mFileList, this, this);
+        View fragmentView = inflater.inflate(R.layout.fragment_my_records, container, false);
 
         setupRecyclerView(fragmentView);
-        setupBottomSheet(fragmentView);
+        setupFab(fragmentView);
         setOnBackPress(fragmentView);
 
         progressDialog = new ProgressDialog(getActivity());
@@ -208,153 +194,170 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onItemOptionsClick(VmrItem item, View view) {
-        PopupMenu popupMenu = new PopupMenu(getActivity(), view);
-        popupMenu.inflate(R.menu.file_overflow_manu);
-        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                Toast.makeText(VMR.getVMRContext(), item.getTitle() + " clicked", Toast.LENGTH_SHORT).show();
-                return false;
-            }
-        });
-        popupMenu.show();
+        optionsMenuSheet.setVmrItem(item);
+        fabAddItem.hide();
+        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        Toast.makeText(VMR.getVMRContext(), "Options menu opened", Toast.LENGTH_SHORT).show();
-        MenuInflater inflater = getActivity().getMenuInflater();
-        inflater.inflate(R.menu.file_overflow_manu, menu);
+    public void onCameraClick() {
+        Toast.makeText(VMR.getVMRContext(), "Camera button clicked", Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        return super.onContextItemSelected(item);
+    public void onFileClick() {
+        Toast.makeText(VMR.getVMRContext(), "Upload file button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFolderClick() {
+        Toast.makeText(VMR.getVMRContext(), "Add folder button clicked", Toast.LENGTH_SHORT).show();
+        //        createFolder.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//
+//                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
+//                bsbAddItem.setState(BottomSheetBehavior.STATE_COLLAPSED);
+//                bsbAddItem.setState(BottomSheetBehavior.STATE_HIDDEN);
+//
+//                // get prompts.xml view
+//                View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
+//
+//                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+//
+//                // set prompts.xml to alertdialog builder
+//                alertDialogBuilder.setView(promptsView);
+//
+//                final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
+//
+//                // set dialog message
+//                alertDialogBuilder
+//                        .setPositiveButton("OK",
+//                                new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog,int id) {
+//                                        Map<String, String> formData = VMR.getUserMap();
+////                                        formData.remove("pageMode");
+//                                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
+//                                        JSONObject jsonObject = new JSONObject();
+//                                        try {
+//                                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME,userInput.getText().toString());
+//                                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
+//                                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString());
+//                                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
+//                                            @Override
+//                                            public void onCreateFolderSuccess(JSONObject jsonObject) {
+//                                                try {
+//                                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+//                                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+//                                                        refreshFolder();
+//                                                    }
+//                                                } catch (JSONException e){
+//                                                    e.printStackTrace();
+//                                                }
+//                                            }
+//
+//                                            @Override
+//                                            public void onCreateFolderFailure(VolleyError error) {
+//                                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//                                            }
+//                                        });
+//                                        createFolderController.createFolder(formData);
+//                                    }
+//                                })
+//                        .setNegativeButton("Cancel",
+//                                new DialogInterface.OnClickListener() {
+//                                    public void onClick(DialogInterface dialog,int id) {
+//                                        dialog.cancel();
+//                                    }
+//                                });
+//
+//                // create alert dialog
+//                AlertDialog alertDialog = alertDialogBuilder.create();
+//
+//                // show it
+//                alertDialog.show();
+//            }
+//        });
+    }
+
+    @Override
+    public void onAddItemsMenuDismiss() {
+        Toast.makeText(VMR.getVMRContext(), "Menu dismissed", Toast.LENGTH_SHORT).show();
+        fabAddItem.show();
+    }
+
+    @Override
+    public void onInfoClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Info button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onOpenClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Open button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onShareClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Share button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onRenameClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Rename button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDownloadClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Download button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMoveClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Move button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onCopyClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Copy button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDuplicateClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Duplicate button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPropertiesClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Properties button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDeleteClicked(VmrItem vmrItem) {
+        Toast.makeText(VMR.getVMRContext(), "Delete button clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onOptionsMenuDismiss() {
+        Toast.makeText(VMR.getVMRContext(), "Menu dismissed", Toast.LENGTH_SHORT).show();
+        fabAddItem.show();
     }
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
     }
 
-    private void setupBottomSheet(View view){
-        // Get views and set them
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.bottom_sheet_layout);
-        final FrameLayout bottomSheet = (FrameLayout) coordinatorLayout.findViewById(R.id.bottom_sheet_frame);
-        behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setPeekHeight(150);
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        fab.setOnClickListener(new View.OnClickListener() {
+    private void setupFab(View view){
+        fabAddItem = (FloatingActionButton) view.findViewById(R.id.fab);
+        fabAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fab.hide();
-                bottomSheet.setBackgroundColor(Color.BLACK);
-                bottomSheet.getBackground().setAlpha(50);
-                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
-
-        bottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
-
-        // Set Callback for BottomSheet interaction
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(@NonNull View bottomSheet, int newState) {
-//                VmrDebug.printLine(String.valueOf(newState));
-                if ( newState == BottomSheetBehavior.STATE_EXPANDED ) {
-                    fab.hide();
-                } else {
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
-
-            }
-        });
-
-        ImageButton cameraImage = (ImageButton) bottomSheet.findViewById(R.id.ibCamera);
-        ImageButton uploadFile = (ImageButton) bottomSheet.findViewById(R.id.ibUpload);
-        ImageButton createFolder = (ImageButton) bottomSheet.findViewById(R.id.ibNewFolder);
-
-        createFolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-                // get prompts.xml view
-                View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-                // set prompts.xml to alertdialog builder
-                alertDialogBuilder.setView(promptsView);
-
-                final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
-
-                // set dialog message
-                alertDialogBuilder
-                        .setPositiveButton("OK",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
-                                        Map<String, String> formData = VMR.getUserMap();
-//                                        formData.remove("pageMode");
-                                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
-                                        JSONObject jsonObject = new JSONObject();
-                                        try {
-                                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME,userInput.getText().toString());
-                                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
-                                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-                                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString());
-                                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
-                                            @Override
-                                            public void onCreateFolderSuccess(JSONObject jsonObject) {
-                                                try {
-                                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-                                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
-                                                        refreshFolder();
-                                                    }
-                                                } catch (JSONException e){
-                                                    e.printStackTrace();
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCreateFolderFailure(VolleyError error) {
-                                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                        createFolderController.createFolder(formData);
-                                    }
-                                })
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,int id) {
-                                        dialog.cancel();
-                                    }
-                                });
-
-                // create alert dialog
-                AlertDialog alertDialog = alertDialogBuilder.create();
-
-                // show it
-                alertDialog.show();
+                fabAddItem.hide();
+                //show it
+                addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
             }
         });
     }
