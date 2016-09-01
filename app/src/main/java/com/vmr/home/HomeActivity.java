@@ -1,6 +1,5 @@
 package com.vmr.home;
 
-import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -32,10 +31,10 @@ import com.vmr.home.fragments.FragmentMyRecords;
 import com.vmr.home.fragments.FragmentOffline;
 import com.vmr.home.fragments.FragmentRecentlyAccessed;
 import com.vmr.home.fragments.FragmentReports;
+import com.vmr.home.fragments.FragmentSharedByMe;
 import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
-import com.vmr.home.interfaces.HomeActivityInterface;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.UserInfo;
@@ -54,22 +53,24 @@ public class HomeActivity extends AppCompatActivity
         FragmentRecentlyAccessed.OnFragmentInteractionListener,
         FragmentReports.OnFragmentInteractionListener,
         FragmentSharedWithMe.OnFragmentInteractionListener,
+        FragmentSharedByMe.OnFragmentInteractionListener,
         FragmentToBeIndexed.OnFragmentInteractionListener,
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
-        VmrRequest.onFetchRecordsListener
+        VmrRequest.OnFetchRecordsListener
 {
-
-
-    private Interaction.HomeToMyRecordsInterface fragmentCommunicator ;
+    private Interaction.HomeToMyRecordsInterface sendToMyRecords;
 
     // Models
     private UserInfo userInfo;
 
+    // Views
+    MenuItem toBeIndexed;
+
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(Constants.Keys.USER_DETAILS, userInfo);
+        intent.putExtra(Constants.Key.USER_DETAILS, userInfo);
         return intent;
     }
 
@@ -92,7 +93,8 @@ public class HomeActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
 
-            userInfo = getIntent().getParcelableExtra(Constants.Keys.USER_DETAILS);
+            userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
+            VMR.setUserInfo(userInfo);
 
         }
 
@@ -106,28 +108,30 @@ public class HomeActivity extends AppCompatActivity
         assert navigationView != null;
         navigationView.setNavigationItemSelectedListener(this);
         navigationView.setCheckedItem(R.id.my_records);
+        toBeIndexed = navigationView.getMenu().findItem(R.id.to_be_indexed);
         View headerView = navigationView.getHeaderView(0);
 
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
+        TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
         ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
         ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
-        if (userInfo.getMembershipType().equals(Constants.Domain.INDIVIDUAL)) {
+        if (userInfo.getMembershipType().equals(Constants.Request.Domain.INDIVIDUAL)) {
             accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
         } else {
             accountName.setText(userInfo.getCorpName());
         }
 
         accountEmail.setText(userInfo.getEmailId());
+        lastLogin.setText(userInfo.getLastLoginTime().toString());
 
         Map<String, String> formData = VMR.getUserMap();
-        formData.put("alfNoderef",this.getUserInfo().getRootNodref());
-        formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put("alf_ticket", PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,this.getUserInfo().getRootNodref());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+//        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(formData);
-
     }
 
     @Override
@@ -181,6 +185,8 @@ public class HomeActivity extends AppCompatActivity
             fragmentClass = FragmentToBeIndexed.class;
         } else if (id == R.id.shared_with_me) {
             fragmentClass = FragmentSharedWithMe.class;
+        } else if (id == R.id.shared_by_me) {
+            fragmentClass = FragmentSharedByMe.class;
         } else if (id == R.id.offline) {
             fragmentClass = FragmentOffline.class;
         } else if (id == R.id.reports) {
@@ -237,19 +243,21 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        if (VMR.getRootVmrFolder() == null) {
-            VMR.setRootVmrFolder(vmrFolder);
+        if (VMR.getVmrRootFolder() == null) {
+            vmrFolder.setNodeRef(userInfo.getRootNodref());
+            VMR.setVmrRootFolder(vmrFolder);
         }
-        fragmentCommunicator.onReceiveFromActivitySuccess(VMR.getRootVmrFolder());
+        toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
+        sendToMyRecords.onReceiveFromActivitySuccess(VMR.getVmrRootFolder());
     }
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        Toast.makeText(VMR.getVMRContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-        fragmentCommunicator.onReceiveFromActivityFailure(error);
+        Toast.makeText(VMR.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+        sendToMyRecords.onReceiveFromActivityFailure(error);
     }
 
-    public void setFragmentCommunicator(Interaction.HomeToMyRecordsInterface fragmentCommunicator) {
-        this.fragmentCommunicator = fragmentCommunicator;
+    public void setSendToMyRecords(Interaction.HomeToMyRecordsInterface sendToMyRecords) {
+        this.sendToMyRecords = sendToMyRecords;
     }
 }

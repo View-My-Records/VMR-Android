@@ -4,15 +4,20 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vmr.app.VMR;
+import com.vmr.debug.VmrDebug;
 import com.vmr.model.UserInfo;
 import com.vmr.network.JSONNetworkRequest;
 import com.vmr.network.NetworkRequest;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 import com.vmr.utils.WebApiConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -32,40 +37,25 @@ public class LoginRequest extends NetworkRequest<UserInfo> {
     }
 
     @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        return super.getHeaders();
+    }
+
+    @Override
     protected Map<String, String> getParams() throws AuthFailureError {
         return this.formData;
     }
 
     @Override
     protected Response<UserInfo> parseNetworkResponse(NetworkResponse response) {
-
+        VmrDebug.printLogD(VMR.getVMRContext(), response.headers.toString());
         String jsonString = new String(response.data);
+        VmrDebug.printLogD(VMR.getVMRContext(), jsonString);
         JSONObject jsonObject;
-        UserInfo userInfo = new UserInfo();
-
+        UserInfo userInfo;
         try {
             jsonObject = new JSONObject(jsonString);
-
-            userInfo.setSlNo(jsonObject.getString(WebApiConstants.JSON_USER_INFO_SLNO          ));
-            userInfo.setResult(jsonObject.getString(WebApiConstants.JSON_USER_INFO_RESULT        ));
-            userInfo.setRootNodref(jsonObject.getString(WebApiConstants.JSON_USER_INFO_ROOTNODREF    ));
-            userInfo.setUrlType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_URLTYPE       ));
-            userInfo.setUserType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERTYPE      ));
-            userInfo.setMembershipType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_MEMBERSHIPTYPE));
-            userInfo.setEmailId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_EMAILID       ));
-            userInfo.setEmpType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_EMPTYPE       ));
-            userInfo.setUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERID        ));
-            userInfo.setHttpSessionId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_HTTPSESSIONID ));
-            userInfo.setUserName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERNAME      ));
-            userInfo.setLoggedinUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LOGGEDINUSERID));
-
-            if(userInfo.getMembershipType().equalsIgnoreCase(Constants.Domain.INDIVIDUAL) ){
-                userInfo.setLastName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LASTNAME));
-                userInfo.setFirstName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_FIRSTNAME));
-            }else {
-                userInfo.setCorpName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_CORPNAME));
-                userInfo.setCorpId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_CORPID));
-            }
+            userInfo = new UserInfo( jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new VolleyError("Invalid Username or Password"));

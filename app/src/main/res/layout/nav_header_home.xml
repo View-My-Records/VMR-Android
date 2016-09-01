@@ -40,11 +40,11 @@
             android:layout_height="wrap_content"
             android:text="a@b.com" />
 
-        <!--<TextView-->
-            <!--android:id="@+id/accountLastAccessed"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="Last login : 10 June, 2016" />-->
+        <TextView
+            android:id="@+id/accountLastAccessed"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Last login : 10 June, 2016" />
     </LinearLayout>
 
     <LinearLayout

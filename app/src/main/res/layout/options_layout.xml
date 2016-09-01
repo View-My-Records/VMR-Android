@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:id="@+id/btnInfo"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@android:drawable/ic_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:id="@+id/infoImageView"
+            android:layout_margin="6dp"
+            android:contentDescription="Info" />
+
+        <TextView
+            android:id="@+id/tvFolderName"
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Info"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/infoImageView"
+            android:layout_toRightOf="@+id/infoImageView"
+            android:layout_toEndOf="@+id/infoImageView"
+            android:layout_margin="6dp" />
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:alpha="150"
+        android:background="#000000" />
+    <RelativeLayout
+        android:id="@+id/btnOpen"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@android:drawable/ic_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:id="@+id/openImageView"
+            android:layout_margin="6dp"
+            android:contentDescription="Open" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Open"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/openImageView"
+            android:layout_toRightOf="@+id/openImageView"
+            android:layout_toEndOf="@+id/openImageView"
+            android:layout_margin="6dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnIndex"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@android:drawable/ic_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:id="@+id/indexImageView"
+            android:layout_margin="6dp"
+            android:contentDescription="Index" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Index"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/indexImageView"
+            android:layout_toRightOf="@+id/indexImageView"
+            android:layout_toEndOf="@+id/indexImageView"
+            android:layout_margin="6dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnShare"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:id="@+id/shareImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Share" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Share"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/shareImageView"
+            android:layout_toRightOf="@+id/shareImageView"
+            android:layout_toEndOf="@+id/shareImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnRename"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/renameImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Rename" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Rename"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/renameImageView"
+            android:layout_toRightOf="@+id/renameImageView"
+            android:layout_toEndOf="@+id/renameImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnDownload"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/downloadImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Download" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Download"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/downloadImageView"
+            android:layout_toRightOf="@+id/downloadImageView"
+            android:layout_toEndOf="@+id/downloadImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnMove"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/moveImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Move" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Move"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/moveImageView"
+            android:layout_toRightOf="@+id/moveImageView"
+            android:layout_toEndOf="@+id/moveImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnCopy"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/copyImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Copy" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Copy"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/copyImageView"
+            android:layout_toRightOf="@+id/copyImageView"
+            android:layout_toEndOf="@+id/copyImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/btnDuplicate"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/duplicateImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Duplicate" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Duplicate"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/duplicateImageView"
+            android:layout_toRightOf="@+id/duplicateImageView"
+            android:layout_toEndOf="@+id/duplicateImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/btnProperties"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/propertiesImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Properties" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Properties"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/propertiesImageView"
+            android:layout_toRightOf="@+id/propertiesImageView"
+            android:layout_toEndOf="@+id/propertiesImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:alpha="150"
+        android:background="#000000" />
+    <RelativeLayout
+        android:id="@+id/btnDelete"
+        android:clickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:src="@android:drawable/ic_menu_add"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_centerVertical="true"
+            android:longClickable="false"
+            android:id="@+id/deleteImageView"
+            android:layout_margin="5dp"
+            android:contentDescription="Delete" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Delete"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/deleteImageView"
+            android:layout_toRightOf="@+id/deleteImageView"
+            android:layout_toEndOf="@+id/deleteImageView"
+            android:layout_margin="5dp" />
+    </RelativeLayout>
+
+</LinearLayout>

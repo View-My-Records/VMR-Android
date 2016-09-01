@@ -1,82 +1,102 @@
 package com.vmr.home.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.vmr.R;
+import com.vmr.app.VMR;
+import com.vmr.debug.VmrDebug;
+import com.vmr.home.HomeController;
+import com.vmr.home.adapters.RecordsAdapter;
+import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.model.folder_structure.VmrFile;
+import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.utils.Constants;
+import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link FragmentSharedWithMe.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentSharedWithMe#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FragmentSharedWithMe extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class FragmentSharedWithMe extends Fragment
+        implements
+        VmrRequest.OnFetchRecordsListener,
+        RecordsAdapter.OnItemClickListener,
+        RecordsAdapter.OnItemOptionsClickListener
+{
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // FragmentInteractionListener
+    private OnFragmentInteractionListener fragmentInteractionListener;
 
-    private OnFragmentInteractionListener mListener;
+    // Views
+    private ProgressDialog progressDialog ;
+
+    // Controllers
+    private HomeController homeController;
+
+    // Variables
+    private VmrFolder head;
+    private List<VmrItem> mFileList = new ArrayList<>();
+    private RecordsAdapter mAdapter;
 
     public FragmentSharedWithMe() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FragmentSharedWithMe.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FragmentSharedWithMe newInstance(String param1, String param2) {
-        FragmentSharedWithMe fragment = new FragmentSharedWithMe();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction("Shared With Me");
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        if (fragmentInteractionListener != null) {
+            fragmentInteractionListener.onFragmentInteraction("Shared With Me");
         }
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shared_with_me, container, false);
+        View view = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
+        homeController = new HomeController(this);
+        mAdapter = new RecordsAdapter(mFileList, this, this);
+
+        setupRecyclerView(view);
+        setOnBackPress(view);
+
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("Fetching The File...");
+        progressDialog.setCancelable(true);
+
+        return view;
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        Map<String, String> formData = VMR.getUserMap();
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getVmrRootFolder().getSharedFolder());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_SHARED_WITH_ME);
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        homeController.fetchAllFilesAndFolders(formData);
+        progressDialog.show();
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            fragmentInteractionListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -86,20 +106,87 @@ public class FragmentSharedWithMe extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        fragmentInteractionListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+    @Override
+    public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
+        progressDialog.dismiss();
+        VmrDebug.printLine("My Records retrieved.");
+        if (head==null) {
+            VMR.setVmrSharedWithMeRootFolder(vmrFolder);
+            head = VMR.getVmrSharedWithMeRootFolder();
+            head.setFolders(vmrFolder.getFolders());
+            head.setIndexedFiles(vmrFolder.getIndexedFiles());
+            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            mFileList = head.getAll();
+            mAdapter.updateDataset(mFileList);
+        } else {
+            head.setFolders(vmrFolder.getFolders());
+            head.setIndexedFiles(vmrFolder.getIndexedFiles());
+            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            mFileList=head.getAll();
+            mAdapter.updateDataset(mFileList);
+        }
+    }
+
+    @Override
+    public void onFetchRecordsFailure(VolleyError error) {
+        progressDialog.dismiss();
+        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onItemClick(VmrItem item) {
+        if(item instanceof VmrFolder){
+            VmrDebug.printLine(item.getName() + "Folder clicked");
+            head = (VmrFolder) item;
+            Map<String, String> formData = VMR.getUserMap();
+            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
+            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+            homeController.fetchAllFilesAndFolders(formData);
+        } else if(item instanceof VmrFile) {
+            VmrDebug.printLine(item.getName() + "File clicked");
+        }
+    }
+
+    @Override
+    public void onItemOptionsClick(VmrItem item, View view) {
+        Toast.makeText(VMR.getVMRContext(), item.getName() + " options clicked.", Toast.LENGTH_SHORT).show();
+    }
+
     public interface OnFragmentInteractionListener {
-        public void onFragmentInteraction(String title);
+        void onFragmentInteraction(String title);
+    }
+
+    private void setOnBackPress(View view){
+        view.setFocusableInTouchMode(true);
+        view.requestFocus();
+        view.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+                if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
+                    if(head !=  VMR.getVmrSharedWithMeRootFolder()) {
+                        head = (VmrFolder) head.getParent();
+                        mFileList=head.getAll();
+                        mAdapter.updateDataset(mFileList);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    return false;
+                }
+            }
+        });
+    }
+
+    private void setupRecyclerView(View view) {
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvSharedWithMe);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mAdapter);
     }
 }

@@ -7,10 +7,17 @@ package com.vmr.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.vmr.utils.Constants;
 import com.vmr.utils.WebApiConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class UserInfo implements Parcelable {
 
@@ -30,6 +37,7 @@ public class UserInfo implements Parcelable {
     private String loggedinUserId;
     private String lastName;            ;
     private String firstName;
+    private Date lastLoginTime;
 
 
     protected UserInfo(Parcel in) {
@@ -49,6 +57,7 @@ public class UserInfo implements Parcelable {
         loggedinUserId = in.readString();
         firstName = in.readString();
         lastName = in.readString();
+        lastLoginTime = (java.util.Date) in.readSerializable();
     }
 
     public UserInfo(JSONObject jsonObject) throws JSONException{
@@ -65,8 +74,9 @@ public class UserInfo implements Parcelable {
         this.setHttpSessionId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_HTTPSESSIONID ));
         this.setUserName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERNAME      ));
         this.setLoggedinUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LOGGEDINUSERID));
+        this.setLastLoginTime(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LAST_LOGIN_TIME));
 
-        if(this.getMembershipType().equalsIgnoreCase("IND") ){
+        if(this.getMembershipType().equalsIgnoreCase(Constants.Request.Domain.INDIVIDUAL) ){
             this.setLastName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LASTNAME));
             this.setFirstName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_FIRSTNAME));
         }else {
@@ -219,6 +229,21 @@ public class UserInfo implements Parcelable {
         this.firstName = firstName;
     }
 
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(String lastLoginTime) {
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH); //"2016-08-29 20:02:37.879"
+        Date result = null;
+        try {
+            result = df.parse(lastLoginTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        this.lastLoginTime = result;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -242,5 +267,6 @@ public class UserInfo implements Parcelable {
         parcel.writeString(loggedinUserId);
         parcel.writeString(firstName);
         parcel.writeString(lastName);
+        parcel.writeSerializable(lastLoginTime);
     }
 }

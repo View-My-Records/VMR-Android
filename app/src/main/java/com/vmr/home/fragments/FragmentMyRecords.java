@@ -2,37 +2,47 @@ package com.vmr.home.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.FrameLayout;
-import android.widget.ListView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.adapters.FileFolderListAdapter;
 import com.vmr.app.VMR;
+import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
+import com.vmr.home.adapters.RecordsAdapter;
+import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrNode;
+import com.vmr.model.folder_structure.VmrItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,74 +50,82 @@ import java.util.Map;
 
 public class FragmentMyRecords extends Fragment
         implements
-        VmrRequest.onFetchRecordsListener,
-        Interaction.HomeToMyRecordsInterface
-//        HomeActivityInterface
+        VmrRequest.OnFetchRecordsListener,
+        Interaction.HomeToMyRecordsInterface,
+        RecordsAdapter.OnItemClickListener,
+        RecordsAdapter.OnItemOptionsClickListener,
+        AddItemMenuSheet.OnItemClickListener,
+        OptionsMenuSheet.OnOptionClickListener
 {
 
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
+
     // Views
-    private FloatingActionButton fab;
-    private ListView mListView;
-    private BottomSheetBehavior behavior;
+    private FloatingActionButton fabAddItem;
+    private SwipeRefreshLayout swipeRefresh;
+    private AddItemMenuSheet addItemMenu;
+    private OptionsMenuSheet optionsMenuSheet;
     private ProgressDialog progressDialog ;
 
     // Controllers
     private HomeController homeController;
-
     // Variables
     private VmrFolder head;
-    private List<VmrNode> mFileList = new ArrayList<>();
-    private FileFolderListAdapter mAdapter;
+    private List<VmrItem> mFileList = new ArrayList<>();
+    private RecordsAdapter mAdapter;
 
+
+    public FragmentMyRecords() {
+        // Required empty public constructor
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        ((HomeActivity) getActivity()).setSendToMyRecords(this);
+
+        homeController = new HomeController(this);
+        mAdapter = new RecordsAdapter(mFileList, this, this);
+
+        addItemMenu = new AddItemMenuSheet();
+        addItemMenu.setItemClickListener(this);
+
+        optionsMenuSheet = new OptionsMenuSheet();
+        optionsMenuSheet.setOptionClickListener(this);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // User interface to change the Title in the Activity
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("My Records");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
         }
 
-        View view = inflater.inflate(R.layout.fragment_my_records, container, false);
-        homeController = new HomeController(this);
+        View fragmentView = inflater.inflate(R.layout.fragment_my_records, container, false);
 
-        setupListView(view);
-        setupBottomSheet(view);
-        setOnBackPress(view);
+        setupRecyclerView(fragmentView);
+        setupFab(fragmentView);
+        setOnBackPress(fragmentView);
 
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Fetching The File...");
         progressDialog.setCancelable(true);
 
-        return view;
-    }
-
-    private void setupListView(View view) {
-        mListView = (ListView) view.findViewById(R.id.lvMyRecords);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(mFileList.get(i) instanceof VmrFolder){
-                    Toast.makeText(getActivity(), "Folder clicked", Toast.LENGTH_SHORT).show();
-                    head=(VmrFolder) mFileList.get(i);
-                    Map<String, String> formData = VMR.getUserMap();
-                    formData.put("alfNoderef", mFileList.get(i).getNodeRef());
-                    formData.put("pageMode",Constants.PageMode.LIST_ALL_FILE_FOLDER);
-                    formData.put("alf_ticket",PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-                    homeController.fetchAllFilesAndFolders(formData);
-                } else if(mFileList.get(i) instanceof VmrFile){
-                    Toast.makeText(getActivity(), "File clicked", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
+        return fragmentView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        progressDialog.show();
+        if(VMR.getVmrRootFolder() == null) {
+            progressDialog.show();
+        } else {
+            head = VMR.getVmrRootFolder();
+            mFileList = head.getAll();
+            mAdapter.updateDataset(mFileList);
+            progressDialog.dismiss();
+        }
     }
 
     @Override
@@ -120,23 +138,30 @@ public class FragmentMyRecords extends Fragment
                     + " must implement OnFragmentInteractionListener");
         }
 
-        ((HomeActivity) getActivity()).setFragmentCommunicator(this);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        fragmentInteractionListener = null;
     }
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         progressDialog.dismiss();
-        Toast.makeText(VMR.getVMRContext(), "My Records retrieved.", Toast.LENGTH_SHORT).show();
         if (head==null) {
+            VmrDebug.printLine("My Records retrieved.");
             head = vmrFolder;
             head.setFolders(vmrFolder.getFolders());
             head.setIndexedFiles(vmrFolder.getIndexedFiles());
             head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
             mFileList = head.getAll();
-            mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-            mListView.setAdapter(mAdapter);
-
+            mAdapter.updateDataset(mFileList);
+        } else if(head.getNodeRef().equals(vmrFolder.getNodeRef())) {
+            VmrDebug.printLine("My Records updated.");
+            updateFolder(vmrFolder);
         } else {
+            VmrDebug.printLine("My Records retrieved.");
             head.setFolders(vmrFolder.getFolders());
             head.setIndexedFiles(vmrFolder.getIndexedFiles());
             head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
@@ -147,6 +172,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
+        progressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -154,8 +180,7 @@ public class FragmentMyRecords extends Fragment
     public void onReceiveFromActivitySuccess(VmrFolder vmrFolder) {
         head = vmrFolder;
         mFileList = head.getAll();
-        mAdapter = new FileFolderListAdapter(getActivity(), mFileList);
-        mListView.setAdapter(mAdapter);
+        mAdapter.updateDataset(mFileList);
         progressDialog.dismiss();
     }
 
@@ -164,53 +189,175 @@ public class FragmentMyRecords extends Fragment
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onItemClick(VmrItem item) {
+        if(item instanceof VmrFolder){
+            VmrDebug.printLine(item.getName() + "Folder clicked");
+            head=(VmrFolder) item;
+            Map<String, String> formData = VMR.getUserMap();
+            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
+            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+            homeController.fetchAllFilesAndFolders(formData);
+        } else if(item instanceof VmrFile) {
+            VmrDebug.printLine(item.getName() + "File clicked");
+        }
+    }
+
+    @Override
+    public void onItemOptionsClick(VmrItem item, View view) {
+        optionsMenuSheet.setVmrItem(item);
+        fabAddItem.hide();
+        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
+    }
+
+    @Override
+    public void onCameraClick() {
+        VmrDebug.printLogI(getContext(), "Camera button clicked" );
+    }
+
+    @Override
+    public void onFileClick() {
+        VmrDebug.printLogI(getContext(), "Upload file button clicked");
+    }
+
+    @Override
+    public void onFolderClick() {
+        Toast.makeText(VMR.getVMRContext(), "Add folder button clicked", Toast.LENGTH_SHORT).show();
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Map<String, String> formData = VMR.getUserMap();
+                        formData.remove("alfNoderef");
+                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME, Uri.encode(userInput.getText().toString(), "UTF-8"));
+                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
+                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        VmrDebug.printLogI(getContext(), jsonObject.toString().replaceAll("\\\\",""));
+                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString().replaceAll("\\\\",""));
+                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
+                            @Override
+                            public void onCreateFolderSuccess(JSONObject jsonObject) {
+                                try {
+                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+                                        refreshFolder();
+                                    }
+                                } catch (JSONException e){
+                                    e.printStackTrace();
+                                }
+                            }
+//
+                            @Override
+                            public void onCreateFolderFailure(VolleyError error) {
+                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        createFolderController.createFolder(formData);
+                    }
+                })
+            .setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.cancel();
+                        }
+                    });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+            }
+
+    @Override
+    public void onAddItemsMenuDismiss() {
+        VmrDebug.printLogI(getContext(), "Menu dismissed" );
+        fabAddItem.show();
+    }
+
+    @Override
+    public void onOpenClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Open button clicked" );
+    }
+
+    @Override
+    public void onIndexClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Index button clicked" );
+    }
+
+    @Override
+    public void onShareClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Share button clicked" );
+    }
+
+    @Override
+    public void onRenameClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Rename button clicked" );
+    }
+
+    @Override
+    public void onDownloadClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Download button clicked" );
+    }
+
+    @Override
+    public void onMoveClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Move button clicked" );
+    }
+
+    @Override
+    public void onCopyClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Copy button clicked" );
+    }
+
+    @Override
+    public void onDuplicateClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Duplicate button clicked" );
+    }
+
+    @Override
+    public void onPropertiesClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Properties button clicked" );
+    }
+
+    @Override
+    public void onDeleteClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Delete button clicked" );
+    }
+
+    @Override
+    public void onOptionsMenuDismiss() {
+        VmrDebug.printLogI(getContext(), "Menu dismissed" );
+        fabAddItem.show();
+    }
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
     }
 
-    private void setupBottomSheet(View view){
-        // Get views and set them
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
-        CoordinatorLayout coordinatorLayout = (CoordinatorLayout) view.findViewById(R.id.bottom_sheet_layout);
-        final FrameLayout bottomSheet = (FrameLayout) coordinatorLayout.findViewById(R.id.bottom_sheet_frame);
-        behavior = BottomSheetBehavior.from(bottomSheet);
-        behavior.setPeekHeight(150);
-        behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-
-        fab.setOnClickListener(new View.OnClickListener() {
+    private void setupFab(View view){
+        fabAddItem = (FloatingActionButton) view.findViewById(R.id.fab);
+        fabAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fab.hide();
-                bottomSheet.setBackgroundColor(Color.BLACK);
-                bottomSheet.getBackground().setAlpha(50);
-                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-            }
-        });
-
-        bottomSheet.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
-                behavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-                behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-            }
-        });
-
-        // Set Callback for BottomSheet interaction
-        behavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
-            @Override
-            public void onStateChanged(View bottomSheet, int newState) {
-                Log.i("-> BottomSheet Callback", "newState->"+newState);
-                if ( newState == BottomSheetBehavior.STATE_EXPANDED ) {
-                    fab.hide();
-                } else {
-                    fab.show();
-                }
-            }
-
-            @Override
-            public void onSlide(View bottomSheet, float slideOffset) {
-
+                fabAddItem.hide();
+                addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
             }
         });
     }
@@ -222,13 +369,13 @@ public class FragmentMyRecords extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    if(head !=  VMR.getRootVmrFolder()) {
+                    if(head !=  VMR.getVmrRootFolder()) {
                         head = (VmrFolder) head.getParent();
                         mFileList=head.getAll();
                         mAdapter.updateDataset(mFileList);
+                        refreshFolder();
                         return true;
                     } else {
-
                         return false;
                     }
                 } else {
@@ -236,5 +383,40 @@ public class FragmentMyRecords extends Fragment
                 }
             }
         });
+    }
+
+    private void setupRecyclerView(View view) {
+        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFolder();
+                swipeRefresh.setRefreshing(false);
+                progressDialog.show();
+            }
+        });
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        mRecyclerView.setLayoutManager(layoutManager);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        mRecyclerView.setAdapter(mAdapter);
+        registerForContextMenu(mRecyclerView);
+    }
+
+    private void updateFolder(VmrFolder vmrFolder){
+        head.setFolders(vmrFolder.getFolders());
+        head.setIndexedFiles(vmrFolder.getIndexedFiles());
+        head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+        mFileList = head.getAll();
+        mAdapter.updateDataset(mFileList);
+    }
+
+    private void refreshFolder(){
+        Map<String, String> formData = VMR.getUserMap();
+        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, head.getNodeRef());
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        homeController.fetchAllFilesAndFolders(formData);
     }
 }

@@ -3,11 +3,20 @@ package com.vmr.home;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.home.interfaces.VmrRequest;
-import com.vmr.home.request.MyRecordsRequest;
+import com.vmr.home.request.CreateFolderRequest;
+import com.vmr.home.request.RecordsRequest;
+import com.vmr.home.request.RemoveExpiredRecordsRequest;
+import com.vmr.home.request.SharedByMeRequest;
+import com.vmr.home.request.TrashRequest;
 import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.folder_structure.VmrSharedItem;
+import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
+import org.json.JSONObject;
+
+import java.util.List;
 import java.util.Map;
 
 /*
@@ -16,15 +25,31 @@ import java.util.Map;
 
 public class HomeController {
 
-    private VmrRequest.onFetchRecordsListener onFetchRecordsListener;
+    private VmrRequest.OnFetchRecordsListener onFetchRecordsListener;
+    private VmrRequest.OnFetchTrashListener onFetchTrashListener;
 
-    public HomeController(VmrRequest.onFetchRecordsListener onFetchRecordsListener) {
-        this.onFetchRecordsListener = onFetchRecordsListener;
+    public HomeController(VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe) {
+        this.onFetchSharedByMe = onFetchSharedByMe;
+    }
+
+    private VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe;
+    private VmrRequest.OnCreateFolderListener onCreateFolderListener;
+
+    public HomeController(VmrRequest.OnFetchRecordsListener OnFetchRecordsListener) {
+        this.onFetchRecordsListener = OnFetchRecordsListener;
+    }
+
+    public HomeController(VmrRequest.OnFetchTrashListener OnFetchTrashListener) {
+        this.onFetchTrashListener = OnFetchTrashListener;
+    }
+
+    public HomeController(VmrRequest.OnCreateFolderListener onCreateFolderListener) {
+        this.onCreateFolderListener = onCreateFolderListener;
     }
 
     public void fetchAllFilesAndFolders(Map<String, String> formData){
-        MyRecordsRequest recordsRequest =
-                new MyRecordsRequest(
+        RecordsRequest recordsRequest =
+                new RecordsRequest(
                         formData,
                         new Response.Listener<VmrFolder>() {
                             @Override
@@ -40,4 +65,82 @@ public class HomeController {
                         } );
         VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
     }
+
+
+    public void fetchTrash(Map<String, String> formData){
+        TrashRequest trashRequest =
+                new TrashRequest(
+                        formData,
+                        new Response.Listener<List<VmrTrashItem>>() {
+                            @Override
+                            public void onResponse(List<VmrTrashItem> vmrTrashItems) {
+                                onFetchTrashListener.onFetchTrashSuccess(vmrTrashItems);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFetchTrashListener.onFetchTrashFailure(error);
+                            }
+                        } );
+        VolleySingleton.getInstance().addToRequestQueue(trashRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void createFolder(Map<String, String> formData){
+        CreateFolderRequest createFolderRequest =
+                new CreateFolderRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onCreateFolderListener.onCreateFolderSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onCreateFolderListener.onCreateFolderFailure(error);
+                            }
+                        }
+                );
+        VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void fetchSharedByMe(Map<String, String> formData){
+        SharedByMeRequest sharedByMeRequest =
+                new SharedByMeRequest(
+                        formData,
+                        new Response.Listener<List<VmrSharedItem>>() {
+                            @Override
+                            public void onResponse(List<VmrSharedItem> vmrSharedItems) {
+                                onFetchSharedByMe.onFetchSharedByMeSuccess(vmrSharedItems);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFetchSharedByMe.onFetchSharedByMeFailure(error);
+                            }
+                        } );
+        VolleySingleton.getInstance().addToRequestQueue(sharedByMeRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void removeExpiredRecords(){
+        RemoveExpiredRecordsRequest request =
+                new RemoveExpiredRecordsRequest(
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String vmrSharedItems) {
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        } );
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
 }

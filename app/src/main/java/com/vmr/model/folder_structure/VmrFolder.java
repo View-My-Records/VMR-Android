@@ -16,7 +16,7 @@ import java.util.Locale;
  * Created by abhijit on 8/20/16.
  */
 
-public class VmrFolder extends VmrNode {
+public class VmrFolder extends VmrItem {
 
     List<VmrFolder>     folders = new ArrayList<>();
     List<VmrFile>       indexedFiles = new ArrayList<>();
@@ -37,9 +37,11 @@ public class VmrFolder extends VmrNode {
         try {
             this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
             this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
+            this.setWriteFlag(folderJson.has("write") && folderJson.getBoolean("write"));
             this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
             this.setFoldersFromJSON(folderJson.has("folders") ? folderJson.getJSONArray("folders") : null);
             this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
+            this.setDeleteFlag(folderJson.has("delete") && folderJson.getBoolean("delete"));
             this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
             this.setUnIndexedFilesFromJSON(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);
         } catch (JSONException e) {
@@ -62,10 +64,17 @@ public class VmrFolder extends VmrNode {
         this.unIndexedFiles.add(file);
     }
 
-    public List<VmrNode> getAll(){
-        List<VmrNode> list = new ArrayList<>();
+    public List<VmrItem> getAll(){
+        List<VmrItem> list = new ArrayList<>();
         list.addAll(folders);
         list.addAll(indexedFiles);
+        list.addAll(unIndexedFiles);
+        return list;
+    }
+
+    public List<VmrItem> getAllUnindexed(){
+        List<VmrItem> list = new ArrayList<>();
+        list.addAll(folders);
         list.addAll(unIndexedFiles);
         return list;
     }

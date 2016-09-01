@@ -39,7 +39,7 @@ public class FragmentLoginCorporate extends Fragment {
                         etUsername.getText().toString(),
                         etPassword.getText().toString(),
                         etCorpId.getText().toString(),
-                        Constants.Domain.CORPORATE,
+                        Constants.Request.Domain.CORPORATE,
                         cbRememberMe.isChecked());
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();

@@ -36,7 +36,7 @@ public class FragmentLoginIndividual extends Fragment {
                     loginFragmentInterface.onIndividualLoginClick(
                             etUsername.getText().toString(),
                             etPassword.getText().toString(),
-                            Constants.Domain.INDIVIDUAL,
+                            Constants.Request.Domain.INDIVIDUAL,
                             cbRememberMe.isChecked());
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();

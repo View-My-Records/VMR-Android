@@ -2,8 +2,11 @@ package com.vmr.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 
+import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
 
 import java.util.Map;
@@ -16,14 +19,41 @@ public class VMR extends Application {
 
     private static VMR appInstance;
     private static Context appContext;
-    private static VmrFolder rootVmrFolder;
+    private static VmrFolder vmrRootFolder;
+    private static VmrFolder vmrSharedWithMeRootFolder;
+    private static VmrFolder vmrSharedByMeRootFolder;
+    private static UserInfo userInfo;
 
-    public static VmrFolder getRootVmrFolder() {
-        return rootVmrFolder;
+    public static UserInfo getUserInfo() {
+        return userInfo;
     }
 
-    public static void setRootVmrFolder(VmrFolder rootVmrFolder) {
-        VMR.rootVmrFolder = rootVmrFolder;
+    public static void setUserInfo(UserInfo userInfo) {
+        VMR.userInfo = userInfo;
+    }
+
+    public static VmrFolder getVmrRootFolder() {
+        return vmrRootFolder;
+    }
+
+    public static void setVmrRootFolder(VmrFolder vmrRootFolder) {
+        VMR.vmrRootFolder = vmrRootFolder;
+    }
+
+    public static VmrFolder getVmrSharedWithMeRootFolder() {
+        return vmrSharedWithMeRootFolder;
+    }
+
+    public static void setVmrSharedWithMeRootFolder(VmrFolder vmrSharedWithMeRootFolder) {
+        VMR.vmrSharedWithMeRootFolder = vmrSharedWithMeRootFolder;
+    }
+
+    public static VmrFolder getVmrSharedByMeRootFolder() {
+        return vmrSharedByMeRootFolder;
+    }
+
+    public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
+        VMR.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
     }
 
     private static Map<String, String > userMap;
@@ -51,7 +81,6 @@ public class VMR extends Application {
 
     @Override
     public void onCreate() {
-//        appInstance = this;
         super.onCreate();
         VMR.appContext = getApplicationContext();
     }
@@ -65,4 +94,6 @@ public class VMR extends Application {
     public void onTerminate() {
         super.onTerminate();
     }
+
+
 }
