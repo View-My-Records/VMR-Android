@@ -36,12 +36,10 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.utils.Constants;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
 import java.util.Map;
 
@@ -58,7 +56,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
-        VmrRequest.OnFetchRecordsListener
+        VmrResponse.OnFetchRecordsListener
 {
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
 

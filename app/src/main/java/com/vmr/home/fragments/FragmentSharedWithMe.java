@@ -19,7 +19,7 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrItem;
@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class FragmentSharedWithMe extends Fragment
         implements
-        VmrRequest.OnFetchRecordsListener,
+        VmrResponse.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener
 {

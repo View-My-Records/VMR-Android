@@ -3,7 +3,6 @@ package com.vmr.home.fragments;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,11 +13,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -31,7 +34,8 @@ import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.interfaces.VmrResponse;
+import com.vmr.model.DeleteMessage;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrItem;
@@ -41,6 +45,7 @@ import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +55,7 @@ import java.util.Map;
 
 public class FragmentMyRecords extends Fragment
         implements
-        VmrRequest.OnFetchRecordsListener,
+        VmrResponse.OnFetchRecordsListener,
         Interaction.HomeToMyRecordsInterface,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
@@ -67,6 +72,8 @@ public class FragmentMyRecords extends Fragment
     private AddItemMenuSheet addItemMenu;
     private OptionsMenuSheet optionsMenuSheet;
     private ProgressDialog progressDialog ;
+    private TextView mTextView;
+    private RecyclerView mRecyclerView ;
 
     // Controllers
     private HomeController homeController;
@@ -168,6 +175,14 @@ public class FragmentMyRecords extends Fragment
             mFileList=head.getAll();
             mAdapter.updateDataset(mFileList);
         }
+
+        if(mFileList.isEmpty()){
+            mRecyclerView.setVisibility(View.GONE);
+            mTextView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -223,7 +238,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFolderClick() {
-        Toast.makeText(VMR.getVMRContext(), "Add folder button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "create folder button clicked" );
         View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
@@ -238,38 +253,43 @@ public class FragmentMyRecords extends Fragment
             .setPositiveButton("OK",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Map<String, String> formData = VMR.getUserMap();
-                        formData.remove("alfNoderef");
-                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
-                        JSONObject jsonObject = new JSONObject();
-                        try {
-                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME, Uri.encode(userInput.getText().toString(), "UTF-8"));
-                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
-                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        VmrDebug.printLogI(getContext(), jsonObject.toString().replaceAll("\\\\",""));
-                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString().replaceAll("\\\\",""));
-                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
-                            @Override
-                            public void onCreateFolderSuccess(JSONObject jsonObject) {
-                                try {
-                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
-                                        refreshFolder();
+                        if(userInput.length() == 0) {
+                            userInput.setError("Only alphabets, numbers and spaces are allowed");
+                        } else {
+                            Map<String, String> formData = VMR.getUserMap();
+                            formData.remove("alfNoderef");
+                            formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
+                            JSONObject jsonObject = new JSONObject();
+                            try {
+                                jsonObject.put(Constants.Request.FormFields.FOLDER_NAME, Uri.encode(userInput.getText().toString(), "UTF-8"));
+                                jsonObject.put(Constants.Request.FormFields.TYPE, 1);
+                                jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            VmrDebug.printLogI(getContext(), jsonObject.toString().replaceAll("\\\\", ""));
+                            formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString().replaceAll("\\\\", ""));
+                            HomeController createFolderController = new HomeController(new VmrResponse.OnCreateFolderListener() {
+                                @Override
+                                public void onCreateFolderSuccess(JSONObject jsonObject) {
+                                    try {
+                                        if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+                                            Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+                                            refreshFolder();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
-                                } catch (JSONException e){
-                                    e.printStackTrace();
                                 }
-                            }
-//
-                            @Override
-                            public void onCreateFolderFailure(VolleyError error) {
-                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        createFolderController.createFolder(formData);
+
+                                //
+                                @Override
+                                public void onCreateFolderFailure(VolleyError error) {
+                                    Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            createFolderController.createFolder(formData);
+                        }
                     }
                 })
             .setNegativeButton("Cancel",
@@ -277,9 +297,34 @@ public class FragmentMyRecords extends Fragment
                         public void onClick(DialogInterface dialog,int id) {
                             dialog.cancel();
                         }
-                    });
+                    })
+            .setTitle("Create New Folder");
         // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            }
+        });
+
+        userInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(TextUtils.isEmpty(editable)){
+                    ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                } else {
+                    ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+            }
+        });
 
         // show it
         alertDialog.show();
@@ -307,8 +352,92 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onRenameClicked(VmrItem vmrItem) {
+    public void onRenameClicked(final VmrItem vmrItem) {
         VmrDebug.printLogI(getContext(), "Rename button clicked" );
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_rename_folder, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewItemName);
+        userInput.setText(vmrItem.getName());
+        userInput.setSelection(userInput.getText().length());
+
+        // set dialog message
+        alertDialogBuilder
+                .setPositiveButton("OK",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                Map<String, String> formData = VMR.getUserMap();
+                                formData.remove("alfNoderef");
+                                formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.RENAME_FILE_OR_FOLDER);
+                                formData.put("newName",Uri.encode(userInput.getText().toString(), "UTF-8"));
+                                formData.put("fileSelectedNodeRef",vmrItem.getNodeRef());
+                                formData.put("renameOldName", vmrItem.getName());
+
+                                HomeController renameController = new HomeController(new VmrResponse.OnRenameItemListener() {
+                                    @Override
+                                    public void onRenameItemSuccess(JSONObject jsonObject) {
+                                        VmrDebug.printLogI(getContext(), jsonObject.toString() );
+                                        try {
+                                            if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
+                                                Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                                refreshFolder();
+                                            }
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onRenameItemFailure(VolleyError error) {
+                                        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                });
+                                renameController.renameItem(formData);
+                            }
+                        })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int id) {
+                                dialog.cancel();
+                            }
+                        })
+                .setTitle("Rename");
+        // create alert dialog
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            }
+        });
+
+        userInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(TextUtils.isEmpty(editable)){
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                } else {
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                }
+            }
+        });
+
+        // show it
+        alertDialog.show();
+
     }
 
     @Override
@@ -339,16 +468,58 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onDeleteClicked(VmrItem vmrItem) {
         VmrDebug.printLogI(getContext(), "Delete button clicked" );
+
+        Map<String, String> formData = VMR.getUserMap();
+        formData.remove("alfNoderef");
+        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.DELETE_FILE_OR_FOLDER);
+
+        JSONObject deleteobjectvalues = new JSONObject();
+        JSONArray arrayDeleteobjects = new JSONArray();
+
+        JSONObject trashobjectvalues = new JSONObject();
+        JSONArray arrayTrashobjects = new JSONArray();
+
+        JSONObject objectToDelete = new JSONObject();
+
+        try {
+            objectToDelete.put("objectName", vmrItem.getName());
+            objectToDelete.put("objectNoderef", vmrItem.getNodeRef());
+            objectToDelete.put("objectType", true);
+            arrayDeleteobjects.put(objectToDelete);
+            deleteobjectvalues.put("Deleteobjects", arrayDeleteobjects);
+            trashobjectvalues.put("Trashobjects", arrayTrashobjects);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        formData.put("deleteobjectvalues", deleteobjectvalues.toString().replaceAll("\\\\", ""));
+        formData.put("trashobjectvalues", trashobjectvalues.toString().replaceAll("\\\\", ""));
+        VmrDebug.printLogI(getContext(), formData.toString().replaceAll("\\\\", ""));
+        HomeController trashController = new HomeController(new VmrResponse.OnMoveToTrashListener() {
+            @Override
+            public void onMoveToTrashSuccess(List<DeleteMessage> deleteMessages) {
+                VmrDebug.printLogI(getContext(), deleteMessages.toString() );
+                refreshFolder();
+
+                for (DeleteMessage dm : deleteMessages) {
+                    if(dm.getStatus().equals("success"))
+                    Toast.makeText(getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onMoveToTrashFailure(VolleyError error) {
+                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+            }
+
+        });
+        trashController.moveToTrash(formData);
     }
 
     @Override
     public void onOptionsMenuDismiss() {
         VmrDebug.printLogI(getContext(), "Menu dismissed" );
         fabAddItem.show();
-    }
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String title);
     }
 
     private void setupFab(View view){
@@ -387,6 +558,8 @@ public class FragmentMyRecords extends Fragment
 
     private void setupRecyclerView(View view) {
         swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mTextView = (TextView) view.findViewById(R.id.tvEmptyFolder);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
 
         swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -396,7 +569,6 @@ public class FragmentMyRecords extends Fragment
                 progressDialog.show();
             }
         });
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -410,6 +582,7 @@ public class FragmentMyRecords extends Fragment
         head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
         mFileList = head.getAll();
         mAdapter.updateDataset(mFileList);
+
     }
 
     private void refreshFolder(){
@@ -418,5 +591,9 @@ public class FragmentMyRecords extends Fragment
         formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
         formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         homeController.fetchAllFilesAndFolders(formData);
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String title);
     }
 }

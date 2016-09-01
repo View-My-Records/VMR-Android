@@ -19,7 +19,7 @@ public class ErrorMessage {
         } else if(error instanceof TicketError){
             return "Failed to retrieve ticket";
         } else if(error instanceof FetchError){
-            return "Failed to retrieve files";
+            return "Failed to process request";
         } else {
             return "Something went wrong.";
         }

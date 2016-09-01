@@ -8,13 +8,13 @@
     android:paddingRight="16dp">
 
     <TextView
-        android:id="@+id/tvNewFolderName"
+        android:id="@+id/tvNewItemName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Name:"/>
+        android:text="New name:"/>
 
     <EditText
-        android:id="@+id/etNewFolderName"
+        android:id="@+id/etNewItemName"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxLength="30"

@@ -21,8 +21,7 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
-import com.vmr.home.interfaces.VmrRequest;
-import com.vmr.home.request.TrashRequest;
+import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -36,7 +35,7 @@ import java.util.Map;
 
 public class FragmentTrash extends Fragment
         implements
-        VmrRequest.OnFetchTrashListener,
+        VmrResponse.OnFetchTrashListener,
         TrashAdapter.OnItemClickListener,
         TrashAdapter.OnItemOptionsClickListener
 {

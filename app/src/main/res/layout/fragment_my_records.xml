@@ -17,11 +17,18 @@
             android:layout_alignParentBottom="true"
             android:clipToPadding="false"
             android:paddingBottom="120dp" />
+
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <!--<include layout="@layout/bottom_sheet_layout_create_new_item" />-->
+    <TextView
+        android:id="@+id/tvEmptyFolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"
+        android:text="Folder is empty"
+        android:layout_gravity="center" />
 
-    <!--<include layout="@layout/bottom_sheet_layout_options" />-->
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

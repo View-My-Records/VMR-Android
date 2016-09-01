@@ -1,5 +1,6 @@
 package com.vmr.home.adapters;
 
+
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,7 +22,10 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
 
-    public SharedByMeAdapter(List<VmrSharedItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
+    public SharedByMeAdapter(
+            List<VmrSharedItem> itemsList,
+            OnItemClickListener itemClickListener,
+            OnItemOptionsClickListener optionsClickListener ) {
         this.itemClickListener = itemClickListener;
         this.optionsClickListener = optionsClickListener;
         this.itemsList = itemsList;
@@ -62,31 +66,27 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
         void onItemOptionsClick(VmrSharedItem item, View view);
     }
 
-    public class SharedByMeViewHolder extends RecyclerView.ViewHolder {
+    class SharedByMeViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemImage ;
         private TextView itemName ;
         private ImageView itemOptions;
 
-        public SharedByMeViewHolder(View itemView) {
+        SharedByMeViewHolder(View itemView) {
             super(itemView);
-            this.itemImage = (ImageView) itemView.findViewById(R.id.ivSBMFileIcon);
-            this.itemName = (TextView) itemView.findViewById(R.id.tvSBMFileName);
-            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivSBMOverflow);
+            this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
+            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
-        public void setItemImage(int itemImage) {
+        void setItemImage(int itemImage) {
             this.itemImage.setImageResource(itemImage);
         }
 
-        public void setItemName(String itemName) {
+        void setItemName(String itemName) {
             this.itemName.setText(itemName);
         }
 
-        public void setItemOptions(ImageView itemOptions) {
-            this.itemOptions = itemOptions;
-        }
-
-        public void bind(final VmrSharedItem item, final OnItemClickListener listener) {
+        void bind(final VmrSharedItem item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -94,7 +94,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
             });
         }
 
-        public void bind(final VmrSharedItem item, final OnItemOptionsClickListener listener) {
+        void bind(final VmrSharedItem item, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(item, v);

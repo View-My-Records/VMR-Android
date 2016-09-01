@@ -19,7 +19,7 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
-import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -32,10 +32,11 @@ import java.util.Map;
 
 public class FragmentSharedByMe extends Fragment
         implements
-        VmrRequest.OnFetchSharedByMeListener,
+        VmrResponse.OnFetchSharedByMeListener,
         SharedByMeAdapter.OnItemClickListener,
         SharedByMeAdapter.OnItemOptionsClickListener {
 
+    // Fragment interaction listener
     private OnFragmentInteractionListener fragmentInteractionListener;
 
     // Views
@@ -63,6 +64,7 @@ public class FragmentSharedByMe extends Fragment
         if (fragmentInteractionListener != null) {
             fragmentInteractionListener.onFragmentInteraction("Shared By Me");
         }
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
         homeController = new HomeController(this);
@@ -74,6 +76,8 @@ public class FragmentSharedByMe extends Fragment
         progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Fetching The File...");
         progressDialog.setCancelable(true);
+
+
 
         return view;
     }
@@ -128,7 +132,7 @@ public class FragmentSharedByMe extends Fragment
 
     @Override
     public void onItemOptionsClick(VmrSharedItem item, View view) {
-        Toast.makeText(VMR.getVMRContext(), item.getFileName() + " options clicked.", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLine( item.getFileName() + " options clicked.");
     }
 
     public interface OnFragmentInteractionListener {

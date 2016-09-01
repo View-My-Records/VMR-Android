@@ -2,12 +2,15 @@ package com.vmr.home;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.home.interfaces.VmrRequest;
+import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.home.request.CreateFolderRequest;
+import com.vmr.home.request.MoveToTrashRequest;
 import com.vmr.home.request.RecordsRequest;
 import com.vmr.home.request.RemoveExpiredRecordsRequest;
+import com.vmr.home.request.RenameItemRequest;
 import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
+import com.vmr.model.DeleteMessage;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.model.folder_structure.VmrTrashItem;
@@ -25,26 +28,35 @@ import java.util.Map;
 
 public class HomeController {
 
-    private VmrRequest.OnFetchRecordsListener onFetchRecordsListener;
-    private VmrRequest.OnFetchTrashListener onFetchTrashListener;
+    private VmrResponse.OnFetchRecordsListener onFetchRecordsListener;
+    private VmrResponse.OnFetchTrashListener onFetchTrashListener;
+    private VmrResponse.OnFetchSharedByMeListener onFetchSharedByMe;
+    private VmrResponse.OnCreateFolderListener onCreateFolderListener;
+    private VmrResponse.OnRenameItemListener onRenameItemListener;
+    private VmrResponse.OnMoveToTrashListener onMoveToTrashListener;
 
-    public HomeController(VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe) {
+    public HomeController(VmrResponse.OnFetchSharedByMeListener onFetchSharedByMe) {
         this.onFetchSharedByMe = onFetchSharedByMe;
     }
 
-    private VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe;
-    private VmrRequest.OnCreateFolderListener onCreateFolderListener;
-
-    public HomeController(VmrRequest.OnFetchRecordsListener OnFetchRecordsListener) {
+    public HomeController(VmrResponse.OnFetchRecordsListener OnFetchRecordsListener) {
         this.onFetchRecordsListener = OnFetchRecordsListener;
     }
 
-    public HomeController(VmrRequest.OnFetchTrashListener OnFetchTrashListener) {
+    public HomeController(VmrResponse.OnFetchTrashListener OnFetchTrashListener) {
         this.onFetchTrashListener = OnFetchTrashListener;
     }
 
-    public HomeController(VmrRequest.OnCreateFolderListener onCreateFolderListener) {
+    public HomeController(VmrResponse.OnCreateFolderListener onCreateFolderListener) {
         this.onCreateFolderListener = onCreateFolderListener;
+    }
+
+    public HomeController(VmrResponse.OnRenameItemListener onRenameItemListener) {
+        this.onRenameItemListener = onRenameItemListener;
+    }
+
+    public HomeController(VmrResponse.OnMoveToTrashListener onMoveToTrashListener) {
+        this.onMoveToTrashListener = onMoveToTrashListener;
     }
 
     public void fetchAllFilesAndFolders(Map<String, String> formData){
@@ -104,6 +116,46 @@ public class HomeController {
                         }
                 );
         VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void renameItem(Map<String, String> formData){
+        RenameItemRequest renameItemRequest =
+                new RenameItemRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onRenameItemListener.onRenameItemSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onRenameItemListener.onRenameItemFailure(error);
+                            }
+                        }
+                );
+        VolleySingleton.getInstance().addToRequestQueue(renameItemRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void moveToTrash(Map<String, String> formData){
+        MoveToTrashRequest moveToTrashRequest =
+                new MoveToTrashRequest(
+                        formData,
+                        new Response.Listener<List<DeleteMessage>>() {
+                            @Override
+                            public void onResponse(List<DeleteMessage> response) {
+                                onMoveToTrashListener.onMoveToTrashSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onMoveToTrashListener.onMoveToTrashFailure(error);
+                            }
+                        }
+                );
+        VolleySingleton.getInstance().addToRequestQueue(moveToTrashRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
     }
 
     public void fetchSharedByMe(Map<String, String> formData){
