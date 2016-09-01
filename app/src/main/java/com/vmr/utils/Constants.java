@@ -10,7 +10,7 @@ public class Constants {
     public static final String VMR_FOLDER_NAVIGATION_TAG = "VMR_FOLDER_NAVIGATION";
 
     public final static class Url {
-        private final static String BASE                = "http://vmrdev.cloudapp.net:8080";
+        public  final static String BASE                = "http://vmrdev.cloudapp.net:8080";
         public  final static String ALFRESCO_TICKET     = BASE + "/alfresco/service/api/login?u=admin&pw=alfresc0";
         public  final static String LOGIN               = BASE + "/vmr/mlogin.do";
         public  final static String FOLDER_NAVIGATION   = BASE + "/vmr/folderNavigation.do";
@@ -36,6 +36,7 @@ public class Constants {
         public final static String LIST_SHARED_WITH_ME       = "LIST_ALL_FILE_FOLDER_FOR_SHARED_WITH_ME";
         public final static String LIST_SHARED_BY_ME         = "GET_RECORDS_SHARED_BY_OWNER";
         public final static String CREATE_FOLDER             = "FOLDER_ADD";
+        public final static String REMOVE_EXPIRED_RECORDS    = "REMOVE_EXPIRED_RECORDS";
     }
 
     public final static class Request {
@@ -101,7 +102,7 @@ public class Constants {
             public static final String FOLDER_NAME = "folderName";
             public static final String TYPE = "type";
             public static final String PARENT_FOLDER = "parent";
-            public static final String FOLDER_JSON_OBJECT = "folderJsonObj";
+            public static final String FOLDER_JSON_OBJECT = "folderObjJson";
             public static final String LOGGEDIN_USER_ID = "loggedInUserId";
 
         }

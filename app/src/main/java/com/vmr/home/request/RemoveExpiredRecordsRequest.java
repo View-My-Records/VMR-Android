@@ -5,29 +5,30 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
+import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.network.NetworkRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.Constants;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /*
- * Created by abhijit on 8/29/16.
+ * Created by abhijit on 9/1/16.
  */
-public class CreateFolderRequest extends NetworkRequest<JSONObject> {
+public class RemoveExpiredRecordsRequest extends NetworkRequest<String> {
 
-    Map<String, String> formData;
+    Map<String, String> formData =  new HashMap<>();
 
-    public CreateFolderRequest(
-            Map<String, String> formData,
-            Response.Listener<JSONObject> successListener,
+    public RemoveExpiredRecordsRequest(
+            Response.Listener<String> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
-        this.formData = formData;
+        super(Method.POST, Constants.Url.SHARE_RECORDS, successListener, errorListener);
     }
 
     @Override
@@ -47,21 +48,15 @@ public class CreateFolderRequest extends NetworkRequest<JSONObject> {
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
+        VmrDebug.printLogI(VMR.getVMRContext(), this.formData.toString());
+        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.REMOVE_EXPIRED_RECORDS);
         return this.formData;
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
-        String jsonString = new String(response.data);
-        JSONObject jsonObject;
-
-        try {
-            jsonObject = new JSONObject(jsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return Response.error(new FetchError());
-        }
-
-        return Response.success(jsonObject, getCacheEntry());
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+        String string = new String(response.data);
+        VmrDebug.printLogI(VMR.getVMRContext(), string);
+        return Response.success(string, getCacheEntry());
     }
 }

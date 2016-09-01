@@ -2,6 +2,7 @@ package com.vmr.home.interfaces;
 
 import com.android.volley.VolleyError;
 import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.model.folder_structure.VmrTrashItem;
 
 import org.json.JSONException;
@@ -29,7 +30,8 @@ public class VmrRequest {
         void onCreateFolderFailure(VolleyError error);
     }
 
-    public interface OnFetchSharedByMe{
-
+    public interface OnFetchSharedByMeListener{
+        void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems);
+        void onFetchSharedByMeFailure(VolleyError error);
     }
 }

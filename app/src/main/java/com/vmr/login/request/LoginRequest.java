@@ -4,15 +4,20 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.vmr.app.VMR;
+import com.vmr.debug.VmrDebug;
 import com.vmr.model.UserInfo;
 import com.vmr.network.JSONNetworkRequest;
 import com.vmr.network.NetworkRequest;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 import com.vmr.utils.WebApiConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /*
@@ -32,14 +37,20 @@ public class LoginRequest extends NetworkRequest<UserInfo> {
     }
 
     @Override
+    public Map<String, String> getHeaders() throws AuthFailureError {
+        return super.getHeaders();
+    }
+
+    @Override
     protected Map<String, String> getParams() throws AuthFailureError {
         return this.formData;
     }
 
     @Override
     protected Response<UserInfo> parseNetworkResponse(NetworkResponse response) {
-
+        VmrDebug.printLogD(VMR.getVMRContext(), response.headers.toString());
         String jsonString = new String(response.data);
+        VmrDebug.printLogD(VMR.getVMRContext(), jsonString);
         JSONObject jsonObject;
         UserInfo userInfo;
         try {

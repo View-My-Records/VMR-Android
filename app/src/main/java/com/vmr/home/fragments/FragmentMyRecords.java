@@ -2,10 +2,15 @@ package com.vmr.home.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -35,6 +41,9 @@ import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +63,7 @@ public class FragmentMyRecords extends Fragment
 
     // Views
     private FloatingActionButton fabAddItem;
+    private SwipeRefreshLayout swipeRefresh;
     private AddItemMenuSheet addItemMenu;
     private OptionsMenuSheet optionsMenuSheet;
     private ProgressDialog progressDialog ;
@@ -139,8 +149,8 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         progressDialog.dismiss();
-        VmrDebug.printLine("My Records retrieved.");
         if (head==null) {
+            VmrDebug.printLine("My Records retrieved.");
             head = vmrFolder;
             head.setFolders(vmrFolder.getFolders());
             head.setIndexedFiles(vmrFolder.getIndexedFiles());
@@ -148,8 +158,10 @@ public class FragmentMyRecords extends Fragment
             mFileList = head.getAll();
             mAdapter.updateDataset(mFileList);
         } else if(head.getNodeRef().equals(vmrFolder.getNodeRef())) {
+            VmrDebug.printLine("My Records updated.");
             updateFolder(vmrFolder);
         } else {
+            VmrDebug.printLine("My Records retrieved.");
             head.setFolders(vmrFolder.getFolders());
             head.setIndexedFiles(vmrFolder.getIndexedFiles());
             head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
@@ -201,148 +213,137 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onCameraClick() {
-        Toast.makeText(VMR.getVMRContext(), "Camera button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Camera button clicked" );
     }
 
     @Override
     public void onFileClick() {
-        Toast.makeText(VMR.getVMRContext(), "Upload file button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Upload file button clicked");
     }
 
     @Override
     public void onFolderClick() {
         Toast.makeText(VMR.getVMRContext(), "Add folder button clicked", Toast.LENGTH_SHORT).show();
-        //        createFolder.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        // set prompts.xml to alertdialog builder
+        alertDialogBuilder.setView(promptsView);
+
+        final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Map<String, String> formData = VMR.getUserMap();
+                        formData.remove("alfNoderef");
+                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME, Uri.encode(userInput.getText().toString(), "UTF-8"));
+                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
+                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        VmrDebug.printLogI(getContext(), jsonObject.toString().replaceAll("\\\\",""));
+                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString().replaceAll("\\\\",""));
+                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
+                            @Override
+                            public void onCreateFolderSuccess(JSONObject jsonObject) {
+                                try {
+                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+                                        refreshFolder();
+                                    }
+                                } catch (JSONException e){
+                                    e.printStackTrace();
+                                }
+                            }
 //
-//                bottomSheet.setBackgroundColor(Color.TRANSPARENT);
-//                bsbAddItem.setState(BottomSheetBehavior.STATE_COLLAPSED);
-//                bsbAddItem.setState(BottomSheetBehavior.STATE_HIDDEN);
-//
-//                // get prompts.xml view
-//                View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
-//
-//                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-//
-//                // set prompts.xml to alertdialog builder
-//                alertDialogBuilder.setView(promptsView);
-//
-//                final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
-//
-//                // set dialog message
-//                alertDialogBuilder
-//                        .setPositiveButton("OK",
-//                                new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog,int id) {
-//                                        Map<String, String> formData = VMR.getUserMap();
-////                                        formData.remove("pageMode");
-//                                        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
-//                                        JSONObject jsonObject = new JSONObject();
-//                                        try {
-//                                            jsonObject.put(Constants.Request.FormFields.FOLDER_NAME,userInput.getText().toString());
-//                                            jsonObject.put(Constants.Request.FormFields.TYPE,1);
-//                                            jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
-//                                        } catch (JSONException e) {
-//                                            e.printStackTrace();
-//                                        }
-//                                        formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString());
-//                                        HomeController createFolderController = new HomeController(new VmrRequest.OnCreateFolderListener() {
-//                                            @Override
-//                                            public void onCreateFolderSuccess(JSONObject jsonObject) {
-//                                                try {
-//                                                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-//                                                        Toast.makeText(VMR.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
-//                                                        refreshFolder();
-//                                                    }
-//                                                } catch (JSONException e){
-//                                                    e.printStackTrace();
-//                                                }
-//                                            }
-//
-//                                            @Override
-//                                            public void onCreateFolderFailure(VolleyError error) {
-//                                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-//                                            }
-//                                        });
-//                                        createFolderController.createFolder(formData);
-//                                    }
-//                                })
-//                        .setNegativeButton("Cancel",
-//                                new DialogInterface.OnClickListener() {
-//                                    public void onClick(DialogInterface dialog,int id) {
-//                                        dialog.cancel();
-//                                    }
-//                                });
-//
-//                // create alert dialog
-//                AlertDialog alertDialog = alertDialogBuilder.create();
-//
-//                // show it
-//                alertDialog.show();
-//            }
-//        });
-    }
+                            @Override
+                            public void onCreateFolderFailure(VolleyError error) {
+                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        createFolderController.createFolder(formData);
+                    }
+                })
+            .setNegativeButton("Cancel",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog,int id) {
+                            dialog.cancel();
+                        }
+                    });
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+            }
 
     @Override
     public void onAddItemsMenuDismiss() {
-        Toast.makeText(VMR.getVMRContext(), "Menu dismissed", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Menu dismissed" );
         fabAddItem.show();
     }
 
     @Override
-    public void onInfoClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Info button clicked", Toast.LENGTH_SHORT).show();
+    public void onOpenClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Open button clicked" );
     }
 
     @Override
-    public void onOpenClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Open button clicked", Toast.LENGTH_SHORT).show();
+    public void onIndexClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(getContext(), "Index button clicked" );
     }
 
     @Override
     public void onShareClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Share button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Share button clicked" );
     }
 
     @Override
     public void onRenameClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Rename button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Rename button clicked" );
     }
 
     @Override
     public void onDownloadClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Download button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Download button clicked" );
     }
 
     @Override
     public void onMoveClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Move button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Move button clicked" );
     }
 
     @Override
     public void onCopyClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Copy button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Copy button clicked" );
     }
 
     @Override
     public void onDuplicateClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Duplicate button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Duplicate button clicked" );
     }
 
     @Override
     public void onPropertiesClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Properties button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Properties button clicked" );
     }
 
     @Override
     public void onDeleteClicked(VmrItem vmrItem) {
-        Toast.makeText(VMR.getVMRContext(), "Delete button clicked", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Delete button clicked" );
     }
 
     @Override
     public void onOptionsMenuDismiss() {
-        Toast.makeText(VMR.getVMRContext(), "Menu dismissed", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(getContext(), "Menu dismissed" );
         fabAddItem.show();
     }
 
@@ -356,7 +357,6 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onClick(View view) {
                 fabAddItem.hide();
-                //show it
                 addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
             }
         });
@@ -386,6 +386,16 @@ public class FragmentMyRecords extends Fragment
     }
 
     private void setupRecyclerView(View view) {
+        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshFolder();
+                swipeRefresh.setRefreshing(false);
+                progressDialog.show();
+            }
+        });
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);

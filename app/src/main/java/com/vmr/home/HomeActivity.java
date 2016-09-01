@@ -129,7 +129,7 @@ public class HomeActivity extends AppCompatActivity
         Map<String, String> formData = VMR.getUserMap();
         formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,this.getUserInfo().getRootNodref());
         formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+//        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(formData);
     }

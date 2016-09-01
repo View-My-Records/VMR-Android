@@ -5,8 +5,11 @@ import com.android.volley.VolleyError;
 import com.vmr.home.interfaces.VmrRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.RecordsRequest;
+import com.vmr.home.request.RemoveExpiredRecordsRequest;
+import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
 import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
@@ -24,6 +27,12 @@ public class HomeController {
 
     private VmrRequest.OnFetchRecordsListener onFetchRecordsListener;
     private VmrRequest.OnFetchTrashListener onFetchTrashListener;
+
+    public HomeController(VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe) {
+        this.onFetchSharedByMe = onFetchSharedByMe;
+    }
+
+    private VmrRequest.OnFetchSharedByMeListener onFetchSharedByMe;
     private VmrRequest.OnCreateFolderListener onCreateFolderListener;
 
     public HomeController(VmrRequest.OnFetchRecordsListener OnFetchRecordsListener) {
@@ -97,5 +106,41 @@ public class HomeController {
         VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
     }
 
+    public void fetchSharedByMe(Map<String, String> formData){
+        SharedByMeRequest sharedByMeRequest =
+                new SharedByMeRequest(
+                        formData,
+                        new Response.Listener<List<VmrSharedItem>>() {
+                            @Override
+                            public void onResponse(List<VmrSharedItem> vmrSharedItems) {
+                                onFetchSharedByMe.onFetchSharedByMeSuccess(vmrSharedItems);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFetchSharedByMe.onFetchSharedByMeFailure(error);
+                            }
+                        } );
+        VolleySingleton.getInstance().addToRequestQueue(sharedByMeRequest, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
+
+    public void removeExpiredRecords(){
+        RemoveExpiredRecordsRequest request =
+                new RemoveExpiredRecordsRequest(
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String vmrSharedItems) {
+
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+
+                            }
+                        } );
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.VMR_FOLDER_NAVIGATION_TAG);
+    }
 
 }

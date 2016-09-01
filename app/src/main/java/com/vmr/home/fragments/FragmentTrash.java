@@ -44,13 +44,13 @@ public class FragmentTrash extends Fragment
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
 
+    // Views
+    private ProgressDialog progressDialog;
+
     // Controllers
     private HomeController homeController;
 
-    private ProgressDialog progressDialog ;
-
     // Variables
-//    private VmrFolder head;
     private List<VmrTrashItem> mFileList = new ArrayList<>();
     private TrashAdapter mAdapter;
 

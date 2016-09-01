@@ -1,10 +1,12 @@
 package com.vmr.home.bottomsheet_behaviors;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
+import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.model.folder_structure.VmrItem;
@@ -28,16 +30,18 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.options_layout, null);
         dialog.setContentView(contentView);
 
-        contentView.findViewById(R.id.btnInfo).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onInfoClicked(vmrItem);  dismiss();
-            }
-        });
+        ((TextView)contentView.findViewById(R.id.tvFolderName)).setText(vmrItem.getName());
+
         contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onOpenClicked(vmrItem);  dismiss();
+            }
+        });
+        contentView.findViewById(R.id.btnIndex).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                optionClickListener.onIndexClicked(vmrItem);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnShare).setOnClickListener(new View.OnClickListener() {
@@ -105,8 +109,8 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
     }
 
     public interface OnOptionClickListener{
-        void onInfoClicked(VmrItem vmrItem);
         void onOpenClicked(VmrItem vmrItem);
+        void onIndexClicked(VmrItem vmrItem);
         void onShareClicked(VmrItem vmrItem);
         void onRenameClicked(VmrItem vmrItem);
         void onDownloadClicked(VmrItem vmrItem);

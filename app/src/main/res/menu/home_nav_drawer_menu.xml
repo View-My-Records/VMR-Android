@@ -27,7 +27,7 @@
             android:id="@+id/trash"
             android:icon="@android:drawable/ic_menu_delete"
             android:title="Trash" />
-    </group>
+
 
     <item android:title="Sharing">
         <menu>
@@ -59,5 +59,6 @@
         android:id="@+id/log_out"
         android:icon="@drawable/ic_log_out"
         android:title="Log Out" />
+    </group>
 
 </menu>

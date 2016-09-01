@@ -67,7 +67,7 @@ public class FragmentSharedWithMe extends Fragment
         if (fragmentInteractionListener != null) {
             fragmentInteractionListener.onFragmentInteraction("Shared With Me");
         }
-        View view = inflater.inflate(R.layout.fragment_my_records, container, false);
+        View view = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
         homeController = new HomeController(this);
         mAdapter = new RecordsAdapter(mFileList, this, this);
 
@@ -183,7 +183,7 @@ public class FragmentSharedWithMe extends Fragment
     }
 
     private void setupRecyclerView(View view) {
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvSharedWithMe);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

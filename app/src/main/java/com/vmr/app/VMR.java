@@ -2,7 +2,9 @@ package com.vmr.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 
 import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
@@ -79,7 +81,6 @@ public class VMR extends Application {
 
     @Override
     public void onCreate() {
-//        appInstance = this;
         super.onCreate();
         VMR.appContext = getApplicationContext();
     }
@@ -93,4 +94,6 @@ public class VMR extends Application {
     public void onTerminate() {
         super.onTerminate();
     }
+
+
 }

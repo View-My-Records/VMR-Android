@@ -1,11 +1,16 @@
 package com.vmr.network;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.vmr.app.VMR;
 import com.vmr.utils.Constants;
 
-/**
+import java.util.Map;
+
+/*
  * Created by abhijit on 8/16/16.
  */
 
@@ -46,12 +51,5 @@ public class VolleySingleton {
     public void cancelPendingRequest(String tag) {
         getRequestQueue().cancelAll(tag);
     }
-
-
-
-
-
-
-
 
 }

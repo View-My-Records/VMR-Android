@@ -18,11 +18,9 @@ import com.vmr.R;
 import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
-import com.vmr.home.adapters.RecordsAdapter;
+import com.vmr.home.adapters.SharedByMeAdapter;
 import com.vmr.home.interfaces.VmrRequest;
-import com.vmr.model.folder_structure.VmrFile;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PrefConstants;
@@ -34,9 +32,9 @@ import java.util.Map;
 
 public class FragmentSharedByMe extends Fragment
         implements
-        VmrRequest.OnFetchRecordsListener,
-        RecordsAdapter.OnItemClickListener,
-        RecordsAdapter.OnItemOptionsClickListener {
+        VmrRequest.OnFetchSharedByMeListener,
+        SharedByMeAdapter.OnItemClickListener,
+        SharedByMeAdapter.OnItemOptionsClickListener {
 
     private OnFragmentInteractionListener fragmentInteractionListener;
 
@@ -47,25 +45,11 @@ public class FragmentSharedByMe extends Fragment
     private HomeController homeController;
 
     // Variables
-    private VmrFolder head;
-    private List<VmrItem> mFileList = new ArrayList<>();
-    private RecordsAdapter mAdapter;
+    private List<VmrSharedItem> mFileList = new ArrayList<>();
+    private SharedByMeAdapter mAdapter;
 
     public FragmentSharedByMe() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Map<String, String> formData = VMR.getUserMap();
-//        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getVmrRootFolder().getSharedFolder());
-        formData.remove(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE);
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_SHARED_BY_ME);
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-        formData.put(Constants.Request.FormFields.LOGGEDIN_USER_ID, VMR.getUserInfo().getLoggedinUserId());
-        homeController.fetchAllFilesAndFolders(formData);
-        progressDialog.show();
     }
 
     @Override
@@ -80,9 +64,9 @@ public class FragmentSharedByMe extends Fragment
             fragmentInteractionListener.onFragmentInteraction("Shared By Me");
         }
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_my_records, container, false);
+        View view = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
         homeController = new HomeController(this);
-        mAdapter = new RecordsAdapter(mFileList, this, this);
+        mAdapter = new SharedByMeAdapter(mFileList, this, this);
 
         setupRecyclerView(view);
         setOnBackPress(view);
@@ -92,6 +76,19 @@ public class FragmentSharedByMe extends Fragment
         progressDialog.setCancelable(true);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Map<String, String> formData = VMR.getUserMap();
+        formData.remove(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_SHARED_BY_ME);
+        formData.put(Constants.Request.FormFields.LOGGEDIN_USER_ID, VMR.getUserInfo().getLoggedinUserId());
+        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        homeController.removeExpiredRecords();
+        homeController.fetchSharedByMe(formData);
+        progressDialog.show();
     }
 
     @Override
@@ -112,50 +109,26 @@ public class FragmentSharedByMe extends Fragment
     }
 
     @Override
-    public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
+    public void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems) {
         progressDialog.dismiss();
         VmrDebug.printLine("My Records retrieved.");
-        if (head==null) {
-            VMR.setVmrSharedWithMeRootFolder(vmrFolder);
-            head = VMR.getVmrSharedWithMeRootFolder();
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList = head.getAll();
-            mAdapter.updateDataset(mFileList);
-        } else {
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList=head.getAll();
-            mAdapter.updateDataset(mFileList);
-        }
+        mAdapter.updateDataset(vmrSharedItems);
     }
 
     @Override
-    public void onFetchRecordsFailure(VolleyError error) {
+    public void onFetchSharedByMeFailure(VolleyError error) {
         progressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemClick(VmrItem item) {
-        if(item instanceof VmrFolder){
-            VmrDebug.printLine(item.getName() + "Folder clicked");
-            head = (VmrFolder) item;
-            Map<String, String> formData = VMR.getUserMap();
-            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
-            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-            homeController.fetchAllFilesAndFolders(formData);
-        } else if(item instanceof VmrFile) {
-            VmrDebug.printLine(item.getName() + "File clicked");
-        }
+    public void onItemClick(VmrSharedItem item) {
+        VmrDebug.printLine(item.getFileName() + " clicked");
     }
 
     @Override
-    public void onItemOptionsClick(VmrItem item, View view) {
-        Toast.makeText(VMR.getVMRContext(), item.getName() + " options clicked.", Toast.LENGTH_SHORT).show();
+    public void onItemOptionsClick(VmrSharedItem item, View view) {
+        Toast.makeText(VMR.getVMRContext(), item.getFileName() + " options clicked.", Toast.LENGTH_SHORT).show();
     }
 
     public interface OnFragmentInteractionListener {
@@ -169,23 +142,15 @@ public class FragmentSharedByMe extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    if(head !=  VMR.getVmrSharedWithMeRootFolder()) {
-                        head = (VmrFolder) head.getParent();
-                        mFileList=head.getAll();
-                        mAdapter.updateDataset(mFileList);
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
                     return false;
                 }
+                return false;
             }
         });
     }
 
     private void setupRecyclerView(View view) {
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvSharedByMe);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());

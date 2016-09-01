@@ -29,6 +29,7 @@
             android:contentDescription="Info" />
 
         <TextView
+            android:id="@+id/tvFolderName"
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
@@ -78,6 +79,42 @@
             android:layout_alignBottom="@+id/openImageView"
             android:layout_toRightOf="@+id/openImageView"
             android:layout_toEndOf="@+id/openImageView"
+            android:layout_margin="6dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/btnIndex"
+        android:clickable="true"
+        android:longClickable="true"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@android:drawable/ic_menu_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:id="@+id/indexImageView"
+            android:layout_margin="6dp"
+            android:contentDescription="Index" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Index"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:longClickable="false"
+            android:layout_alignBottom="@+id/indexImageView"
+            android:layout_toRightOf="@+id/indexImageView"
+            android:layout_toEndOf="@+id/indexImageView"
             android:layout_margin="6dp" />
 
     </RelativeLayout>
