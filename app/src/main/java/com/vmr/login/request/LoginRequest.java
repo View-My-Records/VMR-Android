@@ -48,9 +48,9 @@ public class LoginRequest extends NetworkRequest<UserInfo> {
 
     @Override
     protected Response<UserInfo> parseNetworkResponse(NetworkResponse response) {
-        VmrDebug.printLogD(VMR.getVMRContext(), response.headers.toString());
+        VmrDebug.printLogD(this.getClass(), response.headers.toString());
         String jsonString = new String(response.data);
-        VmrDebug.printLogD(VMR.getVMRContext(), jsonString);
+        VmrDebug.printLogD(this.getClass(), jsonString);
         JSONObject jsonObject;
         UserInfo userInfo;
         try {

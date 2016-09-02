@@ -76,7 +76,7 @@ public class UserInfo implements Parcelable {
         this.setLoggedinUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LOGGEDINUSERID));
         this.setLastLoginTime(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LAST_LOGIN_TIME));
 
-        if(this.getMembershipType().equalsIgnoreCase(Constants.Request.Domain.INDIVIDUAL) ){
+        if(this.getMembershipType().equalsIgnoreCase(Constants.Request.Login.Domain.INDIVIDUAL) ){
             this.setLastName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LASTNAME));
             this.setFirstName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_FIRSTNAME));
         }else {

@@ -36,7 +36,7 @@ public class RenameItemRequest extends NetworkRequest<JSONObject> {
         headers.put("Accept", "application/json, text/javascript, */*; q=0.01" );
         headers.put("Accept-Encoding", "gzip, deflate" );
         headers.put("Accept-Language", "en-US,en;q=0.8" );
-        headers.put("Cookie", "JSESSIONID=" + VMR.getUserInfo().getHttpSessionId());
+        headers.put("Cookie", "JSESSIONID=" + VMR.getLoggedInUserInfo().getHttpSessionId());
         headers.put("DNT", "1" );
         headers.put("Origin", "http://vmrdev.cloudapp.net:8080" );
         headers.put("Referer", "http://vmrdev.cloudapp.net:8080/vmr/main.do" );

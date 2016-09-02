@@ -11,13 +11,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.vmr.R;
-import com.vmr.login.interfaces.LoginFragmentInterface;
+import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
 
 public class FragmentLoginCorporate extends Fragment {
 
-    private LoginFragmentInterface loginFragmentInterface ;
+    private OnLoginClickListener onLoginClickListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -35,11 +35,11 @@ public class FragmentLoginCorporate extends Fragment {
             @Override
             public void onClick(View view) {
                 if(ConnectionDetector.isOnline()) {
-                    loginFragmentInterface.onCorporateLoginClick(
+                    onLoginClickListener.onCorporateLoginClick(
                         etUsername.getText().toString(),
                         etPassword.getText().toString(),
                         etCorpId.getText().toString(),
-                        Constants.Request.Domain.CORPORATE,
+                        Constants.Request.Login.Domain.CORPORATE,
                         cbRememberMe.isChecked());
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
@@ -49,7 +49,7 @@ public class FragmentLoginCorporate extends Fragment {
         return rootView;
     }
 
-    public void setCallbackInterface(LoginFragmentInterface loginFragmentInterface){
-        this.loginFragmentInterface = loginFragmentInterface;
+    public void setCallbackInterface(OnLoginClickListener onLoginClickListener){
+        this.onLoginClickListener = onLoginClickListener;
     }
 }

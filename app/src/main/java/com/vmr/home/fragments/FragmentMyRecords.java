@@ -1,9 +1,7 @@
 package com.vmr.home.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -34,28 +32,23 @@ import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FragmentMyRecords extends Fragment
         implements
-        VmrResponse.OnFetchRecordsListener,
+        VmrResponseListener.OnFetchRecordsListener,
         Interaction.HomeToMyRecordsInterface,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
@@ -67,25 +60,20 @@ public class FragmentMyRecords extends Fragment
     private OnFragmentInteractionListener fragmentInteractionListener;
 
     // Views
-    private FloatingActionButton fabAddItem;
-    private SwipeRefreshLayout swipeRefresh;
+    private FloatingActionButton mFabAddItem;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private RecyclerView mRecyclerView ;
+    private TextView mTextView;
+    private ProgressDialog mProgressDialog;
     private AddItemMenuSheet addItemMenu;
     private OptionsMenuSheet optionsMenuSheet;
-    private ProgressDialog progressDialog ;
-    private TextView mTextView;
-    private RecyclerView mRecyclerView ;
 
     // Controllers
     private HomeController homeController;
     // Variables
-    private VmrFolder head;
-    private List<VmrItem> mFileList = new ArrayList<>();
-    private RecordsAdapter mAdapter;
-
-
-    public FragmentMyRecords() {
-        // Required empty public constructor
-    }
+    private VmrFolder currentFolder;
+    private List<VmrItem> vmrItems = new ArrayList<>();
+    private RecordsAdapter recordsAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,7 +81,7 @@ public class FragmentMyRecords extends Fragment
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
 
         homeController = new HomeController(this);
-        mAdapter = new RecordsAdapter(mFileList, this, this);
+        recordsAdapter = new RecordsAdapter(vmrItems, this, this);
 
         addItemMenu = new AddItemMenuSheet();
         addItemMenu.setItemClickListener(this);
@@ -115,9 +103,9 @@ public class FragmentMyRecords extends Fragment
         setupFab(fragmentView);
         setOnBackPress(fragmentView);
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Fetching The File...");
-        progressDialog.setCancelable(true);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Fetching The File...");
+        mProgressDialog.setCancelable(true);
 
         return fragmentView;
     }
@@ -126,25 +114,14 @@ public class FragmentMyRecords extends Fragment
     public void onStart() {
         super.onStart();
         if(VMR.getVmrRootFolder() == null) {
-            progressDialog.show();
+            homeController.fetchAllFilesAndFolders(VMR.getLoggedInUserInfo().getRootNodref());
+            mProgressDialog.show();
         } else {
-            head = VMR.getVmrRootFolder();
-            mFileList = head.getAll();
-            mAdapter.updateDataset(mFileList);
-            progressDialog.dismiss();
+            currentFolder = VMR.getVmrRootFolder();
+            vmrItems = currentFolder.getAll();
+            recordsAdapter.updateDataset(vmrItems);
+            mProgressDialog.dismiss();
         }
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            fragmentInteractionListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-
     }
 
     @Override
@@ -155,28 +132,29 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        progressDialog.dismiss();
-        if (head==null) {
+        // TODO: 9/2/16 Combine if conditions. Its all same code in all cases
+        mProgressDialog.dismiss();
+        if (currentFolder ==null) {
             VmrDebug.printLine("My Records retrieved.");
-            head = vmrFolder;
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList = head.getAll();
-            mAdapter.updateDataset(mFileList);
-        } else if(head.getNodeRef().equals(vmrFolder.getNodeRef())) {
-            VmrDebug.printLine("My Records updated.");
+            currentFolder = vmrFolder;
+            currentFolder.setFolders(vmrFolder.getFolders());
+            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
+            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            vmrItems = currentFolder.getAll();
+            recordsAdapter.updateDataset(vmrItems);
+        } else if(currentFolder.getNodeRef().equals(vmrFolder.getNodeRef())) {
+            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " updated.");
             updateFolder(vmrFolder);
         } else {
-            VmrDebug.printLine("My Records retrieved.");
-            head.setFolders(vmrFolder.getFolders());
-            head.setIndexedFiles(vmrFolder.getIndexedFiles());
-            head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            mFileList=head.getAll();
-            mAdapter.updateDataset(mFileList);
+            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " retrieved.");
+            currentFolder.setFolders(vmrFolder.getFolders());
+            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
+            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+            vmrItems = currentFolder.getAll();
+            recordsAdapter.updateDataset(vmrItems);
         }
 
-        if(mFileList.isEmpty()){
+        if(vmrItems.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
             mTextView.setVisibility(View.VISIBLE);
         } else {
@@ -187,16 +165,16 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        progressDialog.dismiss();
+        mProgressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onReceiveFromActivitySuccess(VmrFolder vmrFolder) {
-        head = vmrFolder;
-        mFileList = head.getAll();
-        mAdapter.updateDataset(mFileList);
-        progressDialog.dismiss();
+        currentFolder = vmrFolder;
+        vmrItems = currentFolder.getAll();
+        recordsAdapter.updateDataset(vmrItems);
+        mProgressDialog.dismiss();
     }
 
     @Override
@@ -208,12 +186,9 @@ public class FragmentMyRecords extends Fragment
     public void onItemClick(VmrItem item) {
         if(item instanceof VmrFolder){
             VmrDebug.printLine(item.getName() + "Folder clicked");
-            head=(VmrFolder) item;
-            Map<String, String> formData = VMR.getUserMap();
-            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
-            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-            homeController.fetchAllFilesAndFolders(formData);
+            currentFolder =(VmrFolder) item;
+            homeController.fetchAllFilesAndFolders(item.getNodeRef());
+            mProgressDialog.show();
         } else if(item instanceof VmrFile) {
             VmrDebug.printLine(item.getName() + "File clicked");
         }
@@ -222,28 +197,26 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onItemOptionsClick(VmrItem item, View view) {
         optionsMenuSheet.setVmrItem(item);
-        fabAddItem.hide();
+        mFabAddItem.hide();
         optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
     }
 
     @Override
     public void onCameraClick() {
-        VmrDebug.printLogI(getContext(), "Camera button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
     }
 
     @Override
     public void onFileClick() {
-        VmrDebug.printLogI(getContext(), "Upload file button clicked");
+        VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
     }
 
     @Override
     public void onFolderClick() {
-        VmrDebug.printLogI(getContext(), "create folder button clicked" );
+        VmrDebug.printLogI(this.getClass(), "create folder button clicked" );
         View promptsView = View.inflate(getActivity(), R.layout.dialog_create_folder, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-        // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
@@ -256,20 +229,8 @@ public class FragmentMyRecords extends Fragment
                         if(userInput.length() == 0) {
                             userInput.setError("Only alphabets, numbers and spaces are allowed");
                         } else {
-                            Map<String, String> formData = VMR.getUserMap();
-                            formData.remove("alfNoderef");
-                            formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.CREATE_FOLDER);
-                            JSONObject jsonObject = new JSONObject();
-                            try {
-                                jsonObject.put(Constants.Request.FormFields.FOLDER_NAME, Uri.encode(userInput.getText().toString(), "UTF-8"));
-                                jsonObject.put(Constants.Request.FormFields.TYPE, 1);
-                                jsonObject.put(Constants.Request.FormFields.PARENT_FOLDER, head.getNodeRef());
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                            VmrDebug.printLogI(getContext(), jsonObject.toString().replaceAll("\\\\", ""));
-                            formData.put(Constants.Request.FormFields.FOLDER_JSON_OBJECT, jsonObject.toString().replaceAll("\\\\", ""));
-                            HomeController createFolderController = new HomeController(new VmrResponse.OnCreateFolderListener() {
+
+                            HomeController createFolderController = new HomeController(new VmrResponseListener.OnCreateFolderListener() {
                                 @Override
                                 public void onCreateFolderSuccess(JSONObject jsonObject) {
                                     try {
@@ -282,13 +243,12 @@ public class FragmentMyRecords extends Fragment
                                     }
                                 }
 
-                                //
                                 @Override
                                 public void onCreateFolderFailure(VolleyError error) {
                                     Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                                 }
                             });
-                            createFolderController.createFolder(formData);
+                            createFolderController.createFolder( userInput.getText().toString(), currentFolder.getNodeRef() );
                         }
                     }
                 })
@@ -305,7 +265,7 @@ public class FragmentMyRecords extends Fragment
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface dialogInterface) {
-                ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             }
         });
 
@@ -319,9 +279,9 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void afterTextChanged(Editable editable) {
                 if(TextUtils.isEmpty(editable)){
-                    ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                 } else {
-                    ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                 }
             }
         });
@@ -332,33 +292,31 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onAddItemsMenuDismiss() {
-        VmrDebug.printLogI(getContext(), "Menu dismissed" );
-        fabAddItem.show();
+        VmrDebug.printLogI(this.getClass(), "Menu dismissed" );
+        mFabAddItem.show();
     }
 
     @Override
     public void onOpenClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Open button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Open button clicked" );
     }
 
     @Override
     public void onIndexClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Index button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Index button clicked" );
     }
 
     @Override
     public void onShareClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Share button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Share button clicked" );
     }
 
     @Override
     public void onRenameClicked(final VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Rename button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Rename button clicked" );
         View promptsView = View.inflate(getActivity(), R.layout.dialog_rename_folder, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-
-        // set prompts.xml to alertdialog builder
         alertDialogBuilder.setView(promptsView);
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewItemName);
@@ -367,39 +325,31 @@ public class FragmentMyRecords extends Fragment
 
         // set dialog message
         alertDialogBuilder
-                .setPositiveButton("OK",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-
-                                Map<String, String> formData = VMR.getUserMap();
-                                formData.remove("alfNoderef");
-                                formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.RENAME_FILE_OR_FOLDER);
-                                formData.put("newName",Uri.encode(userInput.getText().toString(), "UTF-8"));
-                                formData.put("fileSelectedNodeRef",vmrItem.getNodeRef());
-                                formData.put("renameOldName", vmrItem.getName());
-
-                                HomeController renameController = new HomeController(new VmrResponse.OnRenameItemListener() {
-                                    @Override
-                                    public void onRenameItemSuccess(JSONObject jsonObject) {
-                                        VmrDebug.printLogI(getContext(), jsonObject.toString() );
-                                        try {
-                                            if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                                Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
-                                                refreshFolder();
-                                            }
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
+            .setPositiveButton("OK",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
+                            @Override
+                            public void onRenameItemSuccess(JSONObject jsonObject) {
+                                VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
+                                try {
+                                    if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
+                                        Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                        refreshFolder();
                                     }
-
-                                    @Override
-                                    public void onRenameItemFailure(VolleyError error) {
-                                        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                                    }
-
-                                });
-                                renameController.renameItem(formData);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
+
+                            @Override
+                            public void onRenameItemFailure(VolleyError error) {
+                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                            }
+
+                        });
+                        renameController.renameItem(vmrItem, userInput.getText().toString());
+                    }
                         })
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
@@ -435,70 +385,42 @@ public class FragmentMyRecords extends Fragment
             }
         });
 
-        // show it
         alertDialog.show();
 
     }
 
     @Override
     public void onDownloadClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Download button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Download button clicked" );
     }
 
     @Override
     public void onMoveClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Move button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Move button clicked" );
     }
 
     @Override
     public void onCopyClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Copy button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Copy button clicked" );
     }
 
     @Override
     public void onDuplicateClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Duplicate button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
     }
 
     @Override
     public void onPropertiesClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Properties button clicked" );
+        VmrDebug.printLogI(this.getClass(), "Properties button clicked" );
     }
 
     @Override
-    public void onDeleteClicked(VmrItem vmrItem) {
-        VmrDebug.printLogI(getContext(), "Delete button clicked" );
-
-        Map<String, String> formData = VMR.getUserMap();
-        formData.remove("alfNoderef");
-        formData.put(Constants.Request.FormFields.PAGE_MODE, Constants.PageMode.DELETE_FILE_OR_FOLDER);
-
-        JSONObject deleteobjectvalues = new JSONObject();
-        JSONArray arrayDeleteobjects = new JSONArray();
-
-        JSONObject trashobjectvalues = new JSONObject();
-        JSONArray arrayTrashobjects = new JSONArray();
-
-        JSONObject objectToDelete = new JSONObject();
-
-        try {
-            objectToDelete.put("objectName", vmrItem.getName());
-            objectToDelete.put("objectNoderef", vmrItem.getNodeRef());
-            objectToDelete.put("objectType", true);
-            arrayDeleteobjects.put(objectToDelete);
-            deleteobjectvalues.put("Deleteobjects", arrayDeleteobjects);
-            trashobjectvalues.put("Trashobjects", arrayTrashobjects);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        formData.put("deleteobjectvalues", deleteobjectvalues.toString().replaceAll("\\\\", ""));
-        formData.put("trashobjectvalues", trashobjectvalues.toString().replaceAll("\\\\", ""));
-        VmrDebug.printLogI(getContext(), formData.toString().replaceAll("\\\\", ""));
-        HomeController trashController = new HomeController(new VmrResponse.OnMoveToTrashListener() {
+    public void onMoveToTrashClicked(VmrItem vmrItem) {
+        VmrDebug.printLogI(this.getClass(), "Delete button clicked" );
+        HomeController trashController = new HomeController(new VmrResponseListener.OnMoveToTrashListener() {
             @Override
             public void onMoveToTrashSuccess(List<DeleteMessage> deleteMessages) {
-                VmrDebug.printLogI(getContext(), deleteMessages.toString() );
+                VmrDebug.printLogI(this.getClass(), deleteMessages.toString() );
                 refreshFolder();
 
                 for (DeleteMessage dm : deleteMessages) {
@@ -513,21 +435,22 @@ public class FragmentMyRecords extends Fragment
             }
 
         });
-        trashController.moveToTrash(formData);
+
+        trashController.moveToTrash(vmrItem);
     }
 
     @Override
     public void onOptionsMenuDismiss() {
-        VmrDebug.printLogI(getContext(), "Menu dismissed" );
-        fabAddItem.show();
+        VmrDebug.printLogI(this.getClass(), "Menu dismissed" );
+        mFabAddItem.show();
     }
 
     private void setupFab(View view){
-        fabAddItem = (FloatingActionButton) view.findViewById(R.id.fab);
-        fabAddItem.setOnClickListener(new View.OnClickListener() {
+        mFabAddItem = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFabAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                fabAddItem.hide();
+                mFabAddItem.hide();
                 addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
             }
         });
@@ -540,10 +463,10 @@ public class FragmentMyRecords extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    if(head !=  VMR.getVmrRootFolder()) {
-                        head = (VmrFolder) head.getParent();
-                        mFileList=head.getAll();
-                        mAdapter.updateDataset(mFileList);
+                    if(currentFolder !=  VMR.getVmrRootFolder()) {
+                        currentFolder = (VmrFolder) currentFolder.getParent();
+                        vmrItems = currentFolder.getAll();
+                        recordsAdapter.updateDataset(vmrItems);
                         refreshFolder();
                         return true;
                     } else {
@@ -557,40 +480,36 @@ public class FragmentMyRecords extends Fragment
     }
 
     private void setupRecyclerView(View view) {
-        swipeRefresh = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mTextView = (TextView) view.findViewById(R.id.tvEmptyFolder);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
 
-        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 refreshFolder();
-                swipeRefresh.setRefreshing(false);
-                progressDialog.show();
+                mSwipeRefreshLayout.setRefreshing(false);
+                mProgressDialog.show();
             }
         });
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mAdapter);
-        registerForContextMenu(mRecyclerView);
+        mRecyclerView.setAdapter(recordsAdapter);
     }
 
     private void updateFolder(VmrFolder vmrFolder){
-        head.setFolders(vmrFolder.getFolders());
-        head.setIndexedFiles(vmrFolder.getIndexedFiles());
-        head.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-        mFileList = head.getAll();
-        mAdapter.updateDataset(mFileList);
+        currentFolder.setFolders(vmrFolder.getFolders());
+        currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
+        currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+        vmrItems = currentFolder.getAll();
+        recordsAdapter.updateDataset(vmrItems);
 
     }
 
     private void refreshFolder(){
-        Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, head.getNodeRef());
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-        homeController.fetchAllFilesAndFolders(formData);
+        homeController.fetchAllFilesAndFolders(currentFolder.getNodeRef());
     }
 
     public interface OnFragmentInteractionListener {

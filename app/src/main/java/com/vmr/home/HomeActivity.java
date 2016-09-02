@@ -36,7 +36,7 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.home.interfaces.VmrResponse;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.utils.Constants;
@@ -56,7 +56,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
-        VmrResponse.OnFetchRecordsListener
+        VmrResponseListener.OnFetchRecordsListener
 {
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
 
@@ -92,7 +92,7 @@ public class HomeActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
 
             userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
-            VMR.setUserInfo(userInfo);
+            VMR.setLoggedInUserInfo(userInfo);
 
         }
 
@@ -115,7 +115,7 @@ public class HomeActivity extends AppCompatActivity
         ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
         ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
-        if (userInfo.getMembershipType().equals(Constants.Request.Domain.INDIVIDUAL)) {
+        if (userInfo.getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
             accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
         } else {
             accountName.setText(userInfo.getCorpName());
@@ -124,12 +124,8 @@ public class HomeActivity extends AppCompatActivity
         accountEmail.setText(userInfo.getEmailId());
         lastLogin.setText(userInfo.getLastLoginTime().toString());
 
-        Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,this.getUserInfo().getRootNodref());
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-//        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(this.getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         HomeController homeController = new HomeController(this);
-        homeController.fetchAllFilesAndFolders(formData);
+        homeController.fetchAllFilesAndFolders(this.getUserInfo().getRootNodref());
     }
 
     @Override

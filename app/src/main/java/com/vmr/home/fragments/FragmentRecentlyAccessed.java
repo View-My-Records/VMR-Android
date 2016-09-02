@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.vmr.R;
+import com.vmr.utils.Constants;
 
 
 public class FragmentRecentlyAccessed extends Fragment {
@@ -27,7 +28,7 @@ public class FragmentRecentlyAccessed extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("Recently Accessed");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.RECENTLY_ACCESSED);
         }
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recently_accessed, container, false);

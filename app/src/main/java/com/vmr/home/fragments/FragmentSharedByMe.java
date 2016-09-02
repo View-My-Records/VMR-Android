@@ -19,7 +19,7 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
-import com.vmr.home.interfaces.VmrResponse;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -32,7 +32,7 @@ import java.util.Map;
 
 public class FragmentSharedByMe extends Fragment
         implements
-        VmrResponse.OnFetchSharedByMeListener,
+        VmrResponseListener.OnFetchSharedByMeListener,
         SharedByMeAdapter.OnItemClickListener,
         SharedByMeAdapter.OnItemOptionsClickListener {
 
@@ -62,7 +62,7 @@ public class FragmentSharedByMe extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("Shared By Me");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_BY_ME);
         }
 
         // Inflate the layout for this fragment
@@ -85,13 +85,8 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        Map<String, String> formData = VMR.getUserMap();
-        formData.remove(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE);
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_SHARED_BY_ME);
-        formData.put(Constants.Request.FormFields.LOGGEDIN_USER_ID, VMR.getUserInfo().getLoggedinUserId());
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
         homeController.removeExpiredRecords();
-        homeController.fetchSharedByMe(formData);
+        homeController.fetchSharedByMe();
         progressDialog.show();
     }
 

@@ -1,23 +1,21 @@
 package com.vmr.login;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.vmr.BuildConfig;
 import com.vmr.R;
-import com.vmr.login.interfaces.LoginFragmentInterface;
-import com.vmr.login.interfaces.LoginRequestInterface;
+import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
+import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.model.UserInfo;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PrefConstants;
@@ -25,11 +23,14 @@ import com.vmr.utils.PrefUtils;
 
 public class LoginActivity extends AppCompatActivity
         implements
-        LoginRequestInterface,
-        LoginFragmentInterface {
-
+        VmrResponseListener.OnLoginListener,
+        VmrResponseListener.OnFetchTicketListener,
+        OnLoginClickListener
+{
+    // Controller for queuing requests
     private LoginController loginController;
 
+    // Variables
     private String username;
     private String password;
     private String accountType;
@@ -37,8 +38,6 @@ public class LoginActivity extends AppCompatActivity
     private boolean remember;
     private UserInfo userDetails;
     private boolean isUserLoggedIn = false;
-
-    public static final String TAG = "LoginActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +47,12 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginController = new LoginController(this);
+        loginController = new LoginController(this, this);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
         assert viewPager != null;
         viewPager.setAdapter(adapter);
-
-        if (BuildConfig.DEBUG) Log.i(this.TAG, "Message");
-
     }
 
     @Override
@@ -77,13 +73,23 @@ public class LoginActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+        } else {
+            loginController.fetchAlfrescoTicket();
+        }
+    }
+
+    @Override
     public void onLoginSuccess(UserInfo userInfo) {
         onLoginComplete(userInfo);
     }
 
     @Override
     public void onLoginFailure(VolleyError error) {
-//        Toast.makeText(this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
         Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -103,7 +109,7 @@ public class LoginActivity extends AppCompatActivity
 
     //flow after login is completed
     private void onLoginComplete(UserInfo userInfo){
-        Toast.makeText(this, "Login Success", Toast.LENGTH_SHORT).show();
+        VmrDebug.printLogI(this.getClass(), "Login Success");
         if(remember){
             PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_USERNAME, this.username);
             PrefUtils.setSharedPreference(this, PrefConstants.VMR_USER_PASSWORD, this.password);
@@ -113,13 +119,13 @@ public class LoginActivity extends AppCompatActivity
 
         this.userDetails = userInfo;
 
-        isUserLoggedIn=true;
+        isUserLoggedIn = true;
+
         if(PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
             loginController.fetchAlfrescoTicket();
         }else {
             startHomeActivity();
         }
-
     }
 
     private void startHomeActivity(){
@@ -131,42 +137,74 @@ public class LoginActivity extends AppCompatActivity
     // Handle clicks on fragments buttons
     @Override
     public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
-        loginController.fetchIndividualDetail(email, password, domain);
-        this.username = email;
-        this.password = password;
-        this.accountType = "Individual";
-        this.accountId = null;
-        this.remember = remember;
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+        } else {
+            if(PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
+                loginController.fetchAlfrescoTicket();
+            }
+            loginController.fetchIndividualDetail(email, password, domain);
+            this.username = email;
+            this.password = password;
+            this.accountType = "Individual";
+            this.accountId = null;
+            this.remember = remember;
+        }
     }
 
     @Override
     public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchFamilyDetail(username, password, accountId, domain);
-        this.username = username;
-        this.password = password;
-        this.accountType = "Family";
-        this.accountId = accountId;
-        this.remember = remember;
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+        } else {
+            if (PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
+                loginController.fetchAlfrescoTicket();
+            }
+            loginController.fetchFamilyDetail(username, password, accountId, domain);
+            this.username = username;
+            this.password = password;
+            this.accountType = "Family";
+            this.accountId = accountId;
+            this.remember = remember;
+        }
     }
 
     @Override
     public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchProfessionalDetail(username, password, accountId, domain);
-        this.username = username;
-        this.password = password;
-        this.accountType = "Professional";
-        this.accountId = accountId;
-        this.remember = remember;
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+        } else {
+            if (PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
+                loginController.fetchAlfrescoTicket();
+            }
+            loginController.fetchProfessionalDetail(username, password, accountId, domain);
+            this.username = username;
+            this.password = password;
+            this.accountType = "Professional";
+            this.accountId = accountId;
+            this.remember = remember;
+        }
     }
 
     @Override
     public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchCorporateDetail(username, password, accountId, domain);
-        this.username = username;
-        this.password = password;
-        this.accountType = "Corporate";
-        this.accountId = accountId;
-        this.remember = remember;
+        if(!ConnectionDetector.isOnline()){
+            PrefUtils.clearSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET);
+            Snackbar.make(findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
+        } else {
+            if (PrefUtils.getSharedPreference(this, PrefConstants.VMR_ALFRESCO_TICKET).equals("NA")) {
+                loginController.fetchAlfrescoTicket();
+            }
+            loginController.fetchCorporateDetail(username, password, accountId, domain);
+            this.username = username;
+            this.password = password;
+            this.accountType = "Corporate";
+            this.accountId = accountId;
+            this.remember = remember;
+        }
     }
 
 }

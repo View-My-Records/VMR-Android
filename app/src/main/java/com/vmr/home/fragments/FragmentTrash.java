@@ -21,7 +21,7 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
-import com.vmr.home.interfaces.VmrResponse;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.model.folder_structure.VmrTrashItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -35,7 +35,7 @@ import java.util.Map;
 
 public class FragmentTrash extends Fragment
         implements
-        VmrResponse.OnFetchTrashListener,
+        VmrResponseListener.OnFetchTrashListener,
         TrashAdapter.OnItemClickListener,
         TrashAdapter.OnItemOptionsClickListener
 {
@@ -77,7 +77,7 @@ public class FragmentTrash extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("Trash");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TRASH);
         }
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_trash, container, false);
@@ -96,11 +96,7 @@ public class FragmentTrash extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getUserInfo().getRootNodref());
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_TRASH_BIN);
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-        homeController.fetchTrash(formData);
+        homeController.fetchTrash(VMR.getLoggedInUserInfo().getRootNodref());
         progressDialog.show();
     }
 

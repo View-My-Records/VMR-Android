@@ -4,10 +4,10 @@
     android:layout_height="match_parent"
     tools:context="com.vmr.home.fragments.FragmentToBeIndexed">
 
-    <RelativeLayout
-        android:id="@+id/frame_layout_to_be_indexed"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvToBeIndexed"
@@ -17,6 +17,16 @@
             android:layout_alignParentBottom="true"
             android:clipToPadding="false"
             android:paddingBottom="120dp" />
-    </RelativeLayout>
+
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/tvEmptyFolder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone"
+        android:text="Folder is empty"
+        android:layout_gravity="center" />
 
 </FrameLayout>

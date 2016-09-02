@@ -1,7 +1,6 @@
 package com.vmr.home.bottomsheet_behaviors;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -89,7 +88,7 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         contentView.findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDeleteClicked(vmrItem);  dismiss();
+                optionClickListener.onMoveToTrashClicked(vmrItem);  dismiss();
             }
         });
     }
@@ -118,7 +117,7 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         void onCopyClicked(VmrItem vmrItem);
         void onDuplicateClicked(VmrItem vmrItem);
         void onPropertiesClicked(VmrItem vmrItem);
-        void onDeleteClicked(VmrItem vmrItem);
+        void onMoveToTrashClicked(VmrItem vmrItem);
         void onOptionsMenuDismiss();
     }
 }

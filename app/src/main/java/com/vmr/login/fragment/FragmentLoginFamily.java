@@ -10,20 +10,15 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
-import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.login.LoginController;
-import com.vmr.login.interfaces.LoginFragmentInterface;
-import com.vmr.login.interfaces.LoginRequestInterface;
+import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
-
-import org.json.JSONObject;
 
 
 public class FragmentLoginFamily extends Fragment {
 
-    private LoginFragmentInterface loginFragmentInterface ;
+    private OnLoginClickListener onLoginClickListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,11 +36,11 @@ public class FragmentLoginFamily extends Fragment {
             @Override
             public void onClick(View view) {
                 if(ConnectionDetector.isOnline()) {
-                    loginFragmentInterface.onFamilyLoginClick(
+                    onLoginClickListener.onFamilyLoginClick(
                         etUsername.getText().toString(),
                         etPassword.getText().toString(),
                         etFamilyId.getText().toString(),
-                        Constants.Request.Domain.FAMILY,
+                        Constants.Request.Login.Domain.FAMILY,
                         cbRememberMe.isChecked());
                 } else {
                     Snackbar.make(getActivity().findViewById(android.R.id.content), "Internet not available", Snackbar.LENGTH_SHORT ).show();
@@ -55,7 +50,7 @@ public class FragmentLoginFamily extends Fragment {
         return rootView;
     }
 
-    public void setCallbackInterface(LoginFragmentInterface loginFragmentInterface){
-        this.loginFragmentInterface = loginFragmentInterface;
+    public void setCallbackInterface(OnLoginClickListener onLoginClickListener){
+        this.onLoginClickListener = onLoginClickListener;
     }
 }

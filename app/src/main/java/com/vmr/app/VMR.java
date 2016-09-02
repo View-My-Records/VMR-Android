@@ -2,9 +2,7 @@ package com.vmr.app;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.preference.PreferenceManager;
 
 import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
@@ -22,14 +20,14 @@ public class VMR extends Application {
     private static VmrFolder vmrRootFolder;
     private static VmrFolder vmrSharedWithMeRootFolder;
     private static VmrFolder vmrSharedByMeRootFolder;
-    private static UserInfo userInfo;
+    private static UserInfo loggedInUserInfo;
 
-    public static UserInfo getUserInfo() {
-        return userInfo;
+    public static UserInfo getLoggedInUserInfo() {
+        return loggedInUserInfo;
     }
 
-    public static void setUserInfo(UserInfo userInfo) {
-        VMR.userInfo = userInfo;
+    public static void setLoggedInUserInfo(UserInfo loggedInUserInfo) {
+        VMR.loggedInUserInfo = loggedInUserInfo;
     }
 
     public static VmrFolder getVmrRootFolder() {

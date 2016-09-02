@@ -1,12 +1,12 @@
-package com.vmr.home.interfaces;
+package com.vmr.response_listener;
 
 import com.android.volley.VolleyError;
 import com.vmr.model.DeleteMessage;
+import com.vmr.model.UserInfo;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.model.folder_structure.VmrTrashItem;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.List;
 /*
  * Created by abhijit on 8/23/16.
  */
-public class VmrResponse {
+public abstract class VmrResponseListener {
 
     public interface OnFetchRecordsListener {
         void onFetchRecordsSuccess(VmrFolder vmrFolder);
@@ -44,5 +44,15 @@ public class VmrResponse {
     public interface OnMoveToTrashListener {
         void onMoveToTrashSuccess(List<DeleteMessage> jsonObject);
         void onMoveToTrashFailure(VolleyError error);
+    }
+
+    public interface OnLoginListener {
+        void onLoginSuccess(UserInfo userInfo);
+        void onLoginFailure(VolleyError error);
+    }
+
+    public interface OnFetchTicketListener{
+        void onFetchTicketSuccess(String ticket);
+        void onFetchTicketFailure(VolleyError error);
     }
 }

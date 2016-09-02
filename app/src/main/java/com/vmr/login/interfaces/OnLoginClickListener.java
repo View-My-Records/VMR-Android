@@ -1,10 +1,10 @@
 package com.vmr.login.interfaces;
 
-/**
+/*
  * Created by abhijit on 8/16/16.
  */
 
-public interface LoginFragmentInterface {
+public interface OnLoginClickListener {
 
     void onIndividualLoginClick(String email, String password, String domain, boolean remember);
 

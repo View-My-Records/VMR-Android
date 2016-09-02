@@ -19,22 +19,19 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.interfaces.VmrResponse;
 import com.vmr.model.folder_structure.VmrFile;
 import com.vmr.model.folder_structure.VmrFolder;
 import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FragmentSharedWithMe extends Fragment
         implements
-        VmrResponse.OnFetchRecordsListener,
+        VmrResponseListener.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener
 {
@@ -65,7 +62,7 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction("Shared With Me");
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
         }
         View view = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
         homeController = new HomeController(this);
@@ -84,11 +81,7 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE,VMR.getVmrRootFolder().getSharedFolder());
-        formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_SHARED_WITH_ME);
-        formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-        homeController.fetchAllFilesAndFolders(formData);
+        homeController.fetchAllFilesAndFolders(VMR.getVmrRootFolder().getSharedFolder());
         progressDialog.show();
     }
 
@@ -141,11 +134,7 @@ public class FragmentSharedWithMe extends Fragment
         if(item instanceof VmrFolder){
             VmrDebug.printLine(item.getName() + "Folder clicked");
             head = (VmrFolder) item;
-            Map<String, String> formData = VMR.getUserMap();
-            formData.put(Constants.Request.FormFields.ALFRESCO_NODE_REFERENCE, item.getNodeRef());
-            formData.put(Constants.Request.FormFields.PAGE_MODE,Constants.PageMode.LIST_ALL_FILE_FOLDER);
-            formData.put(Constants.Request.FormFields.ALFRESCO_TICKET, PrefUtils.getSharedPreference(getActivity().getBaseContext(), PrefConstants.VMR_ALFRESCO_TICKET));
-            homeController.fetchAllFilesAndFolders(formData);
+            homeController.fetchAllFilesAndFolders(item.getNodeRef());
         } else if(item instanceof VmrFile) {
             VmrDebug.printLine(item.getName() + "File clicked");
         }
