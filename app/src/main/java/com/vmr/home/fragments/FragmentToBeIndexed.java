@@ -341,7 +341,7 @@ public class FragmentToBeIndexed extends Fragment
     private void setupRecyclerView(View view) {
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
         mTextView = (TextView) view.findViewById(R.id.tvEmptyFolder);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvMyRecords);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvToBeIndexed);
 
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
