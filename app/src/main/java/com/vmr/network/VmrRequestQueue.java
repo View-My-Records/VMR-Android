@@ -1,33 +1,28 @@
 package com.vmr.network;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.vmr.app.VMR;
 import com.vmr.utils.Constants;
 
-import java.util.Map;
-
 /*
  * Created by abhijit on 8/16/16.
  */
 
-public class VolleySingleton {
+public class VmrRequestQueue {
 
-    private static VolleySingleton volleySingletonInstance;
+    private static VmrRequestQueue vmrRequestQueue;
     private RequestQueue requestQueue;
 
-    private VolleySingleton() {
+    private VmrRequestQueue() {
         requestQueue = getRequestQueue();
     }
 
-    public static synchronized VolleySingleton getInstance() {
-        if (volleySingletonInstance == null) {
-            volleySingletonInstance = new VolleySingleton();
+    public static synchronized VmrRequestQueue getInstance() {
+        if (vmrRequestQueue == null) {
+            vmrRequestQueue = new VmrRequestQueue();
         }
-        return volleySingletonInstance;
+        return vmrRequestQueue;
     }
 
     public RequestQueue getRequestQueue() {

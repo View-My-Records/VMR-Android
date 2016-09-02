@@ -3,8 +3,8 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.network.NetworkRequest;
+import com.vmr.model.VmrFolder;
+import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.Constants;
 
@@ -17,7 +17,7 @@ import java.util.Map;
  * Created by abhijit on 8/16/16.
  */
 
-public class RecordsRequest extends NetworkRequest<VmrFolder> {
+public class RecordsRequest extends PostLoginRequest<VmrFolder> {
 
     private Map<String, String> formData;
 

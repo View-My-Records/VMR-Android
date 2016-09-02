@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
-    android:orientation="vertical"
     android:background="@android:color/white"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/btnInfo"
-        android:clickable="true"
-        android:longClickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
 
         <ImageView
-            android:src="@android:drawable/ic_menu_view"
+            android:id="@+id/infoImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:clickable="false"
-            android:longClickable="false"
-            android:id="@+id/infoImageView"
             android:layout_margin="6dp"
-            android:contentDescription="Info" />
+            android:clickable="false"
+            android:contentDescription="Info"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_view" />
 
         <TextView
-            android:id="@+id/tvFolderName"
+            android:id="@+id/tvItemName"
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Info"
+            android:layout_alignBottom="@+id/infoImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:layout_toEndOf="@+id/infoImageView"
+            android:layout_toRightOf="@+id/infoImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/infoImageView"
-            android:layout_toRightOf="@+id/infoImageView"
-            android:layout_toEndOf="@+id/infoImageView"
-            android:layout_margin="6dp" />
+            android:text="Info"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
     <View
         android:layout_width="fill_parent"
@@ -49,313 +49,313 @@
         android:background="#000000" />
     <RelativeLayout
         android:id="@+id/btnOpen"
-        android:clickable="true"
-        android:longClickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
 
         <ImageView
-            android:src="@android:drawable/ic_menu_view"
+            android:id="@+id/openImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:clickable="false"
-            android:longClickable="false"
-            android:id="@+id/openImageView"
             android:layout_margin="6dp"
-            android:contentDescription="Open" />
+            android:clickable="false"
+            android:contentDescription="Open"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_view" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Open"
+            android:layout_alignBottom="@+id/openImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:layout_toEndOf="@+id/openImageView"
+            android:layout_toRightOf="@+id/openImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/openImageView"
-            android:layout_toRightOf="@+id/openImageView"
-            android:layout_toEndOf="@+id/openImageView"
-            android:layout_margin="6dp" />
+            android:text="Open"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnIndex"
-        android:clickable="true"
-        android:longClickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
 
         <ImageView
-            android:src="@android:drawable/ic_menu_view"
+            android:id="@+id/indexImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:clickable="false"
-            android:longClickable="false"
-            android:id="@+id/indexImageView"
             android:layout_margin="6dp"
-            android:contentDescription="Index" />
+            android:clickable="false"
+            android:contentDescription="Index"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_view" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Index"
+            android:layout_alignBottom="@+id/indexImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:layout_toEndOf="@+id/indexImageView"
+            android:layout_toRightOf="@+id/indexImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/indexImageView"
-            android:layout_toRightOf="@+id/indexImageView"
-            android:layout_toEndOf="@+id/indexImageView"
-            android:layout_margin="6dp" />
+            android:text="Index"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnShare"
-        android:clickable="true"
-        android:longClickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/shareImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:clickable="false"
-            android:longClickable="false"
-            android:id="@+id/shareImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Share" />
+            android:clickable="false"
+            android:contentDescription="Share"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Share"
+            android:layout_alignBottom="@+id/shareImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/shareImageView"
+            android:layout_toRightOf="@+id/shareImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/shareImageView"
-            android:layout_toRightOf="@+id/shareImageView"
-            android:layout_toEndOf="@+id/shareImageView"
-            android:layout_margin="5dp" />
+            android:text="Share"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnRename"
-        android:clickable="true"
-        android:longClickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/renameImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/renameImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Rename" />
+            android:clickable="false"
+            android:contentDescription="Rename"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Rename"
+            android:layout_alignBottom="@+id/renameImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/renameImageView"
+            android:layout_toRightOf="@+id/renameImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/renameImageView"
-            android:layout_toRightOf="@+id/renameImageView"
-            android:layout_toEndOf="@+id/renameImageView"
-            android:layout_margin="5dp" />
+            android:text="Rename"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnDownload"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/downloadImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/downloadImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Download" />
+            android:clickable="false"
+            android:contentDescription="Download"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Download"
+            android:layout_alignBottom="@+id/downloadImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/downloadImageView"
+            android:layout_toRightOf="@+id/downloadImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/downloadImageView"
-            android:layout_toRightOf="@+id/downloadImageView"
-            android:layout_toEndOf="@+id/downloadImageView"
-            android:layout_margin="5dp" />
+            android:text="Download"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnMove"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/moveImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/moveImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Move" />
+            android:clickable="false"
+            android:contentDescription="Move"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Move"
+            android:layout_alignBottom="@+id/moveImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/moveImageView"
+            android:layout_toRightOf="@+id/moveImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/moveImageView"
-            android:layout_toRightOf="@+id/moveImageView"
-            android:layout_toEndOf="@+id/moveImageView"
-            android:layout_margin="5dp" />
+            android:text="Move"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/btnCopy"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/copyImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/copyImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Copy" />
+            android:clickable="false"
+            android:contentDescription="Copy"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Copy"
+            android:layout_alignBottom="@+id/copyImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/copyImageView"
+            android:layout_toRightOf="@+id/copyImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/copyImageView"
-            android:layout_toRightOf="@+id/copyImageView"
-            android:layout_toEndOf="@+id/copyImageView"
-            android:layout_margin="5dp" />
+            android:text="Copy"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
     <RelativeLayout
         android:id="@+id/btnDuplicate"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/duplicateImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/duplicateImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Duplicate" />
+            android:clickable="false"
+            android:contentDescription="Duplicate"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Duplicate"
+            android:layout_alignBottom="@+id/duplicateImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/duplicateImageView"
+            android:layout_toRightOf="@+id/duplicateImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/duplicateImageView"
-            android:layout_toRightOf="@+id/duplicateImageView"
-            android:layout_toEndOf="@+id/duplicateImageView"
-            android:layout_margin="5dp" />
+            android:text="Duplicate"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
 
     <RelativeLayout
         android:id="@+id/btnProperties"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/propertiesImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/propertiesImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Properties" />
+            android:clickable="false"
+            android:contentDescription="Properties"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Properties"
+            android:layout_alignBottom="@+id/propertiesImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/propertiesImageView"
+            android:layout_toRightOf="@+id/propertiesImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/propertiesImageView"
-            android:layout_toRightOf="@+id/propertiesImageView"
-            android:layout_toEndOf="@+id/propertiesImageView"
-            android:layout_margin="5dp" />
+            android:text="Properties"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
     <View
         android:layout_width="fill_parent"
@@ -364,36 +364,36 @@
         android:background="#000000" />
     <RelativeLayout
         android:id="@+id/btnDelete"
-        android:clickable="true"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:background="@android:drawable/menuitem_background"
-        android:layout_centerVertical="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
         <ImageView
-            android:src="@android:drawable/ic_menu_add"
+            android:id="@+id/deleteImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:clickable="false"
             android:layout_centerVertical="true"
-            android:longClickable="false"
-            android:id="@+id/deleteImageView"
             android:layout_margin="5dp"
-            android:contentDescription="Delete" />
+            android:clickable="false"
+            android:contentDescription="Delete"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Delete"
+            android:layout_alignBottom="@+id/deleteImageView"
             android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/deleteImageView"
+            android:layout_toRightOf="@+id/deleteImageView"
             android:clickable="false"
             android:longClickable="false"
-            android:layout_alignBottom="@+id/deleteImageView"
-            android:layout_toRightOf="@+id/deleteImageView"
-            android:layout_toEndOf="@+id/deleteImageView"
-            android:layout_margin="5dp" />
+            android:text="Delete"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
 </LinearLayout>

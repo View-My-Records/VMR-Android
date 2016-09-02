@@ -3,9 +3,9 @@ package com.vmr.response_listener;
 import com.android.volley.VolleyError;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.UserInfo;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrSharedItem;
-import com.vmr.model.folder_structure.VmrTrashItem;
+import com.vmr.model.VmrFolder;
+import com.vmr.model.VmrSharedItem;
+import com.vmr.model.VmrTrashItem;
 
 import org.json.JSONObject;
 

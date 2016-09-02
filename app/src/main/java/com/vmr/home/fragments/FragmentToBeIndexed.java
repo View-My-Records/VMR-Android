@@ -29,9 +29,10 @@ import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.model.DeleteMessage;
-import com.vmr.model.folder_structure.VmrFile;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.VmrFile;
+import com.vmr.model.VmrFolder;
+import com.vmr.model.VmrItem;
+import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -51,7 +52,7 @@ public class FragmentToBeIndexed extends Fragment
 {
 
     // FragmentInteractionListener
-    private OnFragmentInteractionListener onFragmentInteractionListener;
+    private OnFragmentInteractionListener fragmentInteractionListener;
 
     // Controllers
     private HomeController homeController;
@@ -82,8 +83,8 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (onFragmentInteractionListener != null) {
-            onFragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
+        if (fragmentInteractionListener != null) {
+            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
         }
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
@@ -114,26 +115,14 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onDetach() {
         super.onDetach();
-        onFragmentInteractionListener = null;
+        fragmentInteractionListener = null;
     }
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         mProgressDialog.dismiss();
         VmrDebug.printLine("Un-indexed files retrieved.");
-        if (currentFolder ==null) {
-            currentFolder = vmrFolder;
-            updateFolder(vmrFolder);
-        } else if(currentFolder.getNodeRef().equals(vmrFolder.getNodeRef())) {
-            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " updated.");
-            updateFolder(vmrFolder);
-        } else {
-            currentFolder.setFolders(vmrFolder.getFolders());
-            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
-            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            vmrItems = currentFolder.getAllUnindexed();
-            recordsAdapter.updateDataset(vmrItems);
-        }
+        updateFolder(vmrFolder);
 
         if(vmrItems.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -153,12 +142,12 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onItemClick(VmrItem item) {
         if(item instanceof VmrFolder){
-            VmrDebug.printLine(item.getName() + " Folder clicked");
+            VmrDebug.printLogI(item.getName() + " Folder clicked");
             currentFolder =(VmrFolder) item;
             homeController.fetchUnIndexed(item.getNodeRef());
             mProgressDialog.show();
         } else if(item instanceof VmrFile){
-            VmrDebug.printLine(item.getName() + " File clicked");
+            VmrDebug.printLogI(item.getName() + " File clicked");
         }
     }
 
@@ -322,6 +311,7 @@ public class FragmentToBeIndexed extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
+                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                     if(currentFolder !=  VMR.getVmrRootFolder()) {
                         currentFolder = (VmrFolder) currentFolder.getParent();
                         vmrItems = currentFolder.getAllUnindexed();
@@ -346,6 +336,7 @@ public class FragmentToBeIndexed extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(false);
                 mProgressDialog.show();

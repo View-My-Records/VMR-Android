@@ -38,10 +38,8 @@ import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.model.UserInfo;
-import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.VmrFolder;
 import com.vmr.utils.Constants;
-
-import java.util.Map;
 
 public class HomeActivity extends AppCompatActivity
         implements
@@ -58,13 +56,11 @@ public class HomeActivity extends AppCompatActivity
         FragmentHelp.OnFragmentInteractionListener,
         VmrResponseListener.OnFetchRecordsListener
 {
-    private Interaction.HomeToMyRecordsInterface sendToMyRecords;
-
-    // Models
-    private UserInfo userInfo;
-
     // Views
     MenuItem toBeIndexed;
+    private Interaction.HomeToMyRecordsInterface sendToMyRecords;
+    // Models
+    private UserInfo userInfo;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 
 import com.vmr.model.UserInfo;
-import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.VmrFolder;
 
 import java.util.Map;
 
@@ -21,6 +21,7 @@ public class VMR extends Application {
     private static VmrFolder vmrSharedWithMeRootFolder;
     private static VmrFolder vmrSharedByMeRootFolder;
     private static UserInfo loggedInUserInfo;
+    private static Map<String, String > userMap;
 
     public static UserInfo getLoggedInUserInfo() {
         return loggedInUserInfo;
@@ -53,8 +54,6 @@ public class VMR extends Application {
     public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
         VMR.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
     }
-
-    private static Map<String, String > userMap;
 
     public static Map<String, String> getUserMap() {
         return userMap;

@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.model.folder_structure.VmrSharedItem;
+import com.vmr.model.VmrSharedItem;
 
 import java.util.List;
 
@@ -18,9 +18,9 @@ import java.util.List;
  */
 public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.SharedByMeViewHolder>{
 
-    private List<VmrSharedItem> itemsList;
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
+    private List<VmrSharedItem> itemsList;
 
     public SharedByMeAdapter(
             List<VmrSharedItem> itemsList,
@@ -41,7 +41,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
     @Override
     public void onBindViewHolder(SharedByMeViewHolder holder, int position) {
         VmrSharedItem item = this.itemsList.get(position);
-        holder.setItemName(item.getFileName());
+        holder.setItemName(item.getName());
         holder.setItemImage(R.drawable.ic_file);
         holder.bind(itemsList.get(position), itemClickListener);
         holder.bind(itemsList.get(position), optionsClickListener);

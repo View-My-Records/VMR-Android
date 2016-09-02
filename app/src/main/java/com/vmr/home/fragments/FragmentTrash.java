@@ -22,15 +22,12 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
 import com.vmr.response_listener.VmrResponseListener;
-import com.vmr.model.folder_structure.VmrTrashItem;
+import com.vmr.model.VmrTrashItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 
 public class FragmentTrash extends Fragment

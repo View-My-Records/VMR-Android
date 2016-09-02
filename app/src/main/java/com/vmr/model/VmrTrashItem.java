@@ -1,14 +1,11 @@
-package com.vmr.model.folder_structure;
-
-import android.annotation.TargetApi;
-import android.os.Build;
+package com.vmr.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -24,31 +21,23 @@ public class VmrTrashItem {
     private String owner;
     private String nodeRef;
 
-    public VmrTrashItem(JSONObject fileJson) {
-        try {
-            this.setIsFolder(fileJson.getBoolean("isFolder"));
-            this.setCreatedBy(fileJson.getString("createdBy"));
-            this.setName(fileJson.getString("name"));
-            this.setOwner(fileJson.getString("owner"));
-            this.setNodeRef(fileJson.getString("noderef"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+    public VmrTrashItem(JSONObject fileJson) throws JSONException {
+        this.setIsFolder(fileJson.getBoolean("isFolder"));
+        this.setCreatedBy(fileJson.getString("createdBy"));
+        this.setName(fileJson.getString("name"));
+        this.setOwner(fileJson.getString("owner"));
+        this.setNodeRef(fileJson.getString("noderef"));
     }
 
-    public static List<VmrTrashItem> parseTrashItems(JSONArray jsonArray) {
+    public static List<VmrTrashItem> parseTrashItems(JSONArray jsonArray) throws JSONException, ParseException{
         List<VmrTrashItem> trashItems = new ArrayList<>();
 
         if (jsonArray.length() > 0) {
             JSONObject jsonobject;
-            try {
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    jsonobject = jsonArray.getJSONObject(i);
-                    VmrTrashItem trashItem = new VmrTrashItem(jsonobject);
-                    trashItems.add(trashItem);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonobject = jsonArray.getJSONObject(i);
+                VmrTrashItem trashItem = new VmrTrashItem(jsonobject);
+                trashItems.add(trashItem);
             }
         }
 

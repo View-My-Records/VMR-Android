@@ -24,31 +24,35 @@ public abstract class Constants {
 
         public final static class Login {
 
+            // constant for Domain
+            public static final String DOMAIN       ="domain";
+
             // constants for Individual Form Body
             public final static class Individual{
                 public static final String EMAIL_ID = "emailID";
                 public static final String PASSWORD = "password";
             }
+
             // constants for Professional Form Body
             public final static class Professional{
                 public static final String EMAIL_ID = "profEmailid";
                 public static final String PASSWORD = "profpswd";
                 public static final String NAME     = "profName";
             }
+
             // constants for Family Form Body
             public final static class Family{
                 public static final String EMAIL_ID = "familyEmailId";
                 public static final String PASSWORD = "familyPassword";
                 public static final String NAME     = "familyName";
             }
+
             // constants for Corporate Form Body
             public final static class Corporate{
                 public static final String EMAIL_ID = "corpEmailID";
                 public static final String PASSWORD = "corpPassword";
                 public static final String NAME     = "corpName";
             }
-            // constant for Domain
-            public static final String DOMAIN       ="domain";
 
             public final static class Custom {
 
@@ -130,7 +134,13 @@ public abstract class Constants {
             public final static class ListSharedByMe {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String LOGGED_IN_USER_ID = "loggedInUserId";
-                public static final String TAG = "VMR_LIST_TRASH_BIN";
+                public static final String TAG = "VMR_SHARED_BY_ME";
+            }
+
+            public final static class ListSharedWithyMe {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String LOGGED_IN_USER_ID = "loggedInUserId";
+                public static final String TAG = "VMR_SHARED_WITH_ME";
             }
 
             public final static class RemoveExpiredRecords {

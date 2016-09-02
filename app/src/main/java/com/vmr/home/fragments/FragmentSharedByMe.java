@@ -1,9 +1,9 @@
 package com.vmr.home.fragments;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -19,43 +20,51 @@ import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
+import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.model.VmrItem;
+import com.vmr.model.VmrSharedItem;
+import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
-import com.vmr.model.folder_structure.VmrSharedItem;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FragmentSharedByMe extends Fragment
         implements
         VmrResponseListener.OnFetchSharedByMeListener,
         SharedByMeAdapter.OnItemClickListener,
-        SharedByMeAdapter.OnItemOptionsClickListener {
+        SharedByMeAdapter.OnItemOptionsClickListener,
+        OptionsMenuSheet.OnOptionClickListener
+{
 
     // Fragment interaction listener
     private OnFragmentInteractionListener fragmentInteractionListener;
 
-    // Views
-    private ProgressDialog progressDialog ;
-
     // Controllers
     private HomeController homeController;
 
-    // Variables
-    private List<VmrSharedItem> mFileList = new ArrayList<>();
-    private SharedByMeAdapter mAdapter;
+    // Views
+    private RecyclerView mRecyclerView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private TextView mTextView;
+    private ProgressDialog mProgressDialog;
+    private OptionsMenuSheet optionsMenuSheet;
 
-    public FragmentSharedByMe() {
-        // Required empty public constructor
-    }
+    // Variables
+    private List<VmrSharedItem> vmrSharedItems = new ArrayList<>();
+    private SharedByMeAdapter sharedByMeAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        homeController = new HomeController(this);
+        sharedByMeAdapter = new SharedByMeAdapter(vmrSharedItems, this, this);
+
+        optionsMenuSheet = new OptionsMenuSheet();
+        optionsMenuSheet.setOptionClickListener(this);
     }
 
     @Override
@@ -66,39 +75,24 @@ public class FragmentSharedByMe extends Fragment
         }
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
-        homeController = new HomeController(this);
-        mAdapter = new SharedByMeAdapter(mFileList, this, this);
+        View fragmentView = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
 
-        setupRecyclerView(view);
-        setOnBackPress(view);
+        setupRecyclerView(fragmentView);
+        setOnBackPress(fragmentView);
 
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setMessage("Fetching The File...");
-        progressDialog.setCancelable(true);
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Fetching The File...");
+        mProgressDialog.setCancelable(true);
 
-
-
-        return view;
+        return fragmentView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        homeController.removeExpiredRecords();
+//        homeController.removeExpiredRecords();
         homeController.fetchSharedByMe();
-        progressDialog.show();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            fragmentInteractionListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
+        mProgressDialog.show();
     }
 
     @Override
@@ -109,29 +103,90 @@ public class FragmentSharedByMe extends Fragment
 
     @Override
     public void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems) {
-        progressDialog.dismiss();
-        VmrDebug.printLine("My Records retrieved.");
-        mAdapter.updateDataset(vmrSharedItems);
+        mProgressDialog.dismiss();
+        VmrDebug.printLogI(this.getClass(), "My Records retrieved.");
+        sharedByMeAdapter.updateDataset(vmrSharedItems);
+
+        if(vmrSharedItems.isEmpty()){
+            mRecyclerView.setVisibility(View.GONE);
+            mTextView.setVisibility(View.VISIBLE);
+        } else {
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mTextView.setVisibility(View.GONE);
+        }
     }
 
     @Override
     public void onFetchSharedByMeFailure(VolleyError error) {
-        progressDialog.dismiss();
+        mProgressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onItemClick(VmrSharedItem item) {
-        VmrDebug.printLine(item.getFileName() + " clicked");
+        VmrDebug.printLine(item.getName() + " clicked");
     }
 
     @Override
     public void onItemOptionsClick(VmrSharedItem item, View view) {
-        VmrDebug.printLine( item.getFileName() + " options clicked.");
+        VmrDebug.printLine( item.getName() + " options clicked.");
+        optionsMenuSheet.setVmrSharedItem(item);
+        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
     }
 
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(String title);
+    @Override
+    public void onOpenClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onIndexClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onShareClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onRenameClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onDownloadClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onMoveClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onCopyClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onDuplicateClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onPropertiesClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onMoveToTrashClicked(VmrItem vmrItem) {
+
+    }
+
+    @Override
+    public void onOptionsMenuDismiss() {
+
     }
 
     private void setOnBackPress(View view){
@@ -149,10 +204,32 @@ public class FragmentSharedByMe extends Fragment
     }
 
     private void setupRecyclerView(View view) {
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.rvSharedByMe);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipeRefreshLayout);
+        mTextView = (TextView) view.findViewById(R.id.tvEmptyFolder);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.rvSharedByMe);
+
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedByMe.TAG);
+                refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(false);
+                mProgressDialog.show();
+            }
+        });
+
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.setAdapter(sharedByMeAdapter);
+    }
+
+    private void refreshFolder(){
+        homeController.removeExpiredRecords();
+        homeController.fetchSharedByMe();
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String title);
     }
 }

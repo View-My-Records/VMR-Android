@@ -4,6 +4,7 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.vmr.network.error.AuthenticationError;
 import com.vmr.network.error.FetchError;
+import com.vmr.network.error.ParseError;
 import com.vmr.network.error.TicketError;
 
 /*
@@ -20,6 +21,8 @@ public class ErrorMessage {
             return "Failed to retrieve ticket";
         } else if(error instanceof FetchError){
             return "Failed to process request";
+        } else if(error instanceof ParseError){
+            return "Failed to parse response";
         } else {
             return "Something went wrong.";
         }

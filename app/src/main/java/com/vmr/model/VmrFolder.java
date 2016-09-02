@@ -1,4 +1,4 @@
-package com.vmr.model.folder_structure;
+package com.vmr.model;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -83,6 +83,14 @@ public class VmrFolder extends VmrItem {
         return folders;
     }
 
+    public void setFolders(List<VmrFolder> folders) {
+        this.folders = new ArrayList<>();
+        for (int i = 0; i < folders.size(); i++) {
+            folders.get(i).setParent(this);
+            this.folders.add(folders.get(i));
+        }
+    }
+
     public void setFoldersFromJSON(JSONArray folders) {
         if (folders != null && folders.length() > 0) {
             JSONObject jsonobject;
@@ -138,6 +146,15 @@ public class VmrFolder extends VmrItem {
         return indexedFiles;
     }
 
+    public void setIndexedFiles(List<VmrFile> indexedFiles) {
+
+        this.indexedFiles = new ArrayList<>();
+        for (int i = 0; i < indexedFiles.size(); i++) {
+            indexedFiles.get(i).setParent(this);
+            this.indexedFiles.add(indexedFiles.get(i));
+        }
+    }
+
     public void setIndexedFilesFromJSON(JSONArray indexedFiles) {
         if (indexedFiles != null && indexedFiles.length() > 0) {
             JSONObject jsonobject;
@@ -155,6 +172,14 @@ public class VmrFolder extends VmrItem {
 
     public List<VmrFile> getUnIndexedFiles() {
         return unIndexedFiles;
+    }
+
+    public void setUnIndexedFiles(List<VmrFile> unIndexedFiles) {
+        this.unIndexedFiles = new ArrayList<>();
+        for (int i = 0; i < unIndexedFiles.size(); i++) {
+            unIndexedFiles.get(i).setParent(this);
+            this.unIndexedFiles.add(unIndexedFiles.get(i));
+        }
     }
 
     public void setUnIndexedFilesFromJSON(JSONArray unIndexedFiles) {
@@ -234,30 +259,5 @@ public class VmrFolder extends VmrItem {
 
     public void setTotalUnIndexed(int totalUnIndexed) {
         this.totalUnIndexed = totalUnIndexed;
-    }
-
-    public void setFolders(List<VmrFolder> folders) {
-        this.folders = new ArrayList<>();
-        for (int i = 0; i < folders.size(); i++) {
-            folders.get(i).setParent(this);
-            this.folders.add(folders.get(i));
-        }
-    }
-
-    public void setIndexedFiles(List<VmrFile> indexedFiles) {
-
-        this.indexedFiles = new ArrayList<>();
-        for (int i = 0; i < indexedFiles.size(); i++) {
-            indexedFiles.get(i).setParent(this);
-            this.indexedFiles.add(indexedFiles.get(i));
-        }
-    }
-
-    public void setUnIndexedFiles(List<VmrFile> unIndexedFiles) {
-        this.unIndexedFiles = new ArrayList<>();
-        for (int i = 0; i < unIndexedFiles.size(); i++) {
-            unIndexedFiles.get(i).setParent(this);
-            this.unIndexedFiles.add(unIndexedFiles.get(i));
-        }
     }
 }

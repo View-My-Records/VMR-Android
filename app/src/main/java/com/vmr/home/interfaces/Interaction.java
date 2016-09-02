@@ -1,7 +1,7 @@
 package com.vmr.home.interfaces;
 
 import com.android.volley.VolleyError;
-import com.vmr.model.folder_structure.VmrFolder;
+import com.vmr.model.VmrFolder;
 
 /*
  * Created by abhijit on 8/23/16.

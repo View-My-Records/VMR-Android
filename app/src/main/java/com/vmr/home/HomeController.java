@@ -6,7 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.VMR;
 import com.vmr.debug.VmrDebug;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.VmrItem;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.MoveToTrashRequest;
@@ -16,10 +16,10 @@ import com.vmr.home.request.RenameItemRequest;
 import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
 import com.vmr.model.DeleteMessage;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrSharedItem;
-import com.vmr.model.folder_structure.VmrTrashItem;
-import com.vmr.network.VolleySingleton;
+import com.vmr.model.VmrFolder;
+import com.vmr.model.VmrSharedItem;
+import com.vmr.model.VmrTrashItem;
+import com.vmr.network.VmrRequestQueue;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
@@ -90,7 +90,7 @@ public class HomeController {
                                 onFetchRecordsListener.onFetchRecordsFailure(error);
                             }
                         } );
-        VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
     }
 
     public void fetchUnIndexed(String nodeRef){
@@ -115,7 +115,7 @@ public class HomeController {
                                 onFetchRecordsListener.onFetchRecordsFailure(error);
                             }
                         } );
-        VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListUnIndexed.TAG);
     }
 
 
@@ -141,7 +141,7 @@ public class HomeController {
                                 onFetchTrashListener.onFetchTrashFailure(error);
                             }
                         } );
-        VolleySingleton.getInstance().addToRequestQueue(trashRequest, Constants.Request.FolderNavigation.ListTrashBin.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(trashRequest, Constants.Request.FolderNavigation.ListTrashBin.TAG);
     }
 
     public void createFolder(String folderName, String parentNodeRef){
@@ -176,7 +176,7 @@ public class HomeController {
                             }
                         }
                 );
-        VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.Request.FolderNavigation.CreateFolder.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(createFolderRequest, Constants.Request.FolderNavigation.CreateFolder.TAG);
     }
 
     public void renameItem(VmrItem vmrItem, String newName){
@@ -204,7 +204,7 @@ public class HomeController {
                             }
                         }
                 );
-        VolleySingleton.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
     }
 
     public void moveToTrash(VmrItem vmrItem){
@@ -252,7 +252,7 @@ public class HomeController {
                             }
                         }
                 );
-        VolleySingleton.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
     }
 
     public void fetchSharedByMe(){
@@ -278,7 +278,7 @@ public class HomeController {
                                 onFetchSharedByMe.onFetchSharedByMeFailure(error);
                             }
                         } );
-        VolleySingleton.getInstance().addToRequestQueue(sharedByMeRequest, Constants.Request.FolderNavigation.ListSharedByMe.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(sharedByMeRequest, Constants.Request.FolderNavigation.ListSharedByMe.TAG);
     }
 
     public void removeExpiredRecords(){
@@ -301,7 +301,7 @@ public class HomeController {
 
                             }
                         } );
-        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.RemoveExpiredRecords.TAG);
+        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.RemoveExpiredRecords.TAG);
     }
 
 }

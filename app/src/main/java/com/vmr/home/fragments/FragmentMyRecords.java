@@ -33,9 +33,10 @@ import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
-import com.vmr.model.folder_structure.VmrFile;
-import com.vmr.model.folder_structure.VmrFolder;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.VmrFile;
+import com.vmr.model.VmrFolder;
+import com.vmr.model.VmrItem;
+import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -134,25 +135,25 @@ public class FragmentMyRecords extends Fragment
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         // TODO: 9/2/16 Combine if conditions. Its all same code in all cases
         mProgressDialog.dismiss();
-        if (currentFolder ==null) {
-            VmrDebug.printLine("My Records retrieved.");
-            currentFolder = vmrFolder;
-            currentFolder.setFolders(vmrFolder.getFolders());
-            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
-            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            vmrItems = currentFolder.getAll();
-            recordsAdapter.updateDataset(vmrItems);
-        } else if(currentFolder.getNodeRef().equals(vmrFolder.getNodeRef())) {
-            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " updated.");
+//        if (currentFolder ==null) {
+//            VmrDebug.printLine("My Records retrieved.");
+//            currentFolder = vmrFolder;
+//            currentFolder.setFolders(vmrFolder.getFolders());
+//            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
+//            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+//            vmrItems = currentFolder.getAll();
+//            recordsAdapter.updateDataset(vmrItems);
+//        } else if(currentFolder.getNodeRef().equals(vmrFolder.getNodeRef())) {
+//            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " updated.");
             updateFolder(vmrFolder);
-        } else {
-            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " retrieved.");
-            currentFolder.setFolders(vmrFolder.getFolders());
-            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
-            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
-            vmrItems = currentFolder.getAll();
-            recordsAdapter.updateDataset(vmrItems);
-        }
+//        } else {
+//            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " retrieved.");
+//            currentFolder.setFolders(vmrFolder.getFolders());
+//            currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
+//            currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
+//            vmrItems = currentFolder.getAll();
+//            recordsAdapter.updateDataset(vmrItems);
+//        }
 
         if(vmrItems.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -463,6 +464,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
+                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if(currentFolder !=  VMR.getVmrRootFolder()) {
                         currentFolder = (VmrFolder) currentFolder.getParent();
                         vmrItems = currentFolder.getAll();

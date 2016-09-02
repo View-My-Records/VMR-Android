@@ -8,8 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.model.folder_structure.VmrItem;
-import com.vmr.model.folder_structure.VmrTrashItem;
+import com.vmr.model.VmrTrashItem;
 
 import java.util.List;
 
@@ -18,9 +17,9 @@ import java.util.List;
  */
 public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHolder>{
 
-    private List<VmrTrashItem> itemsList;
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
+    private List<VmrTrashItem> itemsList;
 
     public TrashAdapter(List<VmrTrashItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
         this.itemClickListener = itemClickListener;

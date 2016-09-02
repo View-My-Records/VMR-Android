@@ -4,15 +4,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.vmr.R;
-import com.vmr.app.VMR;
-import com.vmr.model.folder_structure.VmrFile;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.VmrFile;
+import com.vmr.model.VmrItem;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -23,9 +20,9 @@ import java.util.Locale;
  */
 public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecordsViewHolder>{
 
-    private List<VmrItem> itemsList;
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
+    private List<VmrItem> itemsList;
 
     public RecordsAdapter(List<VmrItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
         this.itemsList = itemsList;

@@ -1,4 +1,4 @@
-package com.vmr.model.folder_structure;
+package com.vmr.model;
 
 import org.json.JSONException;
 import org.json.JSONObject;

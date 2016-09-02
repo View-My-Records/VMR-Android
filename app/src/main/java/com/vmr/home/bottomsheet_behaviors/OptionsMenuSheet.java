@@ -8,7 +8,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.model.folder_structure.VmrItem;
+import com.vmr.model.VmrItem;
+import com.vmr.model.VmrSharedItem;
 
 /*
  * Created by abhijit on 8/31/16.
@@ -17,6 +18,7 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
     private VmrItem vmrItem;
+    private VmrSharedItem vmrSharedItem;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,12 +31,13 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.options_layout, null);
         dialog.setContentView(contentView);
 
-        ((TextView)contentView.findViewById(R.id.tvFolderName)).setText(vmrItem.getName());
+        ((TextView)contentView.findViewById(R.id.tvItemName)).setText(vmrItem.getName());
 
         contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onOpenClicked(vmrItem);  dismiss();
+                optionClickListener.onOpenClicked(vmrItem);
+                dismiss();
             }
         });
         contentView.findViewById(R.id.btnIndex).setOnClickListener(new View.OnClickListener() {
@@ -105,6 +108,10 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
 
     public void setVmrItem(VmrItem vmrItem) {
         this.vmrItem = vmrItem;
+    }
+
+    public void setVmrSharedItem(VmrSharedItem vmrSharedItem) {
+        this.vmrSharedItem = vmrSharedItem;
     }
 
     public interface OnOptionClickListener{
