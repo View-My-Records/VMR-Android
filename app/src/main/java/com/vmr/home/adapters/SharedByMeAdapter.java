@@ -14,7 +14,7 @@ import com.vmr.model.VmrSharedItem;
 import java.util.List;
 
 /*
- * Created by abhijit on 8/31/16.
+* Created by abhijit on 8/31/16.
  */
 public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.SharedByMeViewHolder>{
 

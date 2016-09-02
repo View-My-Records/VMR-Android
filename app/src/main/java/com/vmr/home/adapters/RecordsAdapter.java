@@ -1,5 +1,8 @@
 package com.vmr.home.adapters;
 
+import android.annotation.TargetApi;
+import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.app.VMR;
 import com.vmr.model.VmrFile;
 import com.vmr.model.VmrItem;
 
@@ -47,7 +51,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             holder.setItemSize(((VmrFile)item).getFileSize());
         } else {
             holder.setItemImage(R.drawable.ic_folder);
-            holder.setItemSize(null);
+            holder.setItemSize("");
         }
         SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
         holder.setItemTimeStamp(ft.format(item.getCreated()));
@@ -108,6 +112,15 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
 
         public void setItemSize(Long itemSize) {
             this.itemSize.setText(String.valueOf(itemSize));
+        }
+
+        public void setItemSize(String itemSize) {
+            if (Build.VERSION.SDK_INT < 23) {
+                this.itemSize.setTextAppearance(VMR.getVMRContext(), android.R.style.TextAppearance_Medium);
+            } else {
+                this.itemSize.setTextAppearance(android.R.style.TextAppearance_Medium);
+            }
+            this.itemSize.setText(itemSize);
         }
 
         public void setItemTimeStamp(String itemTimeStamp) {

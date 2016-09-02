@@ -305,6 +305,8 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onIndexClicked(VmrItem vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Index button clicked" );
+
+
     }
 
     @Override
