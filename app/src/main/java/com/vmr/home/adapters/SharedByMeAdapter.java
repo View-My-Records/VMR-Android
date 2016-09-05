@@ -31,6 +31,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
         this.itemsList = itemsList;
     }
 
+
     @Override
     public SharedByMeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
@@ -40,7 +41,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
 
     @Override
     public void onBindViewHolder(SharedByMeViewHolder holder, int position) {
-        VmrSharedItem item = this.itemsList.get(position);
+        VmrSharedItem item = itemsList.get(position);
         holder.setItemName(item.getName());
         holder.setItemImage(R.drawable.ic_file);
         holder.bind(itemsList.get(position), itemClickListener);
@@ -49,12 +50,12 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
 
     @Override
     public int getItemCount() {
-        return 0;
+        return itemsList.size();
     }
 
     public void updateDataset(List<VmrSharedItem> newList){
         this.itemsList.clear();
-        this.itemsList.addAll(newList);
+        this.itemsList.addAll(newList);;
         notifyDataSetChanged();
     }
 

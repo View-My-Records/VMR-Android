@@ -27,9 +27,10 @@ public class FragmentRecentlyAccessed extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.RECENTLY_ACCESSED);
+        if ( fragmentInteractionListener== null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.RECENTLY_ACCESSED);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_recently_accessed, container, false);
     }

@@ -83,9 +83,10 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
+        if (fragmentInteractionListener == null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
 
@@ -195,7 +196,7 @@ public class FragmentToBeIndexed extends Fragment
                                         VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                         try {
                                             if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                                Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(VMR.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                                 refreshFolder();
                                             }
                                         } catch (JSONException e) {

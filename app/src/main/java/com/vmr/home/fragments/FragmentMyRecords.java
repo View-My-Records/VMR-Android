@@ -94,9 +94,10 @@ public class FragmentMyRecords extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // User interface to change the Title in the Activity
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
+        if (fragmentInteractionListener == null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
 
         View fragmentView = inflater.inflate(R.layout.fragment_my_records, container, false);
 
@@ -337,7 +338,7 @@ public class FragmentMyRecords extends Fragment
                                 VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                 try {
                                     if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(VMR.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                         refreshFolder();
                                     }
                                 } catch (JSONException e) {

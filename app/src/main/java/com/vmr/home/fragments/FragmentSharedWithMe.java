@@ -81,9 +81,10 @@ public class FragmentSharedWithMe extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
+        if (fragmentInteractionListener == null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
 
@@ -251,7 +252,7 @@ public class FragmentSharedWithMe extends Fragment
                                         VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                         try {
                                             if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                                Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(VMR.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                                 refreshFolder();
                                             }
                                         } catch (JSONException e) {
