@@ -12,9 +12,11 @@ public abstract class VmrItem {
     private String name;
     private String docType;
     private String nodeRef;
+    private String owner;
+
     private boolean isFolder;
     private boolean isShared;
-    private String owner;
+
     private Date created;
     private String createdBy;
     private Date lastUpdated;

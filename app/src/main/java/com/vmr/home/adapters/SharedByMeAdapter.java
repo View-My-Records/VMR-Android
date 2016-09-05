@@ -49,7 +49,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
 
     @Override
     public int getItemCount() {
-        return 0;
+        return this.itemsList.size();
     }
 
     public void updateDataset(List<VmrSharedItem> newList){

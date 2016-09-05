@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -31,6 +32,7 @@ import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFile;
@@ -94,9 +96,10 @@ public class FragmentMyRecords extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // User interface to change the Title in the Activity
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
+        if (fragmentInteractionListener == null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
 
         View fragmentView = inflater.inflate(R.layout.fragment_my_records, container, false);
 
@@ -305,8 +308,9 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onIndexClicked(VmrItem vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Index button clicked" );
-
-
+        FragmentManager fm = getActivity().getFragmentManager();
+        IndexDialog indexDialog = new IndexDialog();
+        indexDialog.show(fm, "Index");
     }
 
     @Override
@@ -337,7 +341,7 @@ public class FragmentMyRecords extends Fragment
                                 VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                 try {
                                     if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(VMR.getVMRContext(), "Item renamed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(VMR.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                         refreshFolder();
                                     }
                                 } catch (JSONException e) {
@@ -508,6 +512,9 @@ public class FragmentMyRecords extends Fragment
         currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
         currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
         vmrItems = currentFolder.getAll();
+
+        // TODO: 9/5/16 Add code here to update db and return result for current dir
+
         recordsAdapter.updateDataset(vmrItems);
 
     }

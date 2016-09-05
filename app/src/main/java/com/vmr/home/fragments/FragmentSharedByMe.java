@@ -61,7 +61,7 @@ public class FragmentSharedByMe extends Fragment
         super.onCreate(savedInstanceState);
 
         homeController = new HomeController(this);
-        sharedByMeAdapter = new SharedByMeAdapter(vmrSharedItems, this, this);
+
 
         optionsMenuSheet = new OptionsMenuSheet();
         optionsMenuSheet.setOptionClickListener(this);
@@ -70,9 +70,10 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_BY_ME);
+        if ( fragmentInteractionListener== null) {
+            fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_BY_ME);
 
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
@@ -105,8 +106,9 @@ public class FragmentSharedByMe extends Fragment
     public void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems) {
         mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "My Records retrieved.");
-        sharedByMeAdapter.updateDataset(vmrSharedItems);
-
+//        sharedByMeAdapter.updateDataset(vmrSharedItems);
+        sharedByMeAdapter = new SharedByMeAdapter(vmrSharedItems, this, this);
+        mRecyclerView.setAdapter(sharedByMeAdapter);
         if(vmrSharedItems.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
             mTextView.setVisibility(View.VISIBLE);
@@ -221,7 +223,7 @@ public class FragmentSharedByMe extends Fragment
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        mRecyclerView.setAdapter(sharedByMeAdapter);
+
     }
 
     private void refreshFolder(){

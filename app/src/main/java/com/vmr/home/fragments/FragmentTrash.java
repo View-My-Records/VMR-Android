@@ -73,9 +73,10 @@ public class FragmentTrash extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        if (fragmentInteractionListener != null) {
-            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TRASH);
+        if (fragmentInteractionListener == null) {
+            fragmentInteractionListener = (OnFragmentInteractionListener) getActivity();
         }
+        fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TRASH);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_trash, container, false);
         homeController = new HomeController(this);
