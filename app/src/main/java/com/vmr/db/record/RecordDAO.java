@@ -1,10 +1,19 @@
 package com.vmr.db.record;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.vmr.app.VMR;
+import com.vmr.db.DbConstants;
+import com.vmr.debug.VmrDebug;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /*
  * Created by abhijit on 9/5/16.
@@ -16,99 +25,152 @@ public class RecordDAO {
         this.db = db;
     }
 
-    // Adds record to DB
-    public Long addRecord(Record record) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(RecordHelper.COL_ITEM_NODE_REF, record.getRecordNodeRef());
-        return db.insert(RecordHelper.TABLE_NAME, null, contentValues);
-    }
-
-    // Updates record in db
-    private void updateRecord(Record record){
-
-    }
-
-    // Returns record from db
-    private int checkRecord(String noderef){
-
-        return 0;
-    }
-
     // Fetch all records in db for current user
     public List<Record> getAllRecord(String parentNode){
         List<Record> records = new ArrayList<>();
-
-        return records;
-    }
-
-    // Updates record in db
-    public List<Record> updateAllRecord(String parentNode, List<Record> records){
-
-        return records;
-    }
-
-    // Delete record
-    public int deleteRecord(String noderef){
-
-        return 0;
-    }
-
-
-    /*
-
-    public boolean updateTrip(Record record) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(RecordHelper.COL_ID, trip.getTripId());
-        contentValues.put(RecordHelper.COL_TITLE, trip.getTitle());
-        contentValues.put(RecordHelper.COL_UPDATE_DATE, trip.getUpdateDate());
-        return db.update(RecordHelper.TABLE_NAME, contentValues, TripsDBHelper.COL_ID + "=?", new String[]{trip.getTripId() + ""}) > 0;
-    }
-
-    public boolean deleteTrip(Trip trip) {
-        return db.delete(TripsDBHelper.TABLE_NAME, TripsDBHelper.COL_ID + "=?", new String[]{trip.getTripId() + ""}) > 0;
-    }
-
-    public Trip Record(long id) {
-        Trip trip = null;
-        Cursor c = db.query(true, TripsDBHelper.TABLE_NAME, TripsDBHelper.ALL_COLUMNS, TripsDBHelper.COL_ID + "=?", new String[]{id + ""}, null, null, null, null, null);
-
-        if (c != null && c.moveToFirst()) {
-            trip = buildFromCursor(c);
-            if (!c.isClosed()) {
-                c.close();
-            }
-        }
-        return trip;
-    }
-
-    public List<Trip> getAll() {
-        List<Trip> tripList = new ArrayList<Trip>();
-
-        String dbQuery = "SELECT * FROM " + TripsDBHelper.TABLE_NAME + " ORDER BY " + TripsDBHelper.COL_UPDATE_DATE + " DESC";
+        String dbQuery = "SELECT * FROM "
+                + DbConstants.TABLE_RECORD
+                + " ORDER BY "
+                + DbConstants.RECORD_UPDATE_DATE
+                + " DESC "
+                + " HAVING "
+                + DbConstants.RECORD_OWNER
+                + "=" + VMR.getLoggedInUserInfo().getSerialNo()
+                + " AND "
+                + DbConstants.RECORD_PARENT_NODE_REF
+                + "=" + parentNode;
         Cursor c = db.rawQuery(dbQuery, null);
 
         if (c != null && c.moveToFirst()) {
             do {
-                Trip trip = buildFromCursor(c);
-                if (trip != null) {
-                    tripList.add(trip);
+                Record record = buildFromCursor(c);
+                if (record != null) {
+                    records.add(record);
                 }
             } while (c.moveToNext());
         }
-        return tripList;
+
+        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        return records;
     }
 
-
-    private Trip buildFromCursor(Cursor c) {
-        Trip trip = null;
-        if (c != null) {
-            trip = new Trip();
-            trip.setTripId(c.getInt(0));
-            trip.setTitle(c.getString(1));
-            trip.setCreateDate(c.getString(2));
-            trip.setUpdateDate(c.getString(3));
+    // update all records in db for current user
+    public void updateAllRecords(List<Record> records){
+        for (Record record : records) {
+            if(!checkRecord(record.getRecordNodeRef())){
+                addRecord(record);
+            } else {
+                updateRecord(record);
+            }
         }
-        return trip;
+        VmrDebug.printLogI(this.getClass(), "Records updated");
     }
-    */
+
+    // Adds record to DB
+    public Long addRecord(Record record) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.RECORD_NODE_REF  , record.getRecordNodeRef());
+        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getRecordParentNodeRef());
+        contentValues.put(DbConstants.RECORD_NAME      , record.getRecordName());
+        contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
+        contentValues.put(DbConstants.RECORD_FOLDER_CATEGORY, record.getFolderCategory());
+        contentValues.put(DbConstants.RECORD_FILE_CATEGORY, record.getFileCategory());
+        contentValues.put(DbConstants.RECORD_FILE_SIZE, record.getFileSize());
+        contentValues.put(DbConstants.RECORD_FILE_MIME_TYPE, record.getFileMimeType());
+        contentValues.put(DbConstants.RECORD_IS_FOLDER, record.isFolder());
+        contentValues.put(DbConstants.RECORD_IS_SHARED, record.isShared());
+        contentValues.put(DbConstants.RECORD_IS_WRITABLE, record.isWritable());
+        contentValues.put(DbConstants.RECORD_IS_DELETABLE, record.isDeletable());
+        contentValues.put(DbConstants.RECORD_OWNER, record.getRecordOwner());
+        contentValues.put(DbConstants.RECORD_CREATED_BY, record.getCreatedBy());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+        String date = sdf.format(record.getCreatedDate());
+        contentValues.put(DbConstants.RECORD_CREATION_DATE, date);
+        contentValues.put(DbConstants.RECORD_UPDATED_BY, record.getUpdatedBy());
+        date = sdf.format(record.getUpdatedDate());
+        contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
+        VmrDebug.printLogI(this.getClass(), "Record added");
+        return db.insert(DbConstants.TABLE_RECORD, null, contentValues);
+    }
+
+    // Updates record in db
+    private boolean updateRecord(Record record){
+        ContentValues contentValues = new ContentValues();
+//        contentValues.put(DbConstants.RECORD_NODE_REF, record.getRecordNodeRef());
+        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getRecordParentNodeRef());
+        contentValues.put(DbConstants.RECORD_NAME, record.getRecordName());
+        contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
+        contentValues.put(DbConstants.RECORD_FOLDER_CATEGORY, record.getFolderCategory());
+        contentValues.put(DbConstants.RECORD_FILE_CATEGORY, record.getFileCategory());
+        contentValues.put(DbConstants.RECORD_FILE_SIZE, record.getFileSize());
+        contentValues.put(DbConstants.RECORD_FILE_MIME_TYPE, record.getFileMimeType());
+        contentValues.put(DbConstants.RECORD_IS_FOLDER, record.isFolder());
+        contentValues.put(DbConstants.RECORD_IS_SHARED, record.isShared());
+        contentValues.put(DbConstants.RECORD_IS_WRITABLE, record.isWritable());
+        contentValues.put(DbConstants.RECORD_IS_DELETABLE, record.isDeletable());
+        contentValues.put(DbConstants.RECORD_OWNER, record.getRecordOwner());
+        contentValues.put(DbConstants.RECORD_CREATED_BY, record.getCreatedBy());
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String date = sdf.format(record.getCreatedDate());
+        contentValues.put(DbConstants.RECORD_CREATION_DATE, date);
+        contentValues.put(DbConstants.RECORD_UPDATED_BY,record.getUpdatedBy());
+        date = sdf.format(record.getUpdatedDate());
+        contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
+        VmrDebug.printLogI(this.getClass(), "Records updated");
+        return db.update(
+                DbConstants.TABLE_RECORD,
+                contentValues,
+                DbConstants.RECORD_NODE_REF + "=?",
+                new String[]{record.getRecordNodeRef() + ""}) > 0;
+    }
+
+    // Returns record from db
+    private boolean checkRecord(String nodeRef) {
+        Cursor c = db.query(true, DbConstants.TABLE_RECORD, DbConstants.RECORD_COLUMNS, DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""}, null, null, null, null, null);
+        boolean ret = c.moveToFirst();
+        c.close();
+        return ret;
+    }
+
+    // Delete record
+    public boolean deleteRecord(Record record){
+        VmrDebug.printLogI(this.getClass(), "Records deleted");
+        return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getRecordNodeRef() + ""}) > 0;
+    }
+
+    private Record buildFromCursor(Cursor c) {
+        Record record = null;
+        if (c != null) {
+            record = new Record();
+            record.setRecordNodeRef(c.getString(c.getColumnIndex(DbConstants.RECORD_NODE_REF)));
+            record.setRecordParentNodeRef(c.getString(c.getColumnIndex(DbConstants.RECORD_PARENT_NODE_REF)));
+            record.setRecordName(c.getString(c.getColumnIndex(DbConstants.RECORD_NAME)));
+            record.setRecordDocType(c.getString(c.getColumnIndex(DbConstants.RECORD_DOC_TYPE)));
+            record.setFolderCategory(c.getString(c.getColumnIndex(DbConstants.RECORD_FOLDER_CATEGORY)));
+            record.setFileCategory(c.getString(c.getColumnIndex(DbConstants.RECORD_FILE_CATEGORY)));
+            record.setFileSize(c.getInt(c.getColumnIndex(DbConstants.RECORD_FILE_SIZE)));
+            record.setFileMimeType(c.getString(c.getColumnIndex(DbConstants.RECORD_FILE_MIME_TYPE)));
+            record.setIsFolder(c.getInt(c.getColumnIndex(DbConstants.RECORD_IS_FOLDER)) > 0);
+            record.setIsShared(c.getInt(c.getColumnIndex(DbConstants.RECORD_IS_SHARED))>0);
+            record.setIsWritable(c.getInt(c.getColumnIndex(DbConstants.RECORD_IS_WRITABLE))>0);
+            record.setIsDeletable(c.getInt(c.getColumnIndex(DbConstants.RECORD_IS_DELETABLE))>0);
+            record.setCreatedBy(c.getString(c.getColumnIndex(DbConstants.RECORD_CREATED_BY)));
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            Date date = null;
+            try {
+                date = sdf.parse(c.getString(c.getColumnIndex(DbConstants.RECORD_CREATION_DATE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            record.setCreatedDate(date);
+            record.setUpdatedBy(c.getString(c.getColumnIndex(DbConstants.RECORD_UPDATED_BY)));
+            try {
+                date = sdf.parse(c.getString(c.getColumnIndex(DbConstants.RECORD_UPDATE_DATE)));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            record.setUpdatedDate(date);
+        }
+        return record;
+    }
 }

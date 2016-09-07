@@ -4,6 +4,8 @@ package com.vmr.db.record;
  * Created by abhijit on 9/3/16.
  */
 
+import com.vmr.model.VmrFile;
+import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrItem;
 
 import java.util.ArrayList;
@@ -14,9 +16,6 @@ public class Record {
 
     // RecordsList
     List<Record> recordList;
-
-    // DB Specific
-    private int     recordId;                // integer NOT NULL CONSTRAINT ITEMS_pk PRIMARY KEY AUTOINCREMENT,
 
     // Properties in vmrItem
     private String  recordNodeRef;           //  varchar(60) NOT NULL,
@@ -37,7 +36,7 @@ public class Record {
     private String  fileCategory;          // varchar(20) NOT NULL,
     private int     fileSize;               //  integer NOT NULL,
     private String  fileMimeType;              // TYPE varchar(100) NOT NULL,
-    private String  fileExpiryDate;           // integer NOT NULL,
+    private Date  fileExpiryDate;           // integer NOT NULL,
 
     // Folder specific
     private String  folderCategory;         //  varchar(100) NOT NULL,
@@ -45,13 +44,48 @@ public class Record {
     private boolean isDeletable;                 // integer NOT NULL,
 
 
-    public Record(List<VmrItem> vmrItems) {
+    public Record() {
 
     }
 
-    public List<Record> getRecordList(List<VmrItem> vmrItems) {
-        recordList = new ArrayList<>();
-
+    public static List<Record> getRecordList(List<VmrItem> vmrItems) {
+        List<Record> recordList = new ArrayList<>();
+        Record record = null;
+        for(VmrItem item: vmrItems){
+            record = new Record();
+            record.setRecordNodeRef(item.getNodeRef());
+            record.setRecordParentNodeRef(item.getParent().getNodeRef());
+            record.setRecordName(item.getName());
+            record.setRecordDocType(item.getDocType());
+            record.setIsFolder(item.isFolder());
+            record.setIsShared(item.isShared());
+            record.setRecordOwner(item.getOwner());
+            record.setCreatedBy(item.getCreatedBy());
+            record.setCreatedDate(item.getCreatedDate());
+            record.setUpdatedBy(item.getLastUpdatedBy());
+            record.setUpdatedDate(item.getLastUpdated());
+            if(item instanceof VmrFile){
+                record.setFileCategory(((VmrFile) item).getCategory());
+                record.setFileSize((int) ((VmrFile) item).getFileSize());
+                record.setFileMimeType(((VmrFile) item).getMimeType());
+                record.setFileExpiryDate(((VmrFile) item).getExpiryDate());
+            } else {
+                record.setFileCategory(null);
+                record.setFileSize(0);
+                record.setFileMimeType(null);
+                record.setFileExpiryDate(null);
+            }
+            if (item instanceof VmrFolder){
+                record.setFolderCategory(((VmrFolder) item).getFolderCategory());
+                record.setIsWritable(((VmrFolder) item).isWrite());
+                record.setIsDeletable(((VmrFolder) item).isDelete());
+            } else {
+                record.setFolderCategory(null);
+                record.setIsWritable(false);
+                record.setIsDeletable(false);
+            }
+            recordList.add(record);
+        }
         return recordList;
     }
 
@@ -61,14 +95,6 @@ public class Record {
 
     public void setRecordParentNodeRef(String recordParentNodeRef) {
         this.recordParentNodeRef = recordParentNodeRef;
-    }
-
-    public int getRecordId() {
-        return recordId;
-    }
-
-    public void setRecordId(int recordId) {
-        this.recordId = recordId;
     }
 
     public String getRecordNodeRef() {
@@ -127,11 +153,11 @@ public class Record {
         this.fileMimeType = fileMimeType;
     }
 
-    public String getFileExpiryDate() {
+    public Date getFileExpiryDate() {
         return fileExpiryDate;
     }
 
-    public void setFileExpiryDate(String fileExpiryDate) {
+    public void setFileExpiryDate(Date fileExpiryDate) {
         this.fileExpiryDate = fileExpiryDate;
     }
 
@@ -139,7 +165,7 @@ public class Record {
         return isFolder;
     }
 
-    public void setFolder(boolean folder) {
+    public void setIsFolder(boolean folder) {
         this.isFolder = folder;
     }
 
@@ -147,7 +173,7 @@ public class Record {
         return isShared;
     }
 
-    public void setShared(boolean shared) {
+    public void setIsShared(boolean shared) {
         this.isShared = shared;
     }
 

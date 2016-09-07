@@ -21,6 +21,17 @@ import java.util.Locale;
 
 public class UserInfo implements Parcelable {
 
+    public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
+        @Override
+        public UserInfo createFromParcel(Parcel in) {
+            return new UserInfo(in);
+        }
+
+        @Override
+        public UserInfo[] newArray(int size) {
+            return new UserInfo[size];
+        }
+    };
     private String slNo;
     private String result;
     private String rootNodref;
@@ -35,10 +46,9 @@ public class UserInfo implements Parcelable {
     private String userName;
     private String corpId;
     private String loggedinUserId;
-    private String lastName;            ;
+    private Date   lastLoginTime;
     private String firstName;
-    private Date lastLoginTime;
-
+    private String lastName;
 
     protected UserInfo(Parcel in) {
         slNo = in.readString();
@@ -89,19 +99,7 @@ public class UserInfo implements Parcelable {
 
     }
 
-    public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
-        @Override
-        public UserInfo createFromParcel(Parcel in) {
-            return new UserInfo(in);
-        }
-
-        @Override
-        public UserInfo[] newArray(int size) {
-            return new UserInfo[size];
-        }
-    };
-
-    public String getSlNo() {
+    public String getSerialNo() {
         return slNo;
     }
 

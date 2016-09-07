@@ -26,6 +26,9 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.record.Record;
+import com.vmr.db.record.RecordManager;
+import com.vmr.db.user.UserManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
@@ -73,6 +76,9 @@ public class FragmentMyRecords extends Fragment
 
     // Controllers
     private HomeController homeController;
+    private UserManager userManager;
+    private RecordManager recordManager;
+
     // Variables
     private VmrFolder currentFolder;
     private List<VmrItem> vmrItems = new ArrayList<>();
@@ -88,6 +94,9 @@ public class FragmentMyRecords extends Fragment
 
         addItemMenu = new AddItemMenuSheet();
         addItemMenu.setItemClickListener(this);
+
+        userManager = ((HomeActivity) getActivity()).getUserManager();
+        recordManager = ((HomeActivity) getActivity()).getRecordManager();
 
         optionsMenuSheet = new OptionsMenuSheet();
         optionsMenuSheet.setOptionClickListener(this);
@@ -148,6 +157,7 @@ public class FragmentMyRecords extends Fragment
 //            recordsAdapter.updateDataset(vmrItems);
 //        } else if(currentFolder.getNodeRef().equals(vmrFolder.getNodeRef())) {
 //            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " updated.");
+
             updateFolder(vmrFolder);
 //        } else {
 //            VmrDebug.printLogI(this.getClass(), currentFolder.getName() + " retrieved.");
@@ -512,7 +522,7 @@ public class FragmentMyRecords extends Fragment
         currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
         currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
         vmrItems = currentFolder.getAll();
-
+        recordManager.updateAllRecords(Record.getRecordList(vmrItems));
         // TODO: 9/5/16 Add code here to update db and return result for current dir
 
         recordsAdapter.updateDataset(vmrItems);

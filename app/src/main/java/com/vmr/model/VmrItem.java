@@ -78,7 +78,7 @@ public abstract class VmrItem {
         this.owner = owner;
     }
 
-    public Date getCreated() {
+    public Date getCreatedDate() {
         return created;
     }
 

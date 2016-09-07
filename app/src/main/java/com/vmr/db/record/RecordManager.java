@@ -11,13 +11,11 @@ import java.util.List;
  */
 public class RecordManager {
 
-    private SQLiteDatabase database;
-    private RecordHelper recordHelper;
     private RecordDAO recordDAO;
 
     public RecordManager() {
-        recordHelper = new RecordHelper(VMR.getVMRContext());
-        database = recordHelper.getWritableDatabase();
+        RecordHelper recordHelper = new RecordHelper(VMR.getVMRContext());
+        SQLiteDatabase database = recordHelper.getWritableDatabase();
         recordDAO = new RecordDAO(database);
     }
 
@@ -25,11 +23,11 @@ public class RecordManager {
         return this.recordDAO.getAllRecord(parentNode);
     }
 
-    public List<Record> updateAllRecords(String parentNode ,List<Record> records) {
-        return this.recordDAO.updateAllRecord(parentNode, records);
+    public void updateAllRecords(List<Record> records) {
+        this.recordDAO.updateAllRecords(records);
     }
 
-    public int deleteRecord(String parentNode) {
-        return this.recordDAO.deleteRecord(parentNode);
+    public boolean deleteRecord(Record record) {
+        return this.recordDAO.deleteRecord(record);
     }
 }

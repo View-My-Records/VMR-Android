@@ -25,6 +25,9 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.record.Record;
+import com.vmr.db.record.RecordManager;
+import com.vmr.db.user.UserManager;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -61,6 +64,8 @@ public class HomeActivity extends AppCompatActivity
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     // Models
     private UserInfo userInfo;
+    private UserManager userManager;
+    private RecordManager recordManager;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -88,6 +93,10 @@ public class HomeActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
 
             userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
+
+            userManager = new UserManager();
+            recordManager = new RecordManager();
+
             VMR.setLoggedInUserInfo(userInfo);
 
         }
@@ -231,6 +240,18 @@ public class HomeActivity extends AppCompatActivity
         return userInfo;
     }
 
+    public RecordManager getRecordManager() {
+        return recordManager;
+    }
+
+    public UserManager getUserManager() {
+        return userManager;
+    }
+
+    public void setUserManager(UserManager userManager) {
+        this.userManager = userManager;
+    }
+
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         if (VMR.getVmrRootFolder() == null) {
@@ -238,6 +259,7 @@ public class HomeActivity extends AppCompatActivity
             VMR.setVmrRootFolder(vmrFolder);
         }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
+        recordManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll()));
         sendToMyRecords.onReceiveFromActivitySuccess(VMR.getVmrRootFolder());
     }
 

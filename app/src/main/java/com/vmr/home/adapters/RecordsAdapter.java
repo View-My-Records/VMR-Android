@@ -1,7 +1,5 @@
 package com.vmr.home.adapters;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -45,16 +43,22 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
     @Override
     public void onBindViewHolder(MyRecordsViewHolder holder, int position) {
         VmrItem item = this.itemsList.get(position);
-        holder.setItemName(item.getName());
+
         if (item instanceof VmrFile) {
             holder.setItemImage(R.drawable.ic_file);
-            holder.setItemSize(((VmrFile)item).getFileSize());
+            holder.setItemSize(((VmrFile)item).getFileSize() + " bytes");
         } else {
             holder.setItemImage(R.drawable.ic_folder);
-            holder.setItemSize("");
+            holder.itemSize.setVisibility(View.GONE);
+            if (Build.VERSION.SDK_INT < 23) {
+                holder.itemName.setTextAppearance(VMR.getVMRContext(), android.R.style.TextAppearance_Medium);
+            } else {
+                holder.itemName.setTextAppearance(android.R.style.TextAppearance_Medium);
+            }
         }
+        holder.setItemName(item.getName());
         SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
-        holder.setItemTimeStamp(ft.format(item.getCreated()));
+        holder.setItemTimeStamp(ft.format(item.getCreatedDate()));
         holder.bind(itemsList.get(position), itemClickListener);
         holder.bind(itemsList.get(position), optionsClickListener);
     }
@@ -115,11 +119,6 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
         }
 
         public void setItemSize(String itemSize) {
-            if (Build.VERSION.SDK_INT < 23) {
-                this.itemSize.setTextAppearance(VMR.getVMRContext(), android.R.style.TextAppearance_Medium);
-            } else {
-                this.itemSize.setTextAppearance(android.R.style.TextAppearance_Medium);
-            }
             this.itemSize.setText(itemSize);
         }
 
