@@ -18,16 +18,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
-import com.vmr.db.record.RecordManager;
-import com.vmr.db.user.UserManager;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -39,9 +37,9 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 
 public class HomeActivity extends AppCompatActivity
@@ -64,8 +62,7 @@ public class HomeActivity extends AppCompatActivity
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     // Models
     private UserInfo userInfo;
-    private UserManager userManager;
-    private RecordManager recordManager;
+    private DbManager dbManager;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -94,8 +91,7 @@ public class HomeActivity extends AppCompatActivity
 
             userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
 
-            userManager = new UserManager();
-            recordManager = new RecordManager();
+            dbManager = new DbManager();
 
             VMR.setLoggedInUserInfo(userInfo);
 
@@ -117,8 +113,8 @@ public class HomeActivity extends AppCompatActivity
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
         TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
-        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
-        ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
+//        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
+//        ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
         if (userInfo.getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
             accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
@@ -240,16 +236,8 @@ public class HomeActivity extends AppCompatActivity
         return userInfo;
     }
 
-    public RecordManager getRecordManager() {
-        return recordManager;
-    }
-
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    public void setUserManager(UserManager userManager) {
-        this.userManager = userManager;
+    public DbManager getDbManager() {
+        return dbManager;
     }
 
     @Override
@@ -259,7 +247,7 @@ public class HomeActivity extends AppCompatActivity
             VMR.setVmrRootFolder(vmrFolder);
         }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
-        recordManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll()));
+        dbManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll()));
         sendToMyRecords.onReceiveFromActivitySuccess(VMR.getVmrRootFolder());
     }
 

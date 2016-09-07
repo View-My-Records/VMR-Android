@@ -2,7 +2,6 @@ package com.vmr.login;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +10,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.db.user.UserManager;
+import com.vmr.db.DbManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.login.interfaces.OnLoginClickListener;
@@ -32,7 +31,7 @@ public class LoginActivity extends AppCompatActivity
     private LoginController loginController;
 
     // Variables
-    private UserManager userManager;
+    private DbManager dbManager;
     private String username;
     private String password;
     private String accountType;
@@ -47,7 +46,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         loginController = new LoginController(this, this);
-        userManager = new UserManager();
+        dbManager = new DbManager();
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
@@ -85,7 +84,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
-        userManager.addUser(userInfo);
+        dbManager.addUser(userInfo);
         onLoginComplete(userInfo);
     }
 

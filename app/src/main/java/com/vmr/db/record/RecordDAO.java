@@ -126,7 +126,7 @@ public class RecordDAO {
 
     // Returns record from db
     private boolean checkRecord(String nodeRef) {
-        Cursor c = db.query(true, DbConstants.TABLE_RECORD, DbConstants.RECORD_COLUMNS, DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""}, null, null, null, null, null);
+        Cursor c = db.query(true, DbConstants.TABLE_RECORD, new String[]{DbConstants.RECORD_NODE_REF}, DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""}, null, null, null, null, null);
         boolean ret = c.moveToFirst();
         c.close();
         return ret;

@@ -1,12 +1,12 @@
 package com.vmr.home.fragments;
 
+import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -26,9 +26,8 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
-import com.vmr.db.record.RecordManager;
-import com.vmr.db.user.UserManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
@@ -76,8 +75,7 @@ public class FragmentMyRecords extends Fragment
 
     // Controllers
     private HomeController homeController;
-    private UserManager userManager;
-    private RecordManager recordManager;
+    private DbManager dbManager;
 
     // Variables
     private VmrFolder currentFolder;
@@ -95,8 +93,7 @@ public class FragmentMyRecords extends Fragment
         addItemMenu = new AddItemMenuSheet();
         addItemMenu.setItemClickListener(this);
 
-        userManager = ((HomeActivity) getActivity()).getUserManager();
-        recordManager = ((HomeActivity) getActivity()).getRecordManager();
+        dbManager = ((HomeActivity) getActivity()).getDbManager();
 
         optionsMenuSheet = new OptionsMenuSheet();
         optionsMenuSheet.setOptionClickListener(this);
@@ -522,7 +519,7 @@ public class FragmentMyRecords extends Fragment
         currentFolder.setIndexedFiles(vmrFolder.getIndexedFiles());
         currentFolder.setUnIndexedFiles(vmrFolder.getUnIndexedFiles());
         vmrItems = currentFolder.getAll();
-        recordManager.updateAllRecords(Record.getRecordList(vmrItems));
+        dbManager.updateAllRecords(Record.getRecordList(vmrItems));
         // TODO: 9/5/16 Add code here to update db and return result for current dir
 
         recordsAdapter.updateDataset(vmrItems);

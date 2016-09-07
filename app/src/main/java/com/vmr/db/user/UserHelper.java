@@ -11,6 +11,8 @@ import com.vmr.db.DbConstants;
  */
 public class UserHelper extends SQLiteOpenHelper {
 
+
+
     public UserHelper(Context context) {
         super(context, DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
     }
