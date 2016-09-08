@@ -21,6 +21,7 @@ import java.util.Locale;
  * Created by abhijit on 9/5/16.
  */
 public class RecordDAO {
+
     private SQLiteDatabase db;
 
     public RecordDAO(SQLiteDatabase db) {
@@ -117,11 +118,10 @@ public class RecordDAO {
                 updateRecord(record);
             }
         }
-        VmrDebug.printLogI(this.getClass(), "Records updated");
     }
 
     // Adds record to DB
-    public Long addRecord(Record record) {
+    private Long addRecord(Record record) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.RECORD_NODE_REF  , record.getRecordNodeRef());
         contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getRecordParentNodeRef());

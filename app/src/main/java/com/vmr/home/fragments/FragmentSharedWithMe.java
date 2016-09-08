@@ -53,7 +53,7 @@ public class FragmentSharedWithMe extends Fragment
         OptionsMenuSheet.OnOptionClickListener
 {
 
-    // FragmentInteractionListener
+    // Fragment interaction listener
     private OnFragmentInteractionListener fragmentInteractionListener;
 
     // Views
@@ -95,6 +95,7 @@ public class FragmentSharedWithMe extends Fragment
             fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
+
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
 

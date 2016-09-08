@@ -11,6 +11,9 @@ public class DbConstants {
     //Table Name
     public static final String TABLE_USER = "USER";
     public static final String TABLE_RECORD = "RECORD";
+    public static final String TABLE_TRASH = "TRASH";
+    public static final String TABLE_SHARED = "SHARED";
+
 
     //Column Names
     public static final String USER_SERIAL_NO         = "SERIAL_NO";
@@ -90,6 +93,50 @@ public class DbConstants {
                 RECORD_CREATED_BY ,
                 RECORD_CREATION_DATE ,
                 RECORD_UPDATED_BY ,
-                RECORD_UPDATE_DATE };
+                RECORD_UPDATE_DATE
+    };
+
+    public static final String SHARED_OWNER_NAME         = "OWNER_NAME";
+    public static final String SHARED_IS_FOLDER          = "IS_FOLDER";
+    public static final String SHARED_RECORD_LIFE        = "RECORD_LIFE";
+    public static final String SHARED_TO_EMAIL_ID        = "SHARED_TO_EMAIL_ID";
+    public static final String SHARED_USER_ID            = "USER_ID";
+    public static final String SHARED_FILE_NAME          = "FILE_NAME";
+    public static final String SHARED_PERMISSIONS        = "PERMISSIONS";
+    public static final String SHARED_NODE_REF           = "NODE_REF";
+    public static final String SHARED_PARENT_NODE_REF    = "PARENT_NODE_REF";
+
+    //All Columns
+    public static final String[] SHARED_COLUMNS
+            = {
+            SHARED_OWNER_NAME,
+            SHARED_IS_FOLDER,
+            SHARED_RECORD_LIFE,
+            SHARED_TO_EMAIL_ID,
+            SHARED_USER_ID,
+            SHARED_FILE_NAME,
+            SHARED_PERMISSIONS,
+            SHARED_NODE_REF,
+            SHARED_PARENT_NODE_REF
+    };
+
+
+    public static final String TRASH_IS_FOLDER       = "OWNER_NAME";
+    public static final String TRASH_CREATED_BY      = "IS_FOLDER";
+    public static final String TRASH_NAME            = "RECORD_LIFE";
+    public static final String TRASH_OWNER           = "SHARED_TO_EMAIL_ID";
+    public static final String TRASH_NODE_REF        = "USER_ID";
+    public static final String TRASH_PARENT_NODE_REF = "FILE_NAME";
+
+    //All Columns
+    public static final String[] TRASH_COLUMNS
+            = {
+            TRASH_IS_FOLDER,
+            TRASH_CREATED_BY,
+            TRASH_NAME,
+            TRASH_OWNER,
+            TRASH_NODE_REF,
+            TRASH_PARENT_NODE_REF
+    };
 
 }

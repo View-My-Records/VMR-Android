@@ -11,15 +11,15 @@ import java.util.List;
  */
 public class SharedRecord {
 
-    private String ownerName;           //":"Internal1 member of malya",
-    private boolean isFolder;           //":true,
-    private Date   recordLife;          //": "Sep 30, 2016 11:00:00 AM",
-    private String sharedToEmailId;     //": "abhijit159@gmail.com",
-    private String userId;              //": "admin",
-    private String fileName;            //": "testing",
-    private String permissions;         //": "View Only",
-    private String nodeRef;             //": "workspace://SpacesStore/157f186c-77d1-404e-8b22-a5d3d7f32b98",
-    private String parentNodeRef;             //": "workspace://SpacesStore/157f186c-77d1-404e-8b22-a5d3d7f32b98",
+    private String nodeRef;
+    private String parentNodeRef;
+    private String ownerName;
+    private boolean isFolder;
+    private Date   recordLife;
+    private String sharedToEmailId;
+    private String userId;
+    private String fileName;
+    private String permissions;
 
     public SharedRecord() {
 
@@ -84,7 +84,7 @@ public class SharedRecord {
         this.userId = userId;
     }
 
-    public String getFileName() {
+    public String getRecordName() {
         return fileName;
     }
 

@@ -4,6 +4,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.db.record.Record;
 import com.vmr.db.record.RecordDAO;
+import com.vmr.db.shared_by_me.SharedRecord;
+import com.vmr.db.shared_by_me.SharedRecordDAO;
+import com.vmr.db.trash.TrashRecord;
+import com.vmr.db.trash.TrashRecordDAO;
 import com.vmr.db.user.User;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
@@ -18,12 +22,16 @@ public class DbManager {
 
     private UserDAO userDAO;
     private RecordDAO recordDAO;
+    private TrashRecordDAO trashRecordDAO;
+    private SharedRecordDAO sharedRecordDAO;
 
     public DbManager() {
         DbHelper dbHelper = new DbHelper();
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         userDAO = new UserDAO(database);
         recordDAO = new RecordDAO(database);
+        trashRecordDAO = new TrashRecordDAO(database);
+        sharedRecordDAO = new SharedRecordDAO(database);
     }
 
     // Adds new user to user table
@@ -69,5 +77,13 @@ public class DbManager {
     // Delete given record
     public boolean deleteRecord(Record record) {
         return this.recordDAO.deleteRecord(record);
+    }
+
+    public List<SharedRecord> getAllSharedByMe(){
+        return this.sharedRecordDAO.getAllRecords();
+    }
+
+    public List<TrashRecord> getAllTrash(String nodeRef){
+        return this.trashRecordDAO.getAllRecords(nodeRef);
     }
 }

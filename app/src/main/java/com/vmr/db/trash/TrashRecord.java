@@ -10,12 +10,12 @@ import java.util.List;
  */
 public class TrashRecord {
 
+    private String nodeRef;
+    private String parentNodeRef;
     private boolean isFolder;
     private String createdBy;
     private String name;
     private String owner;
-    private String nodeRef;
-    private String parentNodeRef;
 
     public TrashRecord() {
 

@@ -101,6 +101,7 @@ public class FragmentToBeIndexed extends Fragment
             fragmentInteractionListener= (OnFragmentInteractionListener) getActivity();
         }
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
+
         // Inflate the layout for this fragment
         View fragmentView = inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
 

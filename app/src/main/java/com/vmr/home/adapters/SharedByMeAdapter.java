@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.model.VmrSharedItem;
+import com.vmr.db.shared_by_me.SharedRecord;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
 
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
-    private List<VmrSharedItem> itemsList;
+    private List<SharedRecord> itemsList;
 
     public SharedByMeAdapter(
-            List<VmrSharedItem> itemsList,
+            List<SharedRecord> itemsList,
             OnItemClickListener itemClickListener,
             OnItemOptionsClickListener optionsClickListener ) {
         this.itemClickListener = itemClickListener;
@@ -40,8 +40,8 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
 
     @Override
     public void onBindViewHolder(SharedByMeViewHolder holder, int position) {
-        VmrSharedItem item = this.itemsList.get(position);
-        holder.setItemName(item.getName());
+        SharedRecord item = this.itemsList.get(position);
+        holder.setItemName(item.getRecordName());
         holder.setItemImage(R.drawable.ic_file);
         holder.bind(itemsList.get(position), itemClickListener);
         holder.bind(itemsList.get(position), optionsClickListener);
@@ -52,18 +52,18 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
         return this.itemsList.size();
     }
 
-    public void updateDataset(List<VmrSharedItem> newList){
+    public void updateDataset(List<SharedRecord> newList){
         this.itemsList.clear();
         this.itemsList.addAll(newList);
         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(VmrSharedItem item);
+        void onItemClick(SharedRecord record);
     }
 
     public interface OnItemOptionsClickListener {
-        void onItemOptionsClick(VmrSharedItem item, View view);
+        void onItemOptionsClick(SharedRecord record, View view);
     }
 
     class SharedByMeViewHolder extends RecyclerView.ViewHolder {
@@ -86,7 +86,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
             this.itemName.setText(itemName);
         }
 
-        void bind(final VmrSharedItem item, final OnItemClickListener listener) {
+        void bind(final SharedRecord item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -94,7 +94,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
             });
         }
 
-        void bind(final VmrSharedItem item, final OnItemOptionsClickListener listener) {
+        void bind(final SharedRecord item, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(item, v);
