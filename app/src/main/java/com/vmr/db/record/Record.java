@@ -14,9 +14,6 @@ import java.util.List;
 
 public class Record {
 
-    // RecordsList
-    List<Record> recordList;
-
     // Properties in vmrItem
     private String  recordNodeRef;           //  varchar(60) NOT NULL,
     private String  recordParentNodeRef;   // varchar(60) NOT NULL,
@@ -48,13 +45,13 @@ public class Record {
 
     }
 
-    public static List<Record> getRecordList(List<VmrItem> vmrItems) {
+    public static List<Record> getRecordList(List<VmrItem> vmrItems, String recordParentNodeRef) {
         List<Record> recordList = new ArrayList<>();
         Record record = null;
         for(VmrItem item: vmrItems){
             record = new Record();
             record.setRecordNodeRef(item.getNodeRef());
-            record.setRecordParentNodeRef(item.getParent().getNodeRef());
+            record.setRecordParentNodeRef(recordParentNodeRef);
             record.setRecordName(item.getName());
             record.setRecordDocType(item.getDocType());
             record.setIsFolder(item.isFolder());

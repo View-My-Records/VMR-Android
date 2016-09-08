@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
@@ -137,52 +138,52 @@ public class FragmentSharedByMe extends Fragment
     }
 
     @Override
-    public void onOpenClicked(VmrItem vmrItem) {
+    public void onOpenClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onIndexClicked(VmrItem vmrItem) {
+    public void onIndexClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onShareClicked(VmrItem vmrItem) {
+    public void onShareClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onRenameClicked(VmrItem vmrItem) {
+    public void onRenameClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onDownloadClicked(VmrItem vmrItem) {
+    public void onDownloadClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onMoveClicked(VmrItem vmrItem) {
+    public void onMoveClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onCopyClicked(VmrItem vmrItem) {
+    public void onCopyClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onDuplicateClicked(VmrItem vmrItem) {
+    public void onDuplicateClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onPropertiesClicked(VmrItem vmrItem) {
+    public void onPropertiesClicked(Record vmrItem) {
 
     }
 
     @Override
-    public void onMoveToTrashClicked(VmrItem vmrItem) {
+    public void onMoveToTrashClicked(Record vmrItem) {
 
     }
 

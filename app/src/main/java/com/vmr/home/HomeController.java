@@ -5,6 +5,7 @@ import android.net.Uri;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.VMR;
+import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.model.VmrItem;
 import com.vmr.response_listener.VmrResponseListener;
@@ -179,14 +180,14 @@ public class HomeController {
         VmrRequestQueue.getInstance().addToRequestQueue(createFolderRequest, Constants.Request.FolderNavigation.CreateFolder.TAG);
     }
 
-    public void renameItem(VmrItem vmrItem, String newName){
+    public void renameItem(Record record, String newName){
 
         Map<String, String> formData = VMR.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.RenameFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.RENAME_FILE_OR_FOLDER);
-        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NEW_NAME,Uri.encode(newName, "UTF-8"));
-        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NODE_REF,vmrItem.getNodeRef());
-        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.OLD_NAME, vmrItem.getName());
+        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NODE_REF, record.getRecordNodeRef());
+        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.OLD_NAME, record.getRecordName());
+        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NEW_NAME, Uri.encode(newName, "UTF-8"));
 
         RenameItemRequest renameItemRequest =
                 new RenameItemRequest(
@@ -207,7 +208,7 @@ public class HomeController {
         VmrRequestQueue.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
     }
 
-    public void moveToTrash(VmrItem vmrItem){
+    public void moveToTrash(Record record){
 
         Map<String, String> formData = VMR.getUserMap();
 //        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
@@ -222,8 +223,8 @@ public class HomeController {
         JSONObject objectToDelete = new JSONObject();
 
         try {
-            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NAME, vmrItem.getName());
-            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NODE_REF, vmrItem.getNodeRef());
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NAME, record.getRecordName());
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NODE_REF, record.getRecordNodeRef());
             objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_TYPE, true);
             deleteObjects.put(objectToDelete);
             deleteObjectValues.put(Constants.Request.FolderNavigation.DeleteFileFolder.DELETE_OBJECTS, deleteObjects);

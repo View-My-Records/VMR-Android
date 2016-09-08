@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 4;
+    public static final int VERSION = 1;
 
     //Table Name
     public static final String TABLE_USER = "USER";
@@ -56,13 +56,13 @@ public class DbConstants {
     public static final String RECORD_NODE_REF        = "RECORD_NODE_REF";
     public static final String RECORD_PARENT_NODE_REF = "PARENT_NODE_REF";
     public static final String RECORD_NAME            = "RECORD_NAME";
-    public static final String RECORD_DOC_TYPE        = "RECORD_DOC_TYPE ";
+    public static final String RECORD_DOC_TYPE        = "RECORD_DOC_TYPE";
     public static final String RECORD_FOLDER_CATEGORY = "FOLDER_CATEGORY";
-    public static final String RECORD_FILE_CATEGORY   = "FILE_CATEGORY ";
+    public static final String RECORD_FILE_CATEGORY   = "FILE_CATEGORY";
     public static final String RECORD_FILE_SIZE       = "FILE_SIZE";
-    public static final String RECORD_FILE_MIME_TYPE  = "FILE_MIME_";
+    public static final String RECORD_FILE_MIME_TYPE  = "FILE_MIME_TYPE";
     public static final String RECORD_IS_FOLDER       = "IS_FOLDER";
-    public static final String RECORD_IS_SHARED       = "IS_SHARED ";
+    public static final String RECORD_IS_SHARED       = "IS_SHARED";
     public static final String RECORD_IS_WRITABLE     = "IS_WRITABLE";
     public static final String RECORD_IS_DELETABLE    = "IS_DELETABLE";
     public static final String RECORD_OWNER           = "ITEM_OWNER";

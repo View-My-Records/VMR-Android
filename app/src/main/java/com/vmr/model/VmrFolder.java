@@ -33,13 +33,22 @@ public class VmrFolder extends VmrItem {
     private int         totalUnIndexed;
 
 
+    public VmrFolder() {
+
+    }
+
     public VmrFolder(JSONObject folderJson) {
         try {
             this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
             this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
             this.setWriteFlag(folderJson.has("write") && folderJson.getBoolean("write"));
             this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
-            this.setFoldersFromJSON(folderJson.has("folders") ? folderJson.getJSONArray("folders") : null);
+            if(folderJson.has("folders")){
+                Object json = folderJson.get("folders");
+                if(json instanceof JSONArray) {
+                    this.setFoldersFromJSON((JSONArray) json);
+                }
+            }
             this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
             this.setDeleteFlag(folderJson.has("delete") && folderJson.getBoolean("delete"));
             this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);

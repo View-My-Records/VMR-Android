@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.db.record.Record;
 import com.vmr.model.VmrItem;
 import com.vmr.model.VmrSharedItem;
 
@@ -17,7 +18,7 @@ import com.vmr.model.VmrSharedItem;
 public class OptionsMenuSheet extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
-    private VmrItem vmrItem;
+    private Record record;
     private VmrSharedItem vmrSharedItem;
 
     @Override
@@ -31,67 +32,67 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.options_layout, null);
         dialog.setContentView(contentView);
 
-        ((TextView)contentView.findViewById(R.id.tvItemName)).setText(vmrItem.getName());
+        ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
 
         contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onOpenClicked(vmrItem);
+                optionClickListener.onOpenClicked(record);
                 dismiss();
             }
         });
         contentView.findViewById(R.id.btnIndex).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onIndexClicked(vmrItem);  dismiss();
+                optionClickListener.onIndexClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnShare).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onShareClicked(vmrItem);  dismiss();
+                optionClickListener.onShareClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnRename).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onRenameClicked(vmrItem);  dismiss();
+                optionClickListener.onRenameClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDownloadClicked(vmrItem);  dismiss();
+                optionClickListener.onDownloadClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnMove).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onMoveClicked(vmrItem);  dismiss();
+                optionClickListener.onMoveClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnCopy).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onCopyClicked(vmrItem);  dismiss();
+                optionClickListener.onCopyClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnDuplicate).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDuplicateClicked(vmrItem);  dismiss();
+                optionClickListener.onDuplicateClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnProperties).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onPropertiesClicked(vmrItem);  dismiss();
+                optionClickListener.onPropertiesClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onMoveToTrashClicked(vmrItem);  dismiss();
+                optionClickListener.onMoveToTrashClicked(record);  dismiss();
             }
         });
     }
@@ -106,8 +107,8 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
         this.optionClickListener = optionClickListener;
     }
 
-    public void setVmrItem(VmrItem vmrItem) {
-        this.vmrItem = vmrItem;
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
     public void setVmrSharedItem(VmrSharedItem vmrSharedItem) {
@@ -115,16 +116,16 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
     }
 
     public interface OnOptionClickListener{
-        void onOpenClicked(VmrItem vmrItem);
-        void onIndexClicked(VmrItem vmrItem);
-        void onShareClicked(VmrItem vmrItem);
-        void onRenameClicked(VmrItem vmrItem);
-        void onDownloadClicked(VmrItem vmrItem);
-        void onMoveClicked(VmrItem vmrItem);
-        void onCopyClicked(VmrItem vmrItem);
-        void onDuplicateClicked(VmrItem vmrItem);
-        void onPropertiesClicked(VmrItem vmrItem);
-        void onMoveToTrashClicked(VmrItem vmrItem);
+        void onOpenClicked(Record record);
+        void onIndexClicked(Record record);
+        void onShareClicked(Record record);
+        void onRenameClicked(Record record);
+        void onDownloadClicked(Record record);
+        void onMoveClicked(Record record);
+        void onCopyClicked(Record record);
+        void onDuplicateClicked(Record record);
+        void onPropertiesClicked(Record record);
+        void onMoveToTrashClicked(Record record);
         void onOptionsMenuDismiss();
     }
 }

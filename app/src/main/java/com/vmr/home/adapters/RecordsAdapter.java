@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.app.VMR;
+import com.vmr.db.record.Record;
 import com.vmr.model.VmrFile;
 import com.vmr.model.VmrItem;
 
@@ -24,10 +25,12 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
 
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
-    private List<VmrItem> itemsList;
+    private List<Record> records;
 
-    public RecordsAdapter(List<VmrItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
-        this.itemsList = itemsList;
+    public RecordsAdapter(List<Record> records,
+                          OnItemClickListener itemClickListener,
+                          OnItemOptionsClickListener optionsClickListener ) {
+        this.records = records;
         this.itemClickListener = itemClickListener;
         this.optionsClickListener = optionsClickListener;
     }
@@ -42,12 +45,9 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
 
     @Override
     public void onBindViewHolder(MyRecordsViewHolder holder, int position) {
-        VmrItem item = this.itemsList.get(position);
+        Record record = this.records.get(position);
 
-        if (item instanceof VmrFile) {
-            holder.setItemImage(R.drawable.ic_file);
-            holder.setItemSize(((VmrFile)item).getFileSize() + " bytes");
-        } else {
+        if (record.isFolder()) {
             holder.setItemImage(R.drawable.ic_folder);
             holder.itemSize.setVisibility(View.GONE);
             if (Build.VERSION.SDK_INT < 23) {
@@ -55,39 +55,34 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             } else {
                 holder.itemName.setTextAppearance(android.R.style.TextAppearance_Medium);
             }
+        } else {
+            holder.setItemImage(R.drawable.ic_file);
+            holder.setItemSize(record.getFileSize() + " bytes");
         }
-        holder.setItemName(item.getName());
+        holder.setItemName(record.getRecordName());
         SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
-        holder.setItemTimeStamp(ft.format(item.getCreatedDate()));
-        holder.bind(itemsList.get(position), itemClickListener);
-        holder.bind(itemsList.get(position), optionsClickListener);
+        holder.setItemTimeStamp(ft.format(record.getCreatedDate()));
+        holder.bind(records.get(position), itemClickListener);
+        holder.bind(records.get(position), optionsClickListener);
     }
 
     @Override
     public int getItemCount() {
-        return this.itemsList.size();
+        return this.records.size();
     }
 
-    public List<VmrItem> getItemsList() {
-        return itemsList;
-    }
-
-    public void setItemsList(List<VmrItem> itemsList) {
-        this.itemsList = itemsList;
-    }
-
-    public void updateDataset(List<VmrItem> newList) {
-        this.itemsList.clear();
-        this.itemsList.addAll(newList);
+    public void updateDataset(List<Record> newList) {
+        this.records.clear();
+        this.records.addAll(newList);
         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(VmrItem item);
+        void onItemClick(Record record);
     }
 
     public interface OnItemOptionsClickListener {
-        void onItemOptionsClick(VmrItem item, View view);
+        void onItemOptionsClick(Record record, View view);
     }
 
     public class MyRecordsViewHolder extends RecyclerView.ViewHolder {
@@ -130,18 +125,18 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             this.itemImage = itemImage;
         }
 
-        public void bind(final VmrItem item, final OnItemClickListener listener) {
+        public void bind(final Record record, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemClick(item);
+                    listener.onItemClick(record);
                 }
             });
         }
 
-        public void bind(final VmrItem item, final OnItemOptionsClickListener listener) {
+        public void bind(final Record record, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onItemOptionsClick(item, v);
+                    listener.onItemOptionsClick(record, v);
                 }
             });
         }

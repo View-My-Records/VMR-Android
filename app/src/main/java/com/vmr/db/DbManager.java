@@ -48,7 +48,17 @@ public class DbManager {
 
     // Retrieve all records for given parent
     public List<Record> getAllRecords(String parentNode) {
-        return this.recordDAO.getAllRecord(parentNode);
+        return this.recordDAO.getAllRecords(parentNode);
+    }
+
+    // Retrieve all un-indexed records for given parent
+    public List<Record> getAllUnIndexedRecords(String parentNode) {
+        return this.recordDAO.getAllUnIndexedRecords(parentNode);
+    }
+
+    // Retrieve all un-indexed records for given parent
+    public List<Record> getAllSharedWithMeRecords(String parentNode) {
+        return this.recordDAO.getAllSharedWithMeRecords(parentNode);
     }
 
     // Update all records in the given list

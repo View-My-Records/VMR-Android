@@ -42,6 +42,8 @@ import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 
+import java.util.List;
+
 public class HomeActivity extends AppCompatActivity
         implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -247,8 +249,9 @@ public class HomeActivity extends AppCompatActivity
             VMR.setVmrRootFolder(vmrFolder);
         }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
-        dbManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll()));
-        sendToMyRecords.onReceiveFromActivitySuccess(VMR.getVmrRootFolder());
+        dbManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll(), VMR.getLoggedInUserInfo().getRootNodref()));
+        List<Record> records = dbManager.getAllRecords(VMR.getLoggedInUserInfo().getRootNodref());
+        sendToMyRecords.onReceiveFromActivitySuccess(records);
     }
 
     @Override
