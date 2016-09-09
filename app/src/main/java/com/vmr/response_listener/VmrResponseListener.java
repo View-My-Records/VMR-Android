@@ -10,6 +10,7 @@ import com.vmr.model.VmrTrashItem;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Map;
 
 /*
  * Created by abhijit on 8/23/16.
@@ -54,5 +55,10 @@ public abstract class VmrResponseListener {
     public interface OnFetchTicketListener{
         void onFetchTicketSuccess(String ticket);
         void onFetchTicketFailure(VolleyError error);
+    }
+
+    public interface OnFetchClassifications{
+        void onFetchClassificationsSuccess(Map<String , String > classifications);
+        void onFetchClassificationsFailure(VolleyError error);
     }
 }
