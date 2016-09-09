@@ -10,13 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.app.VMR;
 import com.vmr.db.DbConstants;
-import com.vmr.db.shared_by_me.SharedRecord;
 import com.vmr.debug.VmrDebug;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public class TrashRecordDAO {
 
@@ -36,7 +33,7 @@ public class TrashRecordDAO {
                 new String[]{VMR.getLoggedInUserInfo().getSerialNo(), parentNode }, // conditions
                 null, // group by
                 null, // having
-                null, // order by
+                DbConstants.TRASH_NAME, // order by
                 null );
 
         if (c.moveToFirst()) {
@@ -112,15 +109,15 @@ public class TrashRecordDAO {
         VmrDebug.printLogI(this.getClass(), "Records deleted");
         return db.delete(
                 DbConstants.TABLE_TRASH,
-                DbConstants.TRASH_NODE_REF + "=?",
-                new String[]{record.getNodeRef() + ""}) > 0;
-
+                DbConstants.TRASH_RECORD_ID + "=?",
+                new String[]{record.getId() + ""}) > 0;
     }
 
     private TrashRecord buildFromCursor(Cursor c) {
         TrashRecord record = null;
         if (c != null) {
             record = new TrashRecord();
+            record.setId(            c.getInt(    c.getColumnIndex(DbConstants.TRASH_RECORD_ID)));
             record.setNodeRef(       c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
             record.setParentNodeRef( c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
             record.setIsFolder(      c.getInt(    c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);

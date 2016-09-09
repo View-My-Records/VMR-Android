@@ -27,7 +27,7 @@ public class VmrSharedItem {
     private String nodeRef;             //": "workspace://SpacesStore/157f186c-77d1-404e-8b22-a5d3d7f32b98",
 
     public VmrSharedItem(JSONObject fileJson) throws JSONException, ParseException {
-            this.setOwnerName(fileJson.has("ownerName") ? fileJson.getString("recordLife") : null );
+            this.setOwnerName(fileJson.has("ownerName") ? fileJson.getString("ownerName") : null );
             this.setFolder(fileJson.has("isFolder") && fileJson.getBoolean("isFolder"));
             this.setRecordLife(fileJson.has("recordLife") ? fileJson.getString("recordLife") : null);
             this.setSharedToEmailId(fileJson.has("sharedToEmailId") ? fileJson.getString("sharedToEmailId") : null );
@@ -72,13 +72,13 @@ public class VmrSharedItem {
         return recordLife;
     }
 
-    public void setRecordLife(Date recordLife) throws JSONException {
-        this.recordLife = recordLife;
-    }
-
     public void setRecordLife(String recordLife) throws JSONException, ParseException {
         DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.ENGLISH); // "Sep 30, 2016 11:00:00 AM"
         this.recordLife = df.parse(recordLife);
+    }
+
+    public void setRecordLife(Date recordLife) throws JSONException {
+        this.recordLife = recordLife;
     }
 
     public String getSharedToEmailId() {

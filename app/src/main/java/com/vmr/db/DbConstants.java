@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 1;
+    public static final int VERSION = 7;
 
     //Table Name
     public static final String TABLE_USER = "USER";
@@ -96,6 +96,9 @@ public class DbConstants {
                 RECORD_UPDATE_DATE
     };
 
+    public static final String SHARED_RECORD_ID          = "RECORD_ID";
+    public static final String SHARED_NODE_REF           = "NODE_REF";
+    public static final String SHARED_PARENT_NODE_REF    = "PARENT_NODE_REF";
     public static final String SHARED_OWNER_NAME         = "OWNER_NAME";
     public static final String SHARED_IS_FOLDER          = "IS_FOLDER";
     public static final String SHARED_RECORD_LIFE        = "RECORD_LIFE";
@@ -103,12 +106,11 @@ public class DbConstants {
     public static final String SHARED_USER_ID            = "USER_ID";
     public static final String SHARED_FILE_NAME          = "FILE_NAME";
     public static final String SHARED_PERMISSIONS        = "PERMISSIONS";
-    public static final String SHARED_NODE_REF           = "NODE_REF";
-    public static final String SHARED_PARENT_NODE_REF    = "PARENT_NODE_REF";
 
     //All Columns
     public static final String[] SHARED_COLUMNS
             = {
+            SHARED_RECORD_ID,
             SHARED_OWNER_NAME,
             SHARED_IS_FOLDER,
             SHARED_RECORD_LIFE,
@@ -120,7 +122,7 @@ public class DbConstants {
             SHARED_PARENT_NODE_REF
     };
 
-
+    public static final String TRASH_RECORD_ID       = "RECORD_ID";
     public static final String TRASH_IS_FOLDER       = "OWNER_NAME";
     public static final String TRASH_CREATED_BY      = "IS_FOLDER";
     public static final String TRASH_NAME            = "RECORD_LIFE";
@@ -131,6 +133,7 @@ public class DbConstants {
     //All Columns
     public static final String[] TRASH_COLUMNS
             = {
+            TRASH_RECORD_ID,
             TRASH_IS_FOLDER,
             TRASH_CREATED_BY,
             TRASH_NAME,

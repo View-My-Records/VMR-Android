@@ -19,7 +19,7 @@ import com.vmr.R;
 import com.vmr.app.VMR;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
-import com.vmr.db.shared_by_me.SharedRecord;
+import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
@@ -33,7 +33,6 @@ import com.vmr.utils.ErrorMessage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class FragmentSharedByMe extends Fragment
         implements
@@ -51,7 +50,7 @@ public class FragmentSharedByMe extends Fragment
     private RecyclerView mRecyclerView;
     private TextView mTextView;
     private ProgressDialog mProgressDialog;
-    private OptionsMenuSheet optionsMenuSheet;
+//    private OptionsMenuSheet optionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -66,10 +65,10 @@ public class FragmentSharedByMe extends Fragment
         super.onCreate(savedInstanceState);
 
         homeController = new HomeController(this);
+        sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);
 
-
-        optionsMenuSheet = new OptionsMenuSheet();
-        optionsMenuSheet.setOptionClickListener(this);
+//        optionsMenuSheet = new OptionsMenuSheet();
+//        optionsMenuSheet.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
     }
@@ -112,8 +111,9 @@ public class FragmentSharedByMe extends Fragment
     public void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems) {
         mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "My Records retrieved.");
-        // TODO: 9/8/16 Replace NA with appropriate noderef
-        sharedRecords = SharedRecord.getSharedRecordsList(vmrSharedItems, "NA");
+
+        dbManager.updateAllSharedByMe(SharedRecord.getSharedRecordsList(vmrSharedItems, "NA"));
+        sharedRecords = dbManager.getAllSharedByMe();
         sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);
         mRecyclerView.setAdapter(sharedByMeAdapter);
 

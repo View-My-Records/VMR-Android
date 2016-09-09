@@ -10,6 +10,7 @@ import java.util.List;
  */
 public class TrashRecord {
 
+    private int id;
     private String nodeRef;
     private String parentNodeRef;
     private boolean isFolder;
@@ -35,6 +36,14 @@ public class TrashRecord {
             trashRecords.add(trashRecord);
         }
         return trashRecords;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean isFolder() {

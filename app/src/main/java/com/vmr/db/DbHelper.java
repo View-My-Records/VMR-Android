@@ -13,9 +13,12 @@ public class DbHelper extends SQLiteOpenHelper {
 
     private String createUserTable;
     private String createRecordTable;
+    private String createSharedTable;
+    private String createTrashTable;
 
     public DbHelper() {
         super(VMR.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
+
         createUserTable = ("CREATE TABLE " + DbConstants.TABLE_USER + " (") +
                 DbConstants.USER_SERIAL_NO + " TEXT PRIMARY KEY, " +
                 DbConstants.USER_RESULT + " TEXT, " +
@@ -53,18 +56,43 @@ public class DbHelper extends SQLiteOpenHelper {
                 DbConstants.RECORD_CREATION_DATE + " DATETIME, " +
                 DbConstants.RECORD_UPDATED_BY + " TEXT, " +
                 DbConstants.RECORD_UPDATE_DATE + " DATETIME );";
+
+        createSharedTable = ("CREATE TABLE "       + DbConstants.TABLE_SHARED + " (") +
+                DbConstants.SHARED_RECORD_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DbConstants.SHARED_NODE_REF        + " TEXT, " +
+                DbConstants.SHARED_PARENT_NODE_REF + " TEXT, " +
+                DbConstants.SHARED_IS_FOLDER       + " NUMERIC, " +
+                DbConstants.SHARED_TO_EMAIL_ID     + " TEXT, " +
+                DbConstants.SHARED_USER_ID         + " TEXT, " +
+                DbConstants.SHARED_FILE_NAME       + " TEXT, " +
+                DbConstants.SHARED_PERMISSIONS     + " TEXT, " +
+                DbConstants.SHARED_OWNER_NAME      + " TEXT, " +
+                DbConstants.SHARED_RECORD_LIFE     + " DATETIME );" ;
+
+        createTrashTable = "CREATE TABLE "        + DbConstants.TABLE_TRASH + " (" +
+                DbConstants.SHARED_RECORD_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DbConstants.TRASH_NODE_REF        + " TEXT, " +
+                DbConstants.TRASH_PARENT_NODE_REF + " TEXT, " +
+                DbConstants.TRASH_IS_FOLDER       + " NUMERIC, " +
+                DbConstants.TRASH_CREATED_BY      + " TEXT, " +
+                DbConstants.TRASH_NAME            + " TEXT, " +
+                DbConstants.TRASH_OWNER           + " TEXT );" ;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(createUserTable);
         db.execSQL(createRecordTable);
+        db.execSQL(createSharedTable);
+        db.execSQL(createTrashTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_USER);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_RECORD);
+        db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_SHARED);
+        db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_TRASH);
         this.onCreate(db);
     }
 }

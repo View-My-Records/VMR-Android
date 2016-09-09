@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.db.shared_by_me.SharedRecord;
+import com.vmr.db.shared.SharedRecord;
 
 import java.util.List;
 

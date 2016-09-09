@@ -4,8 +4,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.db.record.Record;
 import com.vmr.db.record.RecordDAO;
-import com.vmr.db.shared_by_me.SharedRecord;
-import com.vmr.db.shared_by_me.SharedRecordDAO;
+import com.vmr.db.shared.SharedRecord;
+import com.vmr.db.shared.SharedRecordDAO;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.db.trash.TrashRecordDAO;
 import com.vmr.db.user.User;
@@ -83,7 +83,15 @@ public class DbManager {
         return this.sharedRecordDAO.getAllRecords();
     }
 
+    public void updateAllSharedByMe(List<SharedRecord> sharedRecords){
+        this.sharedRecordDAO.updateAllRecords(sharedRecords);
+    }
+
     public List<TrashRecord> getAllTrash(String nodeRef){
         return this.trashRecordDAO.getAllRecords(nodeRef);
+    }
+
+    public void updateAllTrash(List<TrashRecord> trashRecords,String nodeRef){
+        this.trashRecordDAO.updateAllRecords(trashRecords);
     }
 }

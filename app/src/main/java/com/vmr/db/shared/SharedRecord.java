@@ -1,4 +1,4 @@
-package com.vmr.db.shared_by_me;
+package com.vmr.db.shared;
 
 import com.vmr.model.VmrSharedItem;
 
@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class SharedRecord {
 
+    private int id;
     private String nodeRef;
-    private String parentNodeRef;
     private String ownerName;
     private boolean isFolder;
     private Date   recordLife;
@@ -27,7 +27,7 @@ public class SharedRecord {
 
     public static List<SharedRecord> getSharedRecordsList(List<VmrSharedItem> vmrSharedItems, String parentNodeRef){
         List<SharedRecord> recordList = new ArrayList<>();
-        SharedRecord sharedRecord = null;
+        SharedRecord sharedRecord;
         for (VmrSharedItem sharedItem : vmrSharedItems) {
             sharedRecord = new SharedRecord();
             sharedRecord.setOwnerName(sharedItem.getOwnerName());
@@ -38,10 +38,17 @@ public class SharedRecord {
             sharedRecord.setFileName(sharedItem.getName());
             sharedRecord.setPermissions(sharedItem.getPermissions());
             sharedRecord.setNodeRef(sharedItem.getNodeRef());
-            sharedRecord.setParentNodeRef(parentNodeRef);
             recordList.add(sharedRecord);
         }
         return recordList;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getOwnerName() {
@@ -106,13 +113,5 @@ public class SharedRecord {
 
     public void setNodeRef(String nodeRef) {
         this.nodeRef = nodeRef;
-    }
-
-    public String getParentNodeRef() {
-        return parentNodeRef;
-    }
-
-    public void setParentNodeRef(String parentNodeRef) {
-        this.parentNodeRef = parentNodeRef;
     }
 }
