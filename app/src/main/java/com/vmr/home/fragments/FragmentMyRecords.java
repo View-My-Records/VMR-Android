@@ -1,7 +1,6 @@
 package com.vmr.home.fragments;
 
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -69,7 +68,6 @@ public class FragmentMyRecords extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private ProgressDialog mProgressDialog;
     private AddItemMenuSheet addItemMenu;
     private OptionsMenuSheet optionsMenuSheet;
 
@@ -118,9 +116,7 @@ public class FragmentMyRecords extends Fragment
         setupFab(fragmentView);
         setOnBackPress(fragmentView);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("Fetching The File...");
-        mProgressDialog.setCancelable(true);
+        mSwipeRefreshLayout.setRefreshing(true);
 
         return fragmentView;
     }
@@ -128,9 +124,6 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        homeController.fetchAllFilesAndFolders(VMR.getLoggedInUserInfo().getRootNodref());
-        records = dbManager.getAllRecords(recordStack.peek());
-        recordsAdapter.updateDataset(records);
     }
 
     @Override
@@ -141,12 +134,13 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "Records retrieved.");
 
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
+
+        mSwipeRefreshLayout.setRefreshing(false);
 
         if(records.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -159,14 +153,13 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        mProgressDialog.dismiss();
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onReceiveFromActivitySuccess(List<Record> records) {
         recordsAdapter.updateDataset(records);
-        mProgressDialog.dismiss();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -180,7 +173,7 @@ public class FragmentMyRecords extends Fragment
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
             recordStack.push(record.getRecordNodeRef());
             homeController.fetchAllFilesAndFolders(recordStack.peek());
-            mProgressDialog.show();
+            mSwipeRefreshLayout.setRefreshing(true);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
         }
@@ -500,8 +493,6 @@ public class FragmentMyRecords extends Fragment
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                 refreshFolder();
-                mSwipeRefreshLayout.setRefreshing(false);
-                mProgressDialog.show();
             }
         });
 

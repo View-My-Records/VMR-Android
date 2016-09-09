@@ -34,8 +34,8 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_OWNER + "=? AND " + DbConstants.RECORD_PARENT_NODE_REF + "=?" , // where
-                new String[]{VMR.getLoggedInUserInfo().getSerialNo(), parentNode }, // conditions
+                DbConstants.RECORD_PARENT_NODE_REF + "=?" , // where
+                new String[]{ parentNode }, // conditions
                 null, // group by
                 null, // having
                 null, // order by
@@ -62,9 +62,9 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_OWNER + " =? AND " + DbConstants.RECORD_PARENT_NODE_REF + " =? AND " + DbConstants.RECORD_DOC_TYPE + " IN ( " +
+                DbConstants.RECORD_PARENT_NODE_REF + " =? AND " + DbConstants.RECORD_DOC_TYPE + " IN ( " +
                         TextUtils.join(",", Collections.nCopies(inClause.length, "?")) + ")" , // where
-                new String[]{VMR.getLoggedInUserInfo().getSerialNo(), parentNode, inClause[0], inClause[1] }, // conditions
+                new String[]{ parentNode, inClause[0], inClause[1] }, // conditions
                 null, // group by
                 null, // having
                 null, // order by
@@ -90,7 +90,7 @@ public class RecordDAO {
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
                 DbConstants.RECORD_PARENT_NODE_REF + " =? " , // where
-                new String[]{parentNode }, // conditions
+                new String[]{ parentNode }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_UPDATE_DATE, // order by
