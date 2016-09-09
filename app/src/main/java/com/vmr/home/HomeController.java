@@ -7,6 +7,7 @@ import com.android.volley.VolleyError;
 import com.vmr.app.VMR;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
+import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.MoveToTrashRequest;
 import com.vmr.home.request.RecordsRequest;
@@ -43,6 +44,7 @@ public class HomeController {
     private VmrResponseListener.OnCreateFolderListener onCreateFolderListener;
     private VmrResponseListener.OnRenameItemListener onRenameItemListener;
     private VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener;
+    private VmrResponseListener.OnFetchClassifications onFetchClassifications;
 
     public HomeController(VmrResponseListener.OnFetchSharedByMeListener onFetchSharedByMe) {
         this.onFetchSharedByMe = onFetchSharedByMe;
@@ -66,6 +68,10 @@ public class HomeController {
 
     public HomeController(VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener) {
         this.onMoveToTrashListener = onMoveToTrashListener;
+    }
+
+    public HomeController(VmrResponseListener.OnFetchClassifications onFetchClassifications) {
+        this.onFetchClassifications = onFetchClassifications;
     }
 
     public void fetchAllFilesAndFolders(String nodeRef){
@@ -303,5 +309,31 @@ public class HomeController {
                         } );
         VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.RemoveExpiredRecords.TAG);
     }
+
+    public void fetchClassifications(){
+
+        Map<String, String> formData = VMR.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.Classification.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_CONTENT_TYPES);
+
+        ClassificationRequest classificationRequest =
+                new ClassificationRequest(
+                        formData,
+                        new Response.Listener<Map<String , String >>() {
+                            @Override
+                            public void onResponse(Map<String , String > response) {
+                                onFetchClassifications.onFetchClassificationsSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFetchClassifications.onFetchClassificationsFailure(error);
+                            }
+                        }
+                );
+        VmrRequestQueue.getInstance().addToRequestQueue(classificationRequest, Constants.Request.FolderNavigation.Classification.TAG);
+    }
+
 
 }

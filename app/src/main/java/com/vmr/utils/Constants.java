@@ -96,6 +96,7 @@ public abstract class Constants {
 
             public final static class PageMode {
                 public final static String LIST_ALL_FILE_FOLDER      = "LIST_ALL_FILE_FOLDER";
+                public final static String DOCUMENT_CONTENT_TYPES    = "DOCUMENT_CONTENT_TYPES";
                 public final static String DOCUMENT_DETAILS          = "DOCUMENT_DETAILS";
                 public final static String SET_SAVED_FILE_PROPERTIES = "SET_SAVED_FILE_PROPERTIES";
                 public final static String SAVE_FILE_PROPERTY        = "FILE_PROPERTY_SAVE";
@@ -137,15 +138,19 @@ public abstract class Constants {
                 public static final String TAG = "VMR_SHARED_BY_ME";
             }
 
-            public final static class ListSharedWithyMe {
+            public final static class ListSharedWithMe {
                 public static final String PAGE_MODE = "pageMode";
-                public static final String LOGGED_IN_USER_ID = "loggedInUserId";
                 public static final String TAG = "VMR_SHARED_WITH_ME";
             }
 
             public final static class RemoveExpiredRecords {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String TAG = "VMR_REMOVE_EXPIRED_RECORDS";
+            }
+
+            public final static class Classification {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String TAG = "VMR_GET_CLASSIFICATIONS";
             }
 
             public final static class DownloadFile {
@@ -201,6 +206,12 @@ public abstract class Constants {
             public static final String ALFRESCO_TICKET = "alf_ticket";
         }
 
+    }
+
+    public final static class Indexing {
+        public static final String[] CLASSIFICATION = {
+
+        };
     }
 
     public final static class Key {

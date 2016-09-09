@@ -358,7 +358,7 @@ public class FragmentSharedWithMe extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithyMe.TAG);
+                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithMe.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
