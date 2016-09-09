@@ -24,15 +24,15 @@ public class TrashRecord {
 
     public static List<TrashRecord> getTrashRecordList(List<VmrTrashItem> trashItems, String parentNodeRef){
         List<TrashRecord> trashRecords = new ArrayList<>();
-        TrashRecord trashRecord =  null;
+        TrashRecord trashRecord;
         for (VmrTrashItem trashItem : trashItems) {
             trashRecord =  new TrashRecord();
+            trashRecord.setNodeRef(trashItem.getNodeRef());
+            trashRecord.setParentNodeRef(parentNodeRef);
             trashRecord.setIsFolder(trashItem.isFolder());
             trashRecord.setCreatedBy(trashItem.getCreatedBy());
             trashRecord.setName(trashItem.getName());
             trashRecord.setOwner(trashItem.getOwner());
-            trashRecord.setNodeRef(trashItem.getNodeRef());
-            trashRecord.setParentNodeRef(parentNodeRef);
             trashRecords.add(trashRecord);
         }
         return trashRecords;

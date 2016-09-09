@@ -1,0 +1,399 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/btnInfo"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
+
+        <ImageView
+            android:id="@+id/infoImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:clickable="false"
+            android:contentDescription="Info"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_view" />
+
+        <TextView
+            android:id="@+id/tvItemName"
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/infoImageView"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:layout_toEndOf="@+id/infoImageView"
+            android:layout_toRightOf="@+id/infoImageView"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="Info"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:alpha="150"
+        android:background="#000000" />
+    <RelativeLayout
+        android:id="@+id/btnOpen"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true"
+        android:longClickable="true">
+
+        <ImageView
+            android:id="@+id/openImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:clickable="false"
+            android:contentDescription="Open"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_view" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/openImageView"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:layout_toEndOf="@+id/openImageView"
+            android:layout_toRightOf="@+id/openImageView"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="Open"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    </RelativeLayout>
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnIndex"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true"-->
+        <!--android:longClickable="true">-->
+
+        <!--<ImageView-->
+            <!--android:id="@+id/indexImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="6dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Index"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_view" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/indexImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="6dp"-->
+            <!--android:layout_toEndOf="@+id/indexImageView"-->
+            <!--android:layout_toRightOf="@+id/indexImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Index"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnShare"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true"-->
+        <!--android:longClickable="true">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/shareImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Share"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_add" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/shareImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_toEndOf="@+id/shareImageView"-->
+            <!--android:layout_toRightOf="@+id/shareImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Share"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnRename"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true"-->
+        <!--android:longClickable="true">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/renameImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Rename"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_add" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/renameImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_toEndOf="@+id/renameImageView"-->
+            <!--android:layout_toRightOf="@+id/renameImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Rename"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnDownload"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/downloadImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Download"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_add" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/downloadImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_toEndOf="@+id/downloadImageView"-->
+            <!--android:layout_toRightOf="@+id/downloadImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Download"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnMove"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/moveImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Move"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_add" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/moveImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_toEndOf="@+id/moveImageView"-->
+            <!--android:layout_toRightOf="@+id/moveImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Move"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+    <!--</RelativeLayout>-->
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/btnCopy"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginBottom="2dp"-->
+        <!--android:layout_marginTop="2dp"-->
+        <!--android:background="@android:drawable/menuitem_background"-->
+        <!--android:clickable="true">-->
+        <!--<ImageView-->
+            <!--android:id="@+id/copyImageView"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:clickable="false"-->
+            <!--android:contentDescription="Copy"-->
+            <!--android:longClickable="false"-->
+            <!--android:src="@android:drawable/ic_menu_add" />-->
+
+        <!--<TextView-->
+            <!--android:layout_width="212dp"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignBottom="@+id/copyImageView"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_margin="5dp"-->
+            <!--android:layout_toEndOf="@+id/copyImageView"-->
+            <!--android:layout_toRightOf="@+id/copyImageView"-->
+            <!--android:clickable="false"-->
+            <!--android:longClickable="false"-->
+            <!--android:text="Copy"-->
+            <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
+    <!--</RelativeLayout>-->
+    <RelativeLayout
+        android:id="@+id/btnRestore"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
+        <ImageView
+            android:id="@+id/restoreImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:clickable="false"
+            android:contentDescription="Restore"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/restoreImageView"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/restoreImageView"
+            android:layout_toRightOf="@+id/restoreImageView"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="Restore"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/btnProperties"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
+        <ImageView
+            android:id="@+id/propertiesImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:clickable="false"
+            android:contentDescription="Properties"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/propertiesImageView"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/propertiesImageView"
+            android:layout_toRightOf="@+id/propertiesImageView"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="Properties"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:alpha="150"
+        android:background="#000000" />
+    <RelativeLayout
+        android:id="@+id/btnDelete"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginTop="2dp"
+        android:background="@android:drawable/menuitem_background"
+        android:clickable="true">
+        <ImageView
+            android:id="@+id/deleteImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:clickable="false"
+            android:contentDescription="Delete"
+            android:longClickable="false"
+            android:src="@android:drawable/ic_menu_add" />
+
+        <TextView
+            android:layout_width="212dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/deleteImageView"
+            android:layout_centerVertical="true"
+            android:layout_margin="5dp"
+            android:layout_toEndOf="@+id/deleteImageView"
+            android:layout_toRightOf="@+id/deleteImageView"
+            android:clickable="false"
+            android:longClickable="false"
+            android:text="Delete"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
+
+</LinearLayout>

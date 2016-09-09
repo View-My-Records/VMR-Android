@@ -33,7 +33,7 @@ import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
-import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
@@ -57,7 +57,7 @@ public class FragmentMyRecords extends Fragment
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
         AddItemMenuSheet.OnItemClickListener,
-        OptionsMenuSheet.OnOptionClickListener
+        RecordOptionsMenuSheet.OnOptionClickListener
 {
 
     // FragmentInteractionListener
@@ -69,7 +69,7 @@ public class FragmentMyRecords extends Fragment
     private RecyclerView mRecyclerView;
     private TextView mTextView;
     private AddItemMenuSheet addItemMenu;
-    private OptionsMenuSheet optionsMenuSheet;
+    private RecordOptionsMenuSheet recordOptionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -95,8 +95,8 @@ public class FragmentMyRecords extends Fragment
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
-        optionsMenuSheet = new OptionsMenuSheet();
-        optionsMenuSheet.setOptionClickListener(this);
+        recordOptionsMenuSheet = new RecordOptionsMenuSheet();
+        recordOptionsMenuSheet.setOptionClickListener(this);
 
         recordStack = new Stack<>();
         recordStack.push(VMR.getLoggedInUserInfo().getRootNodref());
@@ -153,6 +153,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -171,8 +172,9 @@ public class FragmentMyRecords extends Fragment
     public void onItemClick(Record record) {
         if(record.isFolder()){
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
+            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getRecordNodeRef());
-            homeController.fetchAllFilesAndFolders(recordStack.peek());
+            refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
@@ -182,9 +184,9 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onItemOptionsClick(Record record, View view) {
         VmrDebug.printLine(record.getRecordName() + " Options clicked");
-        optionsMenuSheet.setRecord(record);
+        recordOptionsMenuSheet.setRecord(record);
         mFabAddItem.hide();
-        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
+        recordOptionsMenuSheet.show(getActivity().getSupportFragmentManager(), recordOptionsMenuSheet.getTag());
     }
 
     @Override
@@ -472,6 +474,7 @@ public class FragmentMyRecords extends Fragment
                         records = dbManager.getAllRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);
                         refreshFolder();
+                        mSwipeRefreshLayout.setRefreshing(true);
                         return true;
                     } else {
                         return false;

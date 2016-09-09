@@ -1,7 +1,6 @@
 package com.vmr.home.fragments;
 
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -32,11 +31,10 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
-import com.vmr.model.VmrItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
@@ -54,7 +52,7 @@ public class FragmentToBeIndexed extends Fragment
         VmrResponseListener.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
-        OptionsMenuSheet.OnOptionClickListener
+        RecordOptionsMenuSheet.OnOptionClickListener
 {
 
     // FragmentInteractionListener
@@ -64,8 +62,7 @@ public class FragmentToBeIndexed extends Fragment
     private RecyclerView mRecyclerView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private TextView mTextView;
-    private ProgressDialog mProgressDialog;
-    private OptionsMenuSheet optionsMenuSheet;
+    private RecordOptionsMenuSheet recordOptionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -85,8 +82,8 @@ public class FragmentToBeIndexed extends Fragment
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
 
-        optionsMenuSheet = new OptionsMenuSheet();
-        optionsMenuSheet.setOptionClickListener(this);
+        recordOptionsMenuSheet = new RecordOptionsMenuSheet();
+        recordOptionsMenuSheet.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
@@ -108,9 +105,7 @@ public class FragmentToBeIndexed extends Fragment
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("Fetching The File...");
-        mProgressDialog.setCancelable(true);
+        mSwipeRefreshLayout.setRefreshing(true);
 
         return fragmentView;
     }
@@ -118,7 +113,6 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onStart() {
         super.onStart();
-        homeController.fetchAllFilesAndFolders(VMR.getLoggedInUserInfo().getRootNodref());
         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
     }
@@ -131,12 +125,13 @@ public class FragmentToBeIndexed extends Fragment
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        mProgressDialog.dismiss();
         VmrDebug.printLine("Un-indexed files retrieved.");
 
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
+
+        mSwipeRefreshLayout.setRefreshing(false);
 
         if(records.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -149,7 +144,7 @@ public class FragmentToBeIndexed extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        mProgressDialog.dismiss();
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -157,9 +152,10 @@ public class FragmentToBeIndexed extends Fragment
     public void onItemClick(Record record) {
         if(record.isFolder()){
             VmrDebug.printLogI(record.getRecordName() + " Folder clicked");
+            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
             recordStack.push(record.getRecordNodeRef());
-            homeController.fetchAllFilesAndFolders(recordStack.peek());
-            mProgressDialog.show();
+            refreshFolder();
+            mSwipeRefreshLayout.setRefreshing(true);
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
         }
@@ -168,8 +164,8 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onItemOptionsClick(Record record, View view) {
         VmrDebug.printLine(record.getRecordName() + " Options clicked");
-        optionsMenuSheet.setRecord(record);
-        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
+        recordOptionsMenuSheet.setRecord(record);
+        recordOptionsMenuSheet.show(getActivity().getSupportFragmentManager(), recordOptionsMenuSheet.getTag());
     }
 
     @Override
@@ -344,12 +340,13 @@ public class FragmentToBeIndexed extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                     if (!recordStack.peek().equals(VMR.getLoggedInUserInfo().getRootNodref())) {
                         recordStack.pop();
                         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);
                         refreshFolder();
+                        mSwipeRefreshLayout.setRefreshing(true);
                         return true;
                     } else {
                         return false;
@@ -371,8 +368,7 @@ public class FragmentToBeIndexed extends Fragment
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                 refreshFolder();
-                mSwipeRefreshLayout.setRefreshing(false);
-                mProgressDialog.show();
+                mSwipeRefreshLayout.setRefreshing(true);
             }
         });
 

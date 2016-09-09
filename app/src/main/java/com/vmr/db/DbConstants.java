@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 7;
+    public static final int VERSION = 9;
 
     //Table Name
     public static final String TABLE_USER = "USER";
@@ -111,24 +111,24 @@ public class DbConstants {
     public static final String[] SHARED_COLUMNS
             = {
             SHARED_RECORD_ID,
+            SHARED_NODE_REF,
+            SHARED_PARENT_NODE_REF,
             SHARED_OWNER_NAME,
             SHARED_IS_FOLDER,
             SHARED_RECORD_LIFE,
             SHARED_TO_EMAIL_ID,
             SHARED_USER_ID,
             SHARED_FILE_NAME,
-            SHARED_PERMISSIONS,
-            SHARED_NODE_REF,
-            SHARED_PARENT_NODE_REF
+            SHARED_PERMISSIONS
     };
 
     public static final String TRASH_RECORD_ID       = "RECORD_ID";
-    public static final String TRASH_IS_FOLDER       = "OWNER_NAME";
-    public static final String TRASH_CREATED_BY      = "IS_FOLDER";
-    public static final String TRASH_NAME            = "RECORD_LIFE";
-    public static final String TRASH_OWNER           = "SHARED_TO_EMAIL_ID";
-    public static final String TRASH_NODE_REF        = "USER_ID";
-    public static final String TRASH_PARENT_NODE_REF = "FILE_NAME";
+    public static final String TRASH_IS_FOLDER       = "IS_FOLDER";
+    public static final String TRASH_CREATED_BY      = "CREATED_BY";
+    public static final String TRASH_NAME            = "NAME";
+    public static final String TRASH_OWNER           = "OWNER";
+    public static final String TRASH_NODE_REF        = "NODE_REF";
+    public static final String TRASH_PARENT_NODE_REF = "PARENT_NODE_REF";
 
     //All Columns
     public static final String[] TRASH_COLUMNS

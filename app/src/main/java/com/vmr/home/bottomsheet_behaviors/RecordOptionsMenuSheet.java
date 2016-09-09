@@ -9,13 +9,12 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.db.record.Record;
-import com.vmr.model.VmrItem;
 import com.vmr.model.VmrSharedItem;
 
 /*
  * Created by abhijit on 8/31/16.
  */
-public class OptionsMenuSheet extends BottomSheetDialogFragment {
+public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
     private Record record;
@@ -29,7 +28,7 @@ public class OptionsMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.options_layout, null);
+        View contentView = View.inflate(getContext(), R.layout.record_options_layout, null);
         dialog.setContentView(contentView);
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());

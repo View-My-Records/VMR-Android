@@ -1,6 +1,5 @@
 package com.vmr.home.fragments;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,13 +17,12 @@ import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.VMR;
 import com.vmr.db.DbManager;
-import com.vmr.db.record.Record;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
-import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.SharedOptionsMenuSheet;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
@@ -39,7 +37,7 @@ public class FragmentSharedByMe extends Fragment
         VmrResponseListener.OnFetchSharedByMeListener,
         SharedByMeAdapter.OnItemClickListener,
         SharedByMeAdapter.OnItemOptionsClickListener,
-        OptionsMenuSheet.OnOptionClickListener
+        SharedOptionsMenuSheet.OnOptionClickListener
 {
 
     // Fragment interaction listener
@@ -49,8 +47,7 @@ public class FragmentSharedByMe extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private ProgressDialog mProgressDialog;
-//    private OptionsMenuSheet optionsMenuSheet;
+    private SharedOptionsMenuSheet optionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -67,8 +64,8 @@ public class FragmentSharedByMe extends Fragment
         homeController = new HomeController(this);
         sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);
 
-//        optionsMenuSheet = new OptionsMenuSheet();
-//        optionsMenuSheet.setOptionClickListener(this);
+        optionsMenuSheet = new SharedOptionsMenuSheet();
+        optionsMenuSheet.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
     }
@@ -86,9 +83,7 @@ public class FragmentSharedByMe extends Fragment
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("Fetching The File...");
-        mProgressDialog.setCancelable(true);
+        mSwipeRefreshLayout.setRefreshing(true);
 
         return fragmentView;
     }
@@ -109,13 +104,14 @@ public class FragmentSharedByMe extends Fragment
 
     @Override
     public void onFetchSharedByMeSuccess(List<VmrSharedItem> vmrSharedItems) {
-        mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "My Records retrieved.");
 
         dbManager.updateAllSharedByMe(SharedRecord.getSharedRecordsList(vmrSharedItems, "NA"));
         sharedRecords = dbManager.getAllSharedByMe();
         sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);
         mRecyclerView.setAdapter(sharedByMeAdapter);
+
+        mSwipeRefreshLayout.setRefreshing(false);
 
         if(vmrSharedItems.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -128,7 +124,7 @@ public class FragmentSharedByMe extends Fragment
 
     @Override
     public void onFetchSharedByMeFailure(VolleyError error) {
-        mProgressDialog.dismiss();
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -140,63 +136,38 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onItemOptionsClick(SharedRecord record, View view) {
         VmrDebug.printLine( record.getRecordName() + " options clicked.");
-//        optionsMenuSheet.setVmrSharedItem(record);
-//        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
+        optionsMenuSheet.setRecord(record);
+        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
     }
 
     @Override
-    public void onOpenClicked(Record vmrItem) {
-
+    public void onOpenClicked(SharedRecord record) {
+        VmrDebug.printLine( record.getRecordName() + " open clicked.");
     }
 
     @Override
-    public void onIndexClicked(Record vmrItem) {
-
+    public void onDownloadClicked(SharedRecord record) {
+        VmrDebug.printLine( record.getRecordName() + " download clicked.");
     }
 
     @Override
-    public void onShareClicked(Record vmrItem) {
-
+    public void onRevokeAccessClicked(SharedRecord record) {
+        VmrDebug.printLine( record.getRecordName() + " revoke access clicked.");
     }
 
     @Override
-    public void onRenameClicked(Record vmrItem) {
-
+    public void onPropertiesClicked(SharedRecord record) {
+        VmrDebug.printLine( record.getRecordName() + " properties clicked.");
     }
 
     @Override
-    public void onDownloadClicked(Record vmrItem) {
-
-    }
-
-    @Override
-    public void onMoveClicked(Record vmrItem) {
-
-    }
-
-    @Override
-    public void onCopyClicked(Record vmrItem) {
-
-    }
-
-    @Override
-    public void onDuplicateClicked(Record vmrItem) {
-
-    }
-
-    @Override
-    public void onPropertiesClicked(Record vmrItem) {
-
-    }
-
-    @Override
-    public void onMoveToTrashClicked(Record vmrItem) {
-
+    public void onMoveToTrashClicked(SharedRecord record) {
+        VmrDebug.printLine( record.getRecordName() + " trash clicked.");
     }
 
     @Override
     public void onOptionsMenuDismiss() {
-
+        VmrDebug.printLine( "Options dismissed");
     }
 
     private void setOnBackPress(View view){
@@ -223,8 +194,7 @@ public class FragmentSharedByMe extends Fragment
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedByMe.TAG);
                 refreshFolder();
-                mSwipeRefreshLayout.setRefreshing(false);
-                mProgressDialog.show();
+                mSwipeRefreshLayout.setRefreshing(true);
             }
         });
 

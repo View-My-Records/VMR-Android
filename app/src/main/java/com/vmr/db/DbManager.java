@@ -87,11 +87,11 @@ public class DbManager {
         this.sharedRecordDAO.updateAllRecords(sharedRecords);
     }
 
-    public List<TrashRecord> getAllTrash(String nodeRef){
-        return this.trashRecordDAO.getAllRecords(nodeRef);
+    public List<TrashRecord> getAllTrash(){
+        return this.trashRecordDAO.getAllRecords();
     }
 
-    public void updateAllTrash(List<TrashRecord> trashRecords,String nodeRef){
+    public void updateAllTrash(List<TrashRecord> trashRecords){
         this.trashRecordDAO.updateAllRecords(trashRecords);
     }
 }

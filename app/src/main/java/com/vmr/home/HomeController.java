@@ -7,8 +7,6 @@ import com.android.volley.VolleyError;
 import com.vmr.app.VMR;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
-import com.vmr.model.VmrItem;
-import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.MoveToTrashRequest;
 import com.vmr.home.request.RecordsRequest;
@@ -21,6 +19,7 @@ import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.model.VmrTrashItem;
 import com.vmr.network.VmrRequestQueue;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
@@ -49,12 +48,12 @@ public class HomeController {
         this.onFetchSharedByMe = onFetchSharedByMe;
     }
 
-    public HomeController(VmrResponseListener.OnFetchRecordsListener OnFetchRecordsListener) {
-        this.onFetchRecordsListener = OnFetchRecordsListener;
+    public HomeController(VmrResponseListener.OnFetchRecordsListener onFetchRecordsListener) {
+        this.onFetchRecordsListener = onFetchRecordsListener;
     }
 
-    public HomeController(VmrResponseListener.OnFetchTrashListener OnFetchTrashListener) {
-        this.onFetchTrashListener = OnFetchTrashListener;
+    public HomeController(VmrResponseListener.OnFetchTrashListener onFetchTrashListener) {
+        this.onFetchTrashListener = onFetchTrashListener;
     }
 
     public HomeController(VmrResponseListener.OnCreateFolderListener onCreateFolderListener) {
@@ -120,10 +119,10 @@ public class HomeController {
     }
 
 
-    public void fetchTrash(String nodeRef){
+    public void fetchTrash(){
 
         Map<String, String> formData = VMR.getUserMap();
-        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
+//        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListTrashBin.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_TRASH_BIN);
         formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(VMR.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
 

@@ -1,6 +1,5 @@
 package com.vmr.home.fragments;
 
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -30,7 +29,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.bottomsheet_behaviors.OptionsMenuSheet;
+import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
@@ -50,7 +49,7 @@ public class FragmentSharedWithMe extends Fragment
         VmrResponseListener.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
-        OptionsMenuSheet.OnOptionClickListener
+        RecordOptionsMenuSheet.OnOptionClickListener
 {
 
     // Fragment interaction listener
@@ -60,8 +59,7 @@ public class FragmentSharedWithMe extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private ProgressDialog mProgressDialog;
-    private OptionsMenuSheet optionsMenuSheet;
+    private RecordOptionsMenuSheet recordOptionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -81,8 +79,8 @@ public class FragmentSharedWithMe extends Fragment
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
 
-        optionsMenuSheet = new OptionsMenuSheet();
-        optionsMenuSheet.setOptionClickListener(this);
+        recordOptionsMenuSheet = new RecordOptionsMenuSheet();
+        recordOptionsMenuSheet.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
         recordStack = new Stack<>();
@@ -102,9 +100,7 @@ public class FragmentSharedWithMe extends Fragment
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
 
-        mProgressDialog = new ProgressDialog(getActivity());
-        mProgressDialog.setMessage("Fetching The File...");
-        mProgressDialog.setCancelable(true);
+        mSwipeRefreshLayout.setRefreshing(true);
 
         return fragmentView;
     }
@@ -125,12 +121,13 @@ public class FragmentSharedWithMe extends Fragment
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "Records retrieved.");
 
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
+
+        mSwipeRefreshLayout.setRefreshing(false);
 
         if(records.isEmpty()){
             mRecyclerView.setVisibility(View.GONE);
@@ -143,7 +140,7 @@ public class FragmentSharedWithMe extends Fragment
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        mProgressDialog.dismiss();
+        mSwipeRefreshLayout.setRefreshing(false);
         Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -153,7 +150,7 @@ public class FragmentSharedWithMe extends Fragment
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
             recordStack.push(record.getRecordNodeRef());
             homeController.fetchAllFilesAndFolders(recordStack.peek());
-            mProgressDialog.show();
+            mSwipeRefreshLayout.setRefreshing(true);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
         }
@@ -162,8 +159,8 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public void onItemOptionsClick(Record record, View view) {
         VmrDebug.printLine(record.getRecordName() + " Options clicked");
-        optionsMenuSheet.setRecord(record);
-        optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
+        recordOptionsMenuSheet.setRecord(record);
+        recordOptionsMenuSheet.show(getActivity().getSupportFragmentManager(), recordOptionsMenuSheet.getTag());
     }
 
     @Override
@@ -341,6 +338,7 @@ public class FragmentSharedWithMe extends Fragment
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);
                         refreshFolder();
+                        mSwipeRefreshLayout.setRefreshing(true);
                         return true;
                     } else {
                         return false;
@@ -362,8 +360,7 @@ public class FragmentSharedWithMe extends Fragment
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithyMe.TAG);
                 refreshFolder();
-                mSwipeRefreshLayout.setRefreshing(false);
-                mProgressDialog.show();
+                mSwipeRefreshLayout.setRefreshing(true);
             }
         });
 

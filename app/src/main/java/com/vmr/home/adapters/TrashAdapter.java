@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.db.trash.TrashRecord;
 import com.vmr.model.VmrTrashItem;
 
 import java.util.List;
@@ -19,9 +20,9 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
 
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
-    private List<VmrTrashItem> itemsList;
+    private List<TrashRecord> itemsList;
 
-    public TrashAdapter(List<VmrTrashItem> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
+    public TrashAdapter(List<TrashRecord> itemsList, OnItemClickListener itemClickListener, OnItemOptionsClickListener optionsClickListener ) {
         this.itemClickListener = itemClickListener;
         this.itemsList = itemsList;
         this.optionsClickListener = optionsClickListener;
@@ -37,7 +38,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
 
     @Override
     public void onBindViewHolder(TrashViewHolder holder, int position) {
-        VmrTrashItem item = this.itemsList.get(position);
+        TrashRecord item = this.itemsList.get(position);
         holder.setItemName(item.getName());
         if (item.isFolder()) {
             holder.setItemImage(R.drawable.ic_folder);
@@ -53,26 +54,26 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
         return this.itemsList.size();
     }
 
-    public List<VmrTrashItem> getItemsList() {
+    public List<TrashRecord> getItemsList() {
         return itemsList;
     }
 
-    public void setItemsList(List<VmrTrashItem> itemsList) {
+    public void setItemsList(List<TrashRecord> itemsList) {
         this.itemsList = itemsList;
     }
 
-    public void updateDataset(List<VmrTrashItem> newList){
+    public void updateDataset(List<TrashRecord> newList){
         this.itemsList.clear();
         this.itemsList.addAll(newList);
         notifyDataSetChanged();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(VmrTrashItem item);
+        void onItemClick(TrashRecord item);
     }
 
     public interface OnItemOptionsClickListener {
-        void onItemOptionsClick(VmrTrashItem item, View view);
+        void onItemOptionsClick(TrashRecord item, View view);
     }
 
     public class TrashViewHolder extends RecyclerView.ViewHolder {
@@ -99,7 +100,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
             this.itemOptions = itemOptions;
         }
 
-        public void bind(final VmrTrashItem item, final OnItemClickListener listener) {
+        public void bind(final TrashRecord item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -107,7 +108,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
             });
         }
 
-        public void bind(final VmrTrashItem item, final OnItemOptionsClickListener listener) {
+        public void bind(final TrashRecord item, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(item, v);

@@ -24,13 +24,13 @@ public class TrashRecordDAO {
     }
 
     // Fetch all records in db for current user
-    public List<TrashRecord> getAllRecords(String parentNode){
+    public List<TrashRecord> getAllRecords(){
         List<TrashRecord> records = new ArrayList<>();
         Cursor c = db.query(
                 DbConstants.TABLE_TRASH, // Table Name
                 DbConstants.TRASH_COLUMNS, // Select columns
-                DbConstants.TRASH_OWNER + "=? AND " + DbConstants.RECORD_PARENT_NODE_REF + "=?" , // where
-                new String[]{VMR.getLoggedInUserInfo().getSerialNo(), parentNode }, // conditions
+                null, // where
+                null, // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_NAME, // order by
