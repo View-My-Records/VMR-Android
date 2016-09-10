@@ -4,12 +4,13 @@ import android.net.Uri;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.MoveToTrashRequest;
+import com.vmr.home.request.PropertiesRequest;
 import com.vmr.home.request.RecordsRequest;
 import com.vmr.home.request.RemoveExpiredRecordsRequest;
 import com.vmr.home.request.RenameItemRequest;
@@ -45,6 +46,7 @@ public class HomeController {
     private VmrResponseListener.OnRenameItemListener onRenameItemListener;
     private VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener;
     private VmrResponseListener.OnFetchClassifications onFetchClassifications;
+    private VmrResponseListener.OnFetchProperties onFetchProperties;
 
     public HomeController(VmrResponseListener.OnFetchSharedByMeListener onFetchSharedByMe) {
         this.onFetchSharedByMe = onFetchSharedByMe;
@@ -74,12 +76,16 @@ public class HomeController {
         this.onFetchClassifications = onFetchClassifications;
     }
 
+    public HomeController(VmrResponseListener.OnFetchProperties onFetchProperties) {
+        this.onFetchProperties = onFetchProperties;
+    }
+
     public void fetchAllFilesAndFolders(String nodeRef){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(VMR.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -101,10 +107,10 @@ public class HomeController {
 
     public void fetchUnIndexed(String nodeRef){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(VMR.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -127,10 +133,10 @@ public class HomeController {
 
     public void fetchTrash(){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
 //        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListTrashBin.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_TRASH_BIN);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(VMR.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
 
         TrashRequest trashRequest =
                 new TrashRequest(
@@ -152,7 +158,7 @@ public class HomeController {
 
     public void createFolder(String folderName, String parentNodeRef){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.CreateFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.CREATE_FOLDER);
         JSONObject jsonObject = new JSONObject();
@@ -187,10 +193,10 @@ public class HomeController {
 
     public void renameItem(Record record, String newName){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.RenameFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.RENAME_FILE_OR_FOLDER);
-        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NODE_REF, record.getRecordNodeRef());
+        formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NODE_REF, record.getNodeRef());
         formData.put(Constants.Request.FolderNavigation.RenameFileFolder.OLD_NAME, record.getRecordName());
         formData.put(Constants.Request.FolderNavigation.RenameFileFolder.NEW_NAME, Uri.encode(newName, "UTF-8"));
 
@@ -215,7 +221,7 @@ public class HomeController {
 
     public void moveToTrash(Record record){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
 //        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.DeleteFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DELETE_FILE_OR_FOLDER);
 
@@ -229,7 +235,7 @@ public class HomeController {
 
         try {
             objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NAME, record.getRecordName());
-            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NODE_REF, record.getRecordNodeRef());
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NODE_REF, record.getNodeRef());
             objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_TYPE, true);
             deleteObjects.put(objectToDelete);
             deleteObjectValues.put(Constants.Request.FolderNavigation.DeleteFileFolder.DELETE_OBJECTS, deleteObjects);
@@ -263,11 +269,11 @@ public class HomeController {
 
     public void fetchSharedByMe(){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_SHARED_BY_ME);
-        formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, VMR.getLoggedInUserInfo().getLoggedinUserId());
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(VMR.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
 
         SharedByMeRequest sharedByMeRequest =
                 new SharedByMeRequest(
@@ -289,7 +295,7 @@ public class HomeController {
 
     public void removeExpiredRecords(){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.RemoveExpiredRecords.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.REMOVE_EXPIRED_RECORDS);
 
         RemoveExpiredRecordsRequest request =
@@ -312,7 +318,7 @@ public class HomeController {
 
     public void fetchClassifications(){
 
-        Map<String, String> formData = VMR.getUserMap();
+        Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.Classification.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_CONTENT_TYPES);
 
@@ -333,6 +339,34 @@ public class HomeController {
                         }
                 );
         VmrRequestQueue.getInstance().addToRequestQueue(classificationRequest, Constants.Request.FolderNavigation.Classification.TAG);
+    }
+
+    public void fetchProperties( String docType, String nodeRef,  String programName){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.Properties.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_DETAILS);
+        formData.put(Constants.Request.FolderNavigation.Properties.DOC_TYPE, docType);
+        formData.put(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, nodeRef);
+//        formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName );
+
+        PropertiesRequest propertiesRequest =
+                new PropertiesRequest(
+                        formData,
+                        new Response.Listener<Map<String , JSONObject >>() {
+                            @Override
+                            public void onResponse(Map<String , JSONObject > response) {
+                                onFetchProperties.onFetchPropertiesSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFetchProperties.onFetchPropertiesFailure(error);
+                            }
+                        }
+                );
+        VmrRequestQueue.getInstance().addToRequestQueue(propertiesRequest, Constants.Request.FolderNavigation.Properties.TAG);
     }
 
 

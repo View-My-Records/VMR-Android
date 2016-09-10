@@ -4,6 +4,8 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.db.record.Record;
 import com.vmr.db.record.RecordDAO;
+import com.vmr.db.search_suggestion.SearchSuggestion;
+import com.vmr.db.search_suggestion.SearchSuggestionDAO;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.shared.SharedRecordDAO;
 import com.vmr.db.trash.TrashRecord;
@@ -12,6 +14,7 @@ import com.vmr.db.user.User;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /*
@@ -24,6 +27,7 @@ public class DbManager {
     private RecordDAO recordDAO;
     private TrashRecordDAO trashRecordDAO;
     private SharedRecordDAO sharedRecordDAO;
+    private SearchSuggestionDAO searchSuggestionDAO;
 
     public DbManager() {
         DbHelper dbHelper = new DbHelper();
@@ -32,6 +36,7 @@ public class DbManager {
         recordDAO = new RecordDAO(database);
         trashRecordDAO = new TrashRecordDAO(database);
         sharedRecordDAO = new SharedRecordDAO(database);
+        searchSuggestionDAO =  new SearchSuggestionDAO(database);
     }
 
     // Adds new user to user table
@@ -56,7 +61,11 @@ public class DbManager {
 
     // Retrieve all records for given parent
     public List<Record> getAllRecords(String parentNode) {
-        return this.recordDAO.getAllRecords(parentNode);
+        return this.recordDAO.getAllRecords(parentNode, false);
+    }
+
+    public List<Record> getAllRecords(String parentNode, boolean override) {
+        return this.recordDAO.getAllRecords(parentNode, override);
     }
 
     // Retrieve all un-indexed records for given parent
@@ -93,5 +102,25 @@ public class DbManager {
 
     public void updateAllTrash(List<TrashRecord> trashRecords){
         this.trashRecordDAO.updateAllRecords(trashRecords);
+    }
+
+    public List<SearchSuggestion> getSuggestions(String searchTerm){
+        List<SearchSuggestion> suggestionList =  new ArrayList<>();
+        suggestionList.addAll(this.getSuggestionsFromMyRecords(searchTerm));
+        suggestionList.addAll(this.getSuggestionsFromTrash(searchTerm));
+        suggestionList.addAll(this.getSuggestionsFromShared(searchTerm));
+        return suggestionList;
+    }
+
+    private List<SearchSuggestion> getSuggestionsFromMyRecords(String searchTerm){
+       return this.searchSuggestionDAO.getSuggestionsFromMyRecords(searchTerm);
+    }
+
+    private List<SearchSuggestion> getSuggestionsFromTrash(String searchTerm){
+        return this.searchSuggestionDAO.getSuggestionsFromTrash(searchTerm);
+    }
+
+    private List<SearchSuggestion> getSuggestionsFromShared(String searchTerm){
+        return this.searchSuggestionDAO.getSuggestionsFromShared(searchTerm);
     }
 }

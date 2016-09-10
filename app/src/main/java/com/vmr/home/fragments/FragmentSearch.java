@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-public class FragmentSharedWithMe extends Fragment
+public class FragmentSearch extends Fragment
         implements
         VmrResponseListener.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,

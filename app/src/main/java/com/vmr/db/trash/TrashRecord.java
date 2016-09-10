@@ -62,7 +62,7 @@ public class TrashRecord {
         this.createdBy = createdBy;
     }
 
-    public String getName() {
+    public String getRecordName() {
         return name;
     }
 

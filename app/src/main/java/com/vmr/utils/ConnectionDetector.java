@@ -4,7 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 
 /**
  * Created by abhijit on 8/17/16.
@@ -12,7 +12,7 @@ import com.vmr.app.VMR;
 
 public class ConnectionDetector {
     public static boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) VMR.getVMRContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) Vmr.getVMRContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
     }

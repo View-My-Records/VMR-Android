@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
@@ -125,7 +125,7 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onFetchSharedByMeFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override

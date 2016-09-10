@@ -9,10 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
-import com.vmr.model.VmrFile;
-import com.vmr.model.VmrItem;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -51,7 +49,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             holder.setItemImage(R.drawable.ic_folder);
             holder.itemSize.setVisibility(View.GONE);
             if (Build.VERSION.SDK_INT < 23) {
-                holder.itemName.setTextAppearance(VMR.getVMRContext(), android.R.style.TextAppearance_Medium);
+                holder.itemName.setTextAppearance(Vmr.getVMRContext(), android.R.style.TextAppearance_Medium);
             } else {
                 holder.itemName.setTextAppearance(android.R.style.TextAppearance_Medium);
             }

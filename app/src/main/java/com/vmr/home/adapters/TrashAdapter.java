@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.db.trash.TrashRecord;
-import com.vmr.model.VmrTrashItem;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
     @Override
     public void onBindViewHolder(TrashViewHolder holder, int position) {
         TrashRecord item = this.itemsList.get(position);
-        holder.setItemName(item.getName());
+        holder.setItemName(item.getRecordName());
         if (item.isFolder()) {
             holder.setItemImage(R.drawable.ic_folder);
         } else {

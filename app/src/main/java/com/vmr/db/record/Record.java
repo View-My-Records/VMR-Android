@@ -86,7 +86,7 @@ public class Record {
         return recordList;
     }
 
-    public String getRecordParentNodeRef() {
+    public String getParentNodeRef() {
         return recordParentNodeRef;
     }
 
@@ -94,7 +94,7 @@ public class Record {
         this.recordParentNodeRef = recordParentNodeRef;
     }
 
-    public String getRecordNodeRef() {
+    public String getNodeRef() {
         return recordNodeRef;
     }
 

@@ -8,7 +8,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.vmr.utils.Constants;
-import com.vmr.utils.WebApiConstants;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,26 +71,26 @@ public class UserInfo implements Parcelable {
 
     public UserInfo(JSONObject jsonObject) throws JSONException{
         super();
-        this.setSlNo(jsonObject.getString(WebApiConstants.JSON_USER_INFO_SLNO          ));
-        this.setResult(jsonObject.getString(WebApiConstants.JSON_USER_INFO_RESULT        ));
-        this.setRootNodref(jsonObject.getString(WebApiConstants.JSON_USER_INFO_ROOTNODREF    ));
-        this.setUrlType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_URLTYPE       ));
-        this.setUserType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERTYPE      ));
-        this.setMembershipType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_MEMBERSHIPTYPE));
-        this.setEmailId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_EMAILID       ));
-        this.setEmpType(jsonObject.getString(WebApiConstants.JSON_USER_INFO_EMPTYPE       ));
-        this.setUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERID        ));
-        this.setHttpSessionId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_HTTPSESSIONID ));
-        this.setUserName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_USERNAME      ));
-        this.setLoggedinUserId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LOGGEDINUSERID));
-        this.setLastLoginTime(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LAST_LOGIN_TIME));
+        this.setSlNo(jsonObject.getString(Constants.Response.Login.SERIAL_LNO));
+        this.setResult(jsonObject.getString(Constants.Response.Login.RESULT));
+        this.setRootNodref(jsonObject.getString(Constants.Response.Login.ROOT_NODE_REF));
+        this.setUrlType(jsonObject.getString(Constants.Response.Login.URL_TYPE));
+        this.setUserType(jsonObject.getString(Constants.Response.Login.USER_TYPE));
+        this.setMembershipType(jsonObject.getString(Constants.Response.Login.MEMBERSHIP_TYPE));
+        this.setEmailId(jsonObject.getString(Constants.Response.Login.EMAIL_ID));
+        this.setEmpType(jsonObject.getString(Constants.Response.Login.EMPLOYEE_TYPE));
+        this.setUserId(jsonObject.getString(Constants.Response.Login.USER_ID));
+        this.setHttpSessionId(jsonObject.getString(Constants.Response.Login.SESSION_ID));
+        this.setUserName(jsonObject.getString(Constants.Response.Login.USER_NAME));
+        this.setLoggedinUserId(jsonObject.getString(Constants.Response.Login.CURRENT_USER_ID));
+        this.setLastLoginTime(jsonObject.getString(Constants.Response.Login.LAST_LOGIN_TIME));
 
         if(this.getMembershipType().equalsIgnoreCase(Constants.Request.Login.Domain.INDIVIDUAL) ){
-            this.setLastName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_LASTNAME));
-            this.setFirstName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_FIRSTNAME));
+            this.setLastName(jsonObject.getString(Constants.Response.Login.LAST_NAME));
+            this.setFirstName(jsonObject.getString(Constants.Response.Login.FIRST_NAME));
         }else {
-            this.setCorpName(jsonObject.getString(WebApiConstants.JSON_USER_INFO_CORPNAME));
-            this.setCorpId(jsonObject.getString(WebApiConstants.JSON_USER_INFO_CORPID));
+            this.setCorpName(jsonObject.getString(Constants.Response.Login.CORP_NAME));
+            this.setCorpId(jsonObject.getString(Constants.Response.Login.CORP_ID));
         }
     }
 

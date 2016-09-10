@@ -7,8 +7,6 @@ package com.vmr.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.vmr.app.VMR;
-
 public class PrefUtils {
 
 //    private static SharedPreferences getSharedPreferences(){

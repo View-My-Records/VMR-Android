@@ -153,6 +153,14 @@ public abstract class Constants {
                 public static final String TAG = "VMR_GET_CLASSIFICATIONS";
             }
 
+            public final static class Properties {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String DOC_TYPE = "docSelected";
+                public static final String FILE_NODE_REF = "fileSelectedNodeRef";
+                public static final String PROGRAM_NAME = "programName";
+                public static final String TAG = "VMR_GET_PROPERTIES";
+            }
+
             public final static class DownloadFile {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String NODE_REF = "fileSelectedNodeRef";
@@ -206,6 +214,28 @@ public abstract class Constants {
             public static final String ALFRESCO_TICKET = "alf_ticket";
         }
 
+    }
+
+    public final static class Response {
+        public final static class Login {
+            public static final String SERIAL_LNO       = "slNo";
+            public static final String RESULT           = "result";
+            public static final String ROOT_NODE_REF    = "rootNodref";
+            public static final String URL_TYPE         = "urlType";
+            public static final String USER_TYPE        = "userType";
+            public static final String MEMBERSHIP_TYPE  = "membershipType";
+            public static final String EMAIL_ID         = "emailId";
+            public static final String EMPLOYEE_TYPE    = "empType";
+            public static final String USER_ID          = "userId";
+            public static final String SESSION_ID       = "httpSessionId";
+            public static final String USER_NAME        = "userName";
+            public static final String CURRENT_USER_ID  = "loggedinUserId";
+            public static final String LAST_LOGIN_TIME  = "lastLoginTime";
+            public static final String LAST_NAME        = "lastName";
+            public static final String FIRST_NAME       = "firstName";
+            public static final String CORP_NAME        = "corpName";
+            public static final String CORP_ID          = "corpId";
+        }
     }
 
     public final static class Indexing {

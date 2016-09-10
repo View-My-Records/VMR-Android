@@ -61,4 +61,9 @@ public abstract class VmrResponseListener {
         void onFetchClassificationsSuccess(Map<String , String > classifications);
         void onFetchClassificationsFailure(VolleyError error);
     }
+
+    public interface OnFetchProperties{
+        void onFetchPropertiesSuccess(Map<String , JSONObject> properties);
+        void onFetchPropertiesFailure(VolleyError error);
+    }
 }

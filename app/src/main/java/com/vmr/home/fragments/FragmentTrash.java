@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
@@ -107,10 +107,10 @@ public class FragmentTrash extends Fragment
     @Override
     public void onItemClick(TrashRecord record) {
         if(record.isFolder()){
-            VmrDebug.printLine(record.getName() + " Folder clicked");
+            VmrDebug.printLine(record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListTrashBin.TAG);
         } else {
-            VmrDebug.printLine(record.getName() + " File clicked");
+            VmrDebug.printLine(record.getRecordName() + " File clicked");
         }
     }
 
@@ -118,7 +118,7 @@ public class FragmentTrash extends Fragment
     public void onFetchTrashSuccess( List<VmrTrashItem> vmrTrashItems ) {
         VmrDebug.printLine("Trash folder retrieved.");
 
-        dbManager.updateAllTrash(TrashRecord.getTrashRecordList(vmrTrashItems, VMR.getLoggedInUserInfo().getRootNodref()));
+        dbManager.updateAllTrash(TrashRecord.getTrashRecordList(vmrTrashItems, Vmr.getLoggedInUserInfo().getRootNodref()));
         trashRecords = dbManager.getAllTrash();
         trashAdapter.updateDataset(trashRecords);
 
@@ -136,7 +136,7 @@ public class FragmentTrash extends Fragment
     @Override
     public void onFetchTrashFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     private void setupRecyclerView(View view) {
@@ -160,7 +160,7 @@ public class FragmentTrash extends Fragment
 
     @Override
     public void onItemOptionsClick(TrashRecord record, View view) {
-        VmrDebug.printLine(record.getName() + " options clicked");
+        VmrDebug.printLine(record.getRecordName() + " options clicked");
         optionsMenuSheet.setRecord(record);
         optionsMenuSheet.show(getActivity().getSupportFragmentManager(), optionsMenuSheet.getTag());
     }
@@ -171,22 +171,22 @@ public class FragmentTrash extends Fragment
 
     @Override
     public void onOpenClicked(TrashRecord record) {
-        VmrDebug.printLine(record.getName() + " open clicked");
+        VmrDebug.printLine(record.getRecordName() + " open clicked");
     }
 
     @Override
     public void onRestoreClicked(TrashRecord record) {
-        VmrDebug.printLine(record.getName() + " restore clicked");
+        VmrDebug.printLine(record.getRecordName() + " restore clicked");
     }
 
     @Override
     public void onPropertiesClicked(TrashRecord record) {
-        VmrDebug.printLine(record.getName() + " properties clicked");
+        VmrDebug.printLine(record.getRecordName() + " properties clicked");
     }
 
     @Override
     public void onDeleteClicked(TrashRecord record) {
-        VmrDebug.printLine(record.getName() + " delete clicked");
+        VmrDebug.printLine(record.getRecordName() + " delete clicked");
     }
 
     @Override

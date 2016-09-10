@@ -13,9 +13,9 @@ import java.util.Map;
  * Created by abhijit on 8/16/16.
  */
 
-public class VMR extends Application {
+public class Vmr extends Application {
 
-    private static VMR appInstance;
+    private static Vmr appInstance;
     private static Context appContext;
     private static VmrFolder vmrRootFolder;
     private static VmrFolder vmrSharedWithMeRootFolder;
@@ -28,7 +28,7 @@ public class VMR extends Application {
     }
 
     public static void setLoggedInUserInfo(UserInfo loggedInUserInfo) {
-        VMR.loggedInUserInfo = loggedInUserInfo;
+        Vmr.loggedInUserInfo = loggedInUserInfo;
     }
 
     public static VmrFolder getVmrRootFolder() {
@@ -36,7 +36,7 @@ public class VMR extends Application {
     }
 
     public static void setVmrRootFolder(VmrFolder vmrRootFolder) {
-        VMR.vmrRootFolder = vmrRootFolder;
+        Vmr.vmrRootFolder = vmrRootFolder;
     }
 
     public static VmrFolder getVmrSharedWithMeRootFolder() {
@@ -44,7 +44,7 @@ public class VMR extends Application {
     }
 
     public static void setVmrSharedWithMeRootFolder(VmrFolder vmrSharedWithMeRootFolder) {
-        VMR.vmrSharedWithMeRootFolder = vmrSharedWithMeRootFolder;
+        Vmr.vmrSharedWithMeRootFolder = vmrSharedWithMeRootFolder;
     }
 
     public static VmrFolder getVmrSharedByMeRootFolder() {
@@ -52,7 +52,7 @@ public class VMR extends Application {
     }
 
     public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
-        VMR.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
+        Vmr.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
     }
 
     public static Map<String, String> getUserMap() {
@@ -63,12 +63,12 @@ public class VMR extends Application {
         userMap = map;
     }
 
-    public static VMR getInstance() {
+    public static Vmr getInstance() {
         return appInstance;
     }
 
     public static Context getVMRContext(){
-        return VMR.appContext;
+        return Vmr.appContext;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class VMR extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        VMR.appContext = getApplicationContext();
+        Vmr.appContext = getApplicationContext();
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.VMR;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -82,7 +81,7 @@ public class TrashRecordDAO {
         contentValues.put(DbConstants.TRASH_IS_FOLDER, record.isFolder());
         contentValues.put(DbConstants.TRASH_CREATED_BY, record.getCreatedBy());
         contentValues.put(DbConstants.TRASH_OWNER      , record.getOwner());
-        contentValues.put(DbConstants.TRASH_NAME, record.getName());
+        contentValues.put(DbConstants.TRASH_NAME, record.getRecordName());
 
         VmrDebug.printLogI(this.getClass(), "Records updated");
         return db.update(
@@ -99,7 +98,7 @@ public class TrashRecordDAO {
         contentValues.put(DbConstants.TRASH_IS_FOLDER, record.isFolder());
         contentValues.put(DbConstants.TRASH_CREATED_BY, record.getCreatedBy());
         contentValues.put(DbConstants.TRASH_OWNER      , record.getOwner());
-        contentValues.put(DbConstants.TRASH_NAME, record.getName());
+        contentValues.put(DbConstants.TRASH_NAME, record.getRecordName());
         VmrDebug.printLogI(this.getClass(), "Record added");
         return db.insert(DbConstants.TABLE_TRASH, null, contentValues);
     }

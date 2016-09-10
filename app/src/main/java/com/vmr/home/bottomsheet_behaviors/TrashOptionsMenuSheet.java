@@ -29,7 +29,7 @@ public class TrashOptionsMenuSheet extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.trash_options_layout, null);
         dialog.setContentView(contentView);
 
-        ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getName());
+        ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
 
         contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
             @Override

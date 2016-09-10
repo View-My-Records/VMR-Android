@@ -4,7 +4,7 @@ import android.net.Uri;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.login.request.AlfrescoTicketRequest;
 import com.vmr.login.request.LoginRequest;
 import com.vmr.model.UserInfo;
@@ -146,7 +146,7 @@ public class LoginController {
                             @Override
                             public void onResponse(UserInfo userInfo) {
                                 onLoginListener.onLoginSuccess(userInfo);
-                                VMR.setUserMap(formData);
+                                Vmr.setUserMap(formData);
                             }
                         },
                         new Response.ErrorListener() {

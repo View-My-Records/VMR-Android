@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.vmr.app.VMR;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -29,7 +28,7 @@ public class RecordDAO {
     }
 
     // Fetch all records in db for current user
-    public List<Record> getAllRecords(String parentNode){
+    public List<Record> getAllRecords(String parentNode, boolean override){
         List<Record> records = new ArrayList<>();
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
@@ -112,7 +111,7 @@ public class RecordDAO {
     // update all records in db for current user
     public void updateAllRecords(List<Record> records){
         for (Record record : records) {
-            if(!checkRecord(record.getRecordNodeRef())){
+            if(!checkRecord(record.getNodeRef())){
                 addRecord(record);
             } else {
                 updateRecord(record);
@@ -123,8 +122,8 @@ public class RecordDAO {
     // Adds record to DB
     private Long addRecord(Record record) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.RECORD_NODE_REF  , record.getRecordNodeRef());
-        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getRecordParentNodeRef());
+        contentValues.put(DbConstants.RECORD_NODE_REF  , record.getNodeRef());
+        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME      , record.getRecordName());
         contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
         contentValues.put(DbConstants.RECORD_FOLDER_CATEGORY, record.getFolderCategory());
@@ -150,7 +149,7 @@ public class RecordDAO {
     // Updates record in db
     private boolean updateRecord(Record record){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getRecordParentNodeRef());
+        contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME, record.getRecordName());
         contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
         contentValues.put(DbConstants.RECORD_FOLDER_CATEGORY, record.getFolderCategory());
@@ -174,12 +173,16 @@ public class RecordDAO {
                 DbConstants.TABLE_RECORD,
                 contentValues,
                 DbConstants.RECORD_NODE_REF + "=?",
-                new String[]{record.getRecordNodeRef() + ""}) > 0;
+                new String[]{record.getNodeRef() + ""}) > 0;
     }
 
     // Returns record from db
     private boolean checkRecord(String nodeRef) {
-        Cursor c = db.query(true, DbConstants.TABLE_RECORD, new String[]{DbConstants.RECORD_NODE_REF}, DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""}, null, null, null, null, null);
+        Cursor c = db.query(true,
+                DbConstants.TABLE_RECORD,
+                new String[]{DbConstants.RECORD_NODE_REF},
+                DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""},
+                null, null, null, null, null);
         boolean ret = c.moveToFirst();
         c.close();
         return ret;
@@ -188,7 +191,7 @@ public class RecordDAO {
     // Delete record
     public boolean deleteRecord(Record record){
         VmrDebug.printLogI(this.getClass(), "Records deleted");
-        return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getRecordNodeRef() + ""}) > 0;
+        return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getNodeRef() + ""}) > 0;
     }
 
     private Record buildFromCursor(Cursor c) {

@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
@@ -88,7 +88,7 @@ public class FragmentToBeIndexed extends Fragment
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
         recordStack = new Stack<>();
-        recordStack.push(VMR.getLoggedInUserInfo().getRootNodref());
+        recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
     }
 
     @Override
@@ -104,8 +104,6 @@ public class FragmentToBeIndexed extends Fragment
 
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
-
-        mSwipeRefreshLayout.setRefreshing(true);
 
         return fragmentView;
     }
@@ -145,7 +143,7 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -153,7 +151,7 @@ public class FragmentToBeIndexed extends Fragment
         if(record.isFolder()){
             VmrDebug.printLogI(record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
-            recordStack.push(record.getRecordNodeRef());
+            recordStack.push(record.getNodeRef());
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
@@ -209,7 +207,7 @@ public class FragmentToBeIndexed extends Fragment
                                 VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                 try {
                                     if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(VMR.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(Vmr.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                         refreshFolder();
                                     }
                                 } catch (JSONException e) {
@@ -219,7 +217,7 @@ public class FragmentToBeIndexed extends Fragment
 
                             @Override
                             public void onRenameItemFailure(VolleyError error) {
-                                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                             }
 
                         });
@@ -306,7 +304,7 @@ public class FragmentToBeIndexed extends Fragment
 
             @Override
             public void onMoveToTrashFailure(VolleyError error) {
-                Toast.makeText(VMR.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -341,7 +339,7 @@ public class FragmentToBeIndexed extends Fragment
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
-                    if (!recordStack.peek().equals(VMR.getLoggedInUserInfo().getRootNodref())) {
+                    if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
                         recordStack.pop();
                         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);

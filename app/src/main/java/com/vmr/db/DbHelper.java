@@ -3,7 +3,7 @@ package com.vmr.db;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 
 /*
  * Created by abhijit on 9/7/16.
@@ -17,7 +17,7 @@ public class DbHelper extends SQLiteOpenHelper {
     private String createTrashTable;
 
     public DbHelper() {
-        super(VMR.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
+        super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
 
         createUserTable = ("CREATE TABLE " + DbConstants.TABLE_USER + " (") +
                 DbConstants.USER_SERIAL_NO + " TEXT PRIMARY KEY, " +

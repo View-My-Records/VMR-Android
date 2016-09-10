@@ -2,7 +2,7 @@ package com.vmr.network;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.utils.Constants;
 
 /*
@@ -29,7 +29,7 @@ public class VmrRequestQueue {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = com.android.volley.toolbox.Volley.newRequestQueue(VMR.getVMRContext());
+            requestQueue = com.android.volley.toolbox.Volley.newRequestQueue(Vmr.getVMRContext());
         }
         return requestQueue;
     }

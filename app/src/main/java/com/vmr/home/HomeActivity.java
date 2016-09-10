@@ -23,9 +23,10 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.VMR;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
+import com.vmr.debug.VmrDebug;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -57,7 +58,9 @@ public class HomeActivity extends AppCompatActivity
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
-        VmrResponseListener.OnFetchRecordsListener
+        VmrResponseListener.OnFetchRecordsListener,
+        SearchView.OnQueryTextListener,
+        SearchView.OnCloseListener
 {
     // Views
     MenuItem toBeIndexed;
@@ -95,7 +98,7 @@ public class HomeActivity extends AppCompatActivity
 
             dbManager = new DbManager();
 
-            VMR.setLoggedInUserInfo(userInfo);
+            Vmr.setLoggedInUserInfo(userInfo);
 
         }
 
@@ -142,13 +145,24 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
+
+    private static final String[] SUGGESTIONS = {
+            "Bauru", "Sao Paulo", "Rio de Janeiro",
+            "Bahia", "Mato Grosso", "Minas Gerais",
+            "Tocantins", "Rio Grande do Sul"
+    };
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_actionbar_menu, menu);
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        if(null!=searchManager ) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        }
+        searchView.setOnQueryTextListener(this);
+        searchView.setOnCloseListener(this);
         return true;
     }
 
@@ -160,7 +174,11 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
+            return true;
+        } else if (id == R.id.action_layout) {
+            return true;
+        } else if (id == R.id.action_settings) {
             return true;
         }
 
@@ -244,23 +262,41 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        if (VMR.getVmrRootFolder() == null) {
+        if (Vmr.getVmrRootFolder() == null) {
             vmrFolder.setNodeRef(userInfo.getRootNodref());
-            VMR.setVmrRootFolder(vmrFolder);
+            Vmr.setVmrRootFolder(vmrFolder);
         }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
-        dbManager.updateAllRecords(Record.getRecordList(VMR.getVmrRootFolder().getAll(), VMR.getLoggedInUserInfo().getRootNodref()));
-        List<Record> records = dbManager.getAllRecords(VMR.getLoggedInUserInfo().getRootNodref());
+        dbManager.updateAllRecords(Record.getRecordList(Vmr.getVmrRootFolder().getAll(), Vmr.getLoggedInUserInfo().getRootNodref()));
+        List<Record> records = dbManager.getAllRecords(Vmr.getLoggedInUserInfo().getRootNodref());
         sendToMyRecords.onReceiveFromActivitySuccess(records);
     }
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        Toast.makeText(VMR.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
         sendToMyRecords.onReceiveFromActivityFailure(error);
     }
 
     public void setSendToMyRecords(Interaction.HomeToMyRecordsInterface sendToMyRecords) {
         this.sendToMyRecords = sendToMyRecords;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit" + query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        VmrDebug.printLogI(this.getClass(), "onQueryTextChange->" + newText);
+        return false;
+    }
+
+    @Override
+    public boolean onClose() {
+        VmrDebug.printLogI(this.getClass(), "onQueryClose");
+        return false;
     }
 }
