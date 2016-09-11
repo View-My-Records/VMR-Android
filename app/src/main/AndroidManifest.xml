@@ -33,6 +33,7 @@
         <activity
             android:name=".home.HomeActivity"
             android:label="@string/title_activity_home"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -46,8 +47,12 @@
                 <data android:pathPattern="/.*" />
             </intent-filter>
             <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".home.SearchResultActivity" />
+            <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/recent_searchable" />
+
         </activity>
 
         <activity
@@ -60,25 +65,27 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:host="example.com"> </data>
+                <data android:host="example.com"/>
                 <data android:scheme="https" />
                 <data android:pathPattern="/.*" />
             </intent-filter>
             <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".home.HomeActivity" />
+            <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-
         </activity>
 
         <provider
-            android:name=".home.SearchProvider"
-            android:authorities="com.vmr.home.SearchProvider"
+            android:name=".home.SearchSuggestionProvider"
+            android:authorities="com.vmr.home.SearchSuggestionProvider"
             android:enabled="true"
             android:exported="true" />
 
         <provider
-            android:name=".home.RecentSearchProvider"
-            android:authorities="com.vmr.home.RecentSearchProvider"
+            android:name=".home.SearchHistoryProvider"
+            android:authorities="com.vmr.home.SearchHistoryProvider"
             android:enabled="true"
             android:exported="true"/>
 

@@ -19,7 +19,7 @@ import java.util.List;
  * Created by abhijit on 9/10/16.
  */
 
-public class SearchProvider extends ContentProvider {
+public class SearchSuggestionProvider extends ContentProvider {
 
     List<SearchSuggestion> searchResults;
 

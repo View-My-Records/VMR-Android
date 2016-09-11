@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:hint="Search"
     android:label="@string/app_name"
-    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"
-    android:searchSuggestAuthority="com.vmr.home.SearchProvider"
+    android:searchSuggestAuthority="com.vmr.home.SearchSuggestionProvider"
     android:searchSuggestIntentAction="android.intent.action.VIEW"
-    android:searchSuggestIntentData=""/>
+    android:searchSuggestIntentData=""
+    android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"/>

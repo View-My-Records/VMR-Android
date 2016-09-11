@@ -1,5 +1,6 @@
 package com.vmr.home;
 
+import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,12 +12,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -28,10 +30,8 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
-import com.vmr.db.DbConstants;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
-import com.vmr.db.search_suggestion.SearchSuggestion;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
@@ -108,17 +108,9 @@ public class HomeActivity extends AppCompatActivity
             userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
 
             dbManager = Vmr.getDbManager();
-
-            Vmr.setLoggedInUserInfo(userInfo);
-
-//            Intent intent  = getIntent();
-
-////            if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-////                String query = intent.getStringExtra(SearchManager.QUERY);
-//                SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-//                        RecentSearchProvider.AUTHORITY, RecentSearchProvider.MODE);
-//                suggestions.saveRecentQuery(query, null);
-////            }
+            if(userInfo!=null) {
+                Vmr.setLoggedInUserInfo(userInfo);
+            }
 
         }
 
@@ -151,7 +143,7 @@ public class HomeActivity extends AppCompatActivity
         lastLogin.setText(Vmr.getLoggedInUserInfo().getLastLoginTime().toString());
 
         HomeController homeController = new HomeController(this);
-        homeController.fetchAllFilesAndFolders(this.getUserInfo().getRootNodref());
+        homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
     }
 
     @Override
@@ -301,7 +293,7 @@ public class HomeActivity extends AppCompatActivity
     public boolean onQueryTextSubmit(String query) {
         VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit" + query);
         SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-                RecentSearchProvider.AUTHORITY, RecentSearchProvider.MODE);
+                SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
         suggestions.saveRecentQuery(query, null);
         return false;
     }
@@ -331,8 +323,19 @@ public class HomeActivity extends AppCompatActivity
         VmrDebug.printLogI(this.getClass(), "Search item clicked ->" +c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
 
         Intent intent = new Intent(this, SearchResultActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
 
         intent.putExtra("id", id);
+
+        PendingIntent pendingIntent =
+                TaskStackBuilder.create(this)
+                        // add all of DetailsActivity's parents to the stack,
+                        // followed by DetailsActivity itself
+                        .addNextIntentWithParentStack(getIntent())
+                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        builder.setContentIntent(pendingIntent);
 
         startActivity(intent);
 
