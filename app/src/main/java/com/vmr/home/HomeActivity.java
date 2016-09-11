@@ -1,15 +1,19 @@
 package com.vmr.home;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.CursorAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -24,8 +28,10 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
+import com.vmr.db.DbConstants;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
+import com.vmr.db.search_suggestion.SearchSuggestion;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
@@ -45,6 +51,8 @@ import com.vmr.utils.Constants;
 
 import java.util.List;
 
+import static android.R.attr.id;
+
 public class HomeActivity extends AppCompatActivity
         implements
         NavigationView.OnNavigationItemSelectedListener,
@@ -60,7 +68,8 @@ public class HomeActivity extends AppCompatActivity
         FragmentHelp.OnFragmentInteractionListener,
         VmrResponseListener.OnFetchRecordsListener,
         SearchView.OnQueryTextListener,
-        SearchView.OnCloseListener
+        SearchView.OnCloseListener,
+        SearchView.OnSuggestionListener
 {
     // Views
     MenuItem toBeIndexed;
@@ -68,6 +77,8 @@ public class HomeActivity extends AppCompatActivity
     // Models
     private UserInfo userInfo;
     private DbManager dbManager;
+    private SearchView searchView;
+//    private SearchSuggestionAdapter mSearchViewAdapter;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -96,9 +107,18 @@ public class HomeActivity extends AppCompatActivity
 
             userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
 
-            dbManager = new DbManager();
+            dbManager = Vmr.getDbManager();
 
             Vmr.setLoggedInUserInfo(userInfo);
+
+//            Intent intent  = getIntent();
+
+////            if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+////                String query = intent.getStringExtra(SearchManager.QUERY);
+//                SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+//                        RecentSearchProvider.AUTHORITY, RecentSearchProvider.MODE);
+//                suggestions.saveRecentQuery(query, null);
+////            }
 
         }
 
@@ -121,14 +141,14 @@ public class HomeActivity extends AppCompatActivity
 //        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
 //        ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
-        if (userInfo.getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
-            accountName.setText(userInfo.getFirstName() + " " + userInfo.getLastName());
+        if (Vmr.getLoggedInUserInfo().getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
+            accountName.setText(Vmr.getLoggedInUserInfo().getFirstName() + " " + Vmr.getLoggedInUserInfo().getLastName());
         } else {
-            accountName.setText(userInfo.getCorpName());
+            accountName.setText(Vmr.getLoggedInUserInfo().getCorpName());
         }
 
-        accountEmail.setText(userInfo.getEmailId());
-        lastLogin.setText(userInfo.getLastLoginTime().toString());
+        accountEmail.setText(Vmr.getLoggedInUserInfo().getEmailId());
+        lastLogin.setText(Vmr.getLoggedInUserInfo().getLastLoginTime().toString());
 
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(this.getUserInfo().getRootNodref());
@@ -145,13 +165,6 @@ public class HomeActivity extends AppCompatActivity
         }
     }
 
-
-    private static final String[] SUGGESTIONS = {
-            "Bauru", "Sao Paulo", "Rio de Janeiro",
-            "Bahia", "Mato Grosso", "Minas Gerais",
-            "Tocantins", "Rio Grande do Sul"
-    };
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -159,10 +172,12 @@ public class HomeActivity extends AppCompatActivity
         final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         if(null!=searchManager ) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setSearchableInfo(searchManager
+                    .getSearchableInfo(new ComponentName(this, SearchResultActivity.class)));
         }
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
+        searchView.setIconifiedByDefault(false);
         return true;
     }
 
@@ -285,12 +300,16 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextSubmit(String query) {
         VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit" + query);
+        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
+                RecentSearchProvider.AUTHORITY, RecentSearchProvider.MODE);
+        suggestions.saveRecentQuery(query, null);
         return false;
     }
 
     @Override
     public boolean onQueryTextChange(String newText) {
         VmrDebug.printLogI(this.getClass(), "onQueryTextChange->" + newText);
+
         return false;
     }
 
@@ -298,5 +317,25 @@ public class HomeActivity extends AppCompatActivity
     public boolean onClose() {
         VmrDebug.printLogI(this.getClass(), "onQueryClose");
         return false;
+    }
+
+    @Override
+    public boolean onSuggestionSelect(int position) {
+        return false;
+    }
+
+    @Override
+    public boolean onSuggestionClick(int position) {
+
+        Cursor c = searchView.getSuggestionsAdapter().getCursor();
+        VmrDebug.printLogI(this.getClass(), "Search item clicked ->" +c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
+
+        Intent intent = new Intent(this, SearchResultActivity.class);
+
+        intent.putExtra("id", id);
+
+        startActivity(intent);
+
+        return true;
     }
 }

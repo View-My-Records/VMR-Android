@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
@@ -47,6 +48,7 @@ public class LoginActivity extends AppCompatActivity
 
         loginController = new LoginController(this, this);
         dbManager = new DbManager();
+        Vmr.setDbManager(dbManager);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
         final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
@@ -84,7 +86,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
-        dbManager.addUser(userInfo);
+        Vmr.getDbManager().addUser(userInfo);
         onLoginComplete(userInfo);
     }
 

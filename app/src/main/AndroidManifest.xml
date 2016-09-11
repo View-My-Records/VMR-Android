@@ -20,10 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".home.HomeActivity"
-            android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
             android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -31,7 +27,61 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
+
+        <activity
+            android:name=".home.HomeActivity"
+            android:label="@string/title_activity_home"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="example.com"> </data>
+                <data android:scheme="https" />
+                <data android:pathPattern="/.*" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/recent_searchable" />
+        </activity>
+
+        <activity
+            android:name=".home.SearchResultActivity"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:host="example.com"> </data>
+                <data android:scheme="https" />
+                <data android:pathPattern="/.*" />
+            </intent-filter>
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+
+        </activity>
+
+        <provider
+            android:name=".home.SearchProvider"
+            android:authorities="com.vmr.home.SearchProvider"
+            android:enabled="true"
+            android:exported="true" />
+
+        <provider
+            android:name=".home.RecentSearchProvider"
+            android:authorities="com.vmr.home.RecentSearchProvider"
+            android:enabled="true"
+            android:exported="true"/>
+
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings">

@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 
+import com.vmr.db.DbManager;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 
@@ -21,6 +22,7 @@ public class Vmr extends Application {
     private static VmrFolder vmrSharedWithMeRootFolder;
     private static VmrFolder vmrSharedByMeRootFolder;
     private static UserInfo loggedInUserInfo;
+    private static DbManager dbManager;
     private static Map<String, String > userMap;
 
     public static UserInfo getLoggedInUserInfo() {
@@ -69,6 +71,14 @@ public class Vmr extends Application {
 
     public static Context getVMRContext(){
         return Vmr.appContext;
+    }
+
+    public static DbManager getDbManager() {
+        return dbManager;
+    }
+
+    public static void setDbManager(DbManager dbManager) {
+        Vmr.dbManager = dbManager;
     }
 
     @Override

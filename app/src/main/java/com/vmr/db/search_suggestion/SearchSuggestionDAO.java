@@ -27,8 +27,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 new String[] { DbConstants.RECORD_NAME, DbConstants.RECORD_IS_FOLDER, DbConstants.RECORD_NODE_REF, DbConstants.RECORD_PARENT_NODE_REF }, // Select columns
-                DbConstants.RECORD_NAME + " LIKE %?% " , // where
-                new String[] { searchTerm } , // conditions
+                DbConstants.RECORD_NAME + " LIKE ? " , // where
+                new String[] { "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_NAME, // order by
@@ -58,8 +58,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_TRASH, // Table Name
                 new String[] { DbConstants.TRASH_NAME, DbConstants.TRASH_IS_FOLDER, DbConstants.TRASH_NODE_REF, DbConstants.TRASH_PARENT_NODE_REF }, // Select columns
-                DbConstants.TRASH_NAME + " LIKE %?% " , // where
-                new String[] { searchTerm } , // conditions
+                DbConstants.TRASH_NAME + " LIKE ? " , // where
+                new String[] {  "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_NAME, // order by
@@ -89,8 +89,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_SHARED, // Table Name
                 new String[] { DbConstants.SHARED_FILE_NAME, DbConstants.SHARED_IS_FOLDER, DbConstants.SHARED_NODE_REF, DbConstants.SHARED_PARENT_NODE_REF }, // Select columns
-                DbConstants.SHARED_FILE_NAME + " LIKE %?% " , // where
-                new String[] { searchTerm } , // conditions
+                "UPPER(" + DbConstants.SHARED_FILE_NAME + ")" + " LIKE ? " , // where
+                new String[] {  "UPPER(%"+searchTerm+"%)" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.SHARED_FILE_NAME, // order by
