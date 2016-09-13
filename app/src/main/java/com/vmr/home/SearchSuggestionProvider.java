@@ -38,12 +38,7 @@ public class SearchSuggestionProvider extends ContentProvider {
                 new String[]{
                         BaseColumns._ID,
                         SearchManager.SUGGEST_COLUMN_TEXT_1,
-                        SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID,
-                        DbConstants.RECORD_NAME,
-                        DbConstants.RECORD_NODE_REF,
-                        DbConstants.RECORD_PARENT_NODE_REF,
-                        DbConstants.RECORD_IS_FOLDER,
-                        "LOCATION"
+                        SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
                 }
         );
         if (searchResults != null) {
@@ -53,10 +48,10 @@ public class SearchSuggestionProvider extends ContentProvider {
             int length = searchResults.size();
 
             for (int i = 0; i < length && matrixCursor.getCount() < limit; i++) {
-                SearchSuggestion s = searchResults.get(i);
+//                SearchSuggestion s = searchResults.get(i);
                 String recipe = searchResults.get(i).getRecordName();
                 if (recipe.toLowerCase().contains(query.toLowerCase())) {
-                    matrixCursor.addRow(new Object[]{i, recipe , i, s.getRecordName(), s.getRecordNodeRef(), s.getRecordParentNodeRef(), s.isFolder(), s.getRecordLocation()});
+                    matrixCursor.addRow(new Object[]{i, recipe , i});
                 }
             }
         }

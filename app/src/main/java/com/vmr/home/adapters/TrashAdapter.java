@@ -30,7 +30,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
     @Override
     public TrashViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.trash_item_layout, parent, false);
+                .inflate(R.layout.item_layout_trash, parent, false);
 
         return new TrashViewHolder(itemView);
     }

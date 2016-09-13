@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:id="@+id/btnHome"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/ic_home"/>
+
+        <android.support.v7.widget.SearchView
+            android:id="@+id/svFolderPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/btnHome"
+            android:hint="Search..." />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ListView
+            android:id="@+id/lvFolderPicker"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"  />
+
+        <TextView
+            android:id="@+id/tvEmptyFolder"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:gravity="center"
+            android:text="Folder is empty"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:visibility="gone" />
+
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btnCancelButton"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:text="Cancel" />
+
+</LinearLayout>

@@ -169,6 +169,14 @@ public abstract class Constants {
                 public static final String TAG = "VMR_DOWNLOAD_FILE";
             }
 
+            public final static class UploadFile {
+                public static final String FILE_LIST = "upload";
+                public static final String FILE_NAMES = "uploadFileName";
+                public static final String CONTENT_TYPE = "uploadContentType";
+                public static final String PARENT_NODE_REF = "selectedFolderNodeRef";
+                public static final String TAG = "VMR_UPLOAD_FILE";
+            }
+
             public final static class DocumentDetails {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String NODE_REF = "fileSelectedNodeRef";

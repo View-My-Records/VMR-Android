@@ -70,6 +70,10 @@ public class IndexDialog extends DialogFragment
 
     private HomeController homeController;
 
+    public IndexDialog() {
+
+    }
+
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
 
@@ -84,7 +88,7 @@ public class IndexDialog extends DialogFragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo_Light);
+        setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light);
 
         recordNodeRef = getArguments().getString(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF);
         recordProgramName = getArguments().getString(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME);
@@ -98,10 +102,7 @@ public class IndexDialog extends DialogFragment
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        Dialog dialog = super.onCreateDialog(savedInstanceState);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setTitle("Index File");
-        return dialog;
+        return super.onCreateDialog(savedInstanceState);
     }
 
     @Override
@@ -110,7 +111,7 @@ public class IndexDialog extends DialogFragment
         View dialogView = inflater.inflate(R.layout.dialog_fragment_index, container);
 
         Toolbar toolbar = (Toolbar) dialogView.findViewById(R.id.toolbar_index_dialog);
-
+        toolbar.setTitle("Indexing...");
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();

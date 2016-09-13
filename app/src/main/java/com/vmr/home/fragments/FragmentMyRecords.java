@@ -1,8 +1,11 @@
 package com.vmr.home.fragments;
 
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcel;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -34,18 +37,23 @@ import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
+import com.vmr.home.fragments.dialog.FilePicker;
+import com.vmr.home.fragments.dialog.FolderPicker;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
+import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -169,7 +177,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onItemClick(Record record) {
+    public void onItemClick(final Record record) {
         if(record.isFolder()){
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
@@ -178,6 +186,30 @@ public class FragmentMyRecords extends Fragment
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
+            HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                @Override
+                public void onFileDownloadSuccess(byte[] bytes) {
+                    try {
+                        if (bytes!=null) {
+                            FileOutputStream outputStream;
+                            String fileName= record.getRecordName();
+                            outputStream = Vmr.getVMRContext().openFileOutput(fileName, Context.MODE_PRIVATE);
+                            outputStream.write(bytes);
+                            outputStream.close();
+                            VmrDebug.printLogI(this.getClass(), "File download complete");
+                        }
+                    } catch (Exception e) {
+                        VmrDebug.printLogI(this.getClass(), "File download failed");
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFileDownloadFailure(VolleyError error) {
+
+                }
+            });
+            dlController.downloadFile(record);
         }
     }
 
@@ -197,6 +229,23 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onFileClick() {
         VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
+        FragmentManager fm = getActivity().getFragmentManager();
+        FilePicker filePicker = new FilePicker();
+        filePicker.setOnFilePickedListener(new FilePicker.OnFilePickedListener() {
+            @Override
+            public void onFilePicked(File file) {
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
+
+                ArrayList<String> fileList = new ArrayList<>();
+                fileList.add(file.getAbsolutePath());
+
+                Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
+                uploadService.putStringArrayListExtra("fileList",fileList);
+
+            }
+        });
+
+        filePicker.show(fm, "file_picker");
     }
 
     @Override
@@ -387,6 +436,16 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onMoveClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Move button clicked" );
+        FragmentManager fm = getActivity().getFragmentManager();
+        FolderPicker folderPicker = new FolderPicker();
+        folderPicker.setOnFolderPickedListener(new FolderPicker.OnFolderPickedListener() {
+            @Override
+            public void onFolderPicked(Record record) {
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " received in fragment");
+            }
+        });
+
+        folderPicker.show(fm, "file_picker");
     }
 
     @Override
@@ -512,4 +571,6 @@ public class FragmentMyRecords extends Fragment
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
     }
+
+
 }

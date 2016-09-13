@@ -66,4 +66,14 @@ public abstract class VmrResponseListener {
         void onFetchPropertiesSuccess(Map<String , JSONObject> properties);
         void onFetchPropertiesFailure(VolleyError error);
     }
+
+    public interface OnFileDownload{
+        void onFileDownloadSuccess(byte[] bytes);
+        void onFileDownloadFailure(VolleyError error);
+    }
+
+    public interface OnFileUpload{
+        void onFileUploadSuccess(JSONObject response);
+        void onFileUploadFailure(VolleyError error);
+    }
 }

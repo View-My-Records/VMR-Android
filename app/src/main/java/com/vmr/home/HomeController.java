@@ -9,6 +9,7 @@ import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
+import com.vmr.home.request.DownloadRequest;
 import com.vmr.home.request.MoveToTrashRequest;
 import com.vmr.home.request.PropertiesRequest;
 import com.vmr.home.request.RecordsRequest;
@@ -17,6 +18,7 @@ import com.vmr.home.request.RenameItemRequest;
 import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
 import com.vmr.model.DeleteMessage;
+import com.vmr.model.UploadPacket;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.model.VmrTrashItem;
@@ -47,6 +49,8 @@ public class HomeController {
     private VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener;
     private VmrResponseListener.OnFetchClassifications onFetchClassifications;
     private VmrResponseListener.OnFetchProperties onFetchProperties;
+    private VmrResponseListener.OnFileDownload onFileDownload;
+
 
     public HomeController(VmrResponseListener.OnFetchSharedByMeListener onFetchSharedByMe) {
         this.onFetchSharedByMe = onFetchSharedByMe;
@@ -78,6 +82,10 @@ public class HomeController {
 
     public HomeController(VmrResponseListener.OnFetchProperties onFetchProperties) {
         this.onFetchProperties = onFetchProperties;
+    }
+
+    public HomeController(VmrResponseListener.OnFileDownload onFileDownload) {
+        this.onFileDownload = onFileDownload;
     }
 
     public void fetchAllFilesAndFolders(String nodeRef){
@@ -367,6 +375,65 @@ public class HomeController {
                         }
                 );
         VmrRequestQueue.getInstance().addToRequestQueue(propertiesRequest, Constants.Request.FolderNavigation.Properties.TAG);
+    }
+
+    public void downloadFile(Record record){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
+        formData.put(Constants.Request.FolderNavigation.DownloadFile.NODE_REF, record.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.DownloadFile.FILE_NAME, Uri.encode(record.getRecordName()));
+        formData.put(Constants.Request.FolderNavigation.DownloadFile.MIME_TYPE, "application/octet-stream");
+
+        DownloadRequest downloadRequest =
+                new DownloadRequest(
+                        formData,
+                        new Response.Listener<byte[]>() {
+                            @Override
+                            public void onResponse(byte[] bytes) {
+                                onFileDownload.onFileDownloadSuccess(bytes);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFileDownload.onFileDownloadFailure(error);
+                            }
+                        }
+                );
+        VmrRequestQueue.getInstance()
+                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
+    }
+
+    public void UploadFile(UploadPacket uploadPacket){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+//        formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
+//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_LIST, uploadPacket.getFiles());
+        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileNames()));
+        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, "multipart/form-data");
+        formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
+
+        DownloadRequest downloadRequest =
+                new DownloadRequest(
+                        formData,
+                        new Response.Listener<byte[]>() {
+                            @Override
+                            public void onResponse(byte[] bytes) {
+                                onFileDownload.onFileDownloadSuccess(bytes);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFileDownload.onFileDownloadFailure(error);
+                            }
+                        }
+                );
+        VmrRequestQueue.getInstance()
+                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
 

@@ -53,6 +53,32 @@ public class RecordDAO {
         return records;
     }
 
+    // Fetch all records in db for current user
+    public List<Record> getFolders(String parentNode){
+        List<Record> records = new ArrayList<>();
+        Cursor c = db.query(
+                DbConstants.TABLE_RECORD, // Table Name
+                DbConstants.RECORD_COLUMNS, // Select columns
+                DbConstants.RECORD_PARENT_NODE_REF + "=? AND " + DbConstants.RECORD_IS_FOLDER + "=?" , // where
+                new String[]{ parentNode, 1+"" }, // conditions
+                null, // group by
+                null, // having
+                null, // order by
+                null );
+
+        if (c.moveToFirst()) {
+            do {
+                Record record = buildFromCursor(c);
+                if (record != null) {
+                    records.add(record);
+                }
+            } while (c.moveToNext());
+        }
+
+        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        return records;
+    }
+
 
     // Fetch all records in db for current user
     public List<Record> getAllUnIndexedRecords(String parentNode){

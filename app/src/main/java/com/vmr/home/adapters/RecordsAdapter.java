@@ -36,7 +36,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
     @Override
     public MyRecordsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.records_item_layout, parent, false);
+                .inflate(R.layout.item_layout_records, parent, false);
 
         return new MyRecordsViewHolder(itemView);
     }

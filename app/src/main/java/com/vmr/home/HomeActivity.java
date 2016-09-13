@@ -24,6 +24,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -161,7 +162,7 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_actionbar_menu, menu);
-        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         if(null!=searchManager ) {
             searchView.setSearchableInfo(searchManager
@@ -169,7 +170,7 @@ public class HomeActivity extends AppCompatActivity
         }
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
-        searchView.setIconifiedByDefault(false);
+        searchView.setIconifiedByDefault(true);
         return true;
     }
 
@@ -291,9 +292,11 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onQueryTextSubmit(String query) {
-        VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit" + query);
-        SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-                SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
+        VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit->" + query);
+        SearchRecentSuggestions suggestions =
+                new SearchRecentSuggestions(this,
+                        SearchHistoryProvider.AUTHORITY,
+                        SearchHistoryProvider.MODE);
         suggestions.saveRecentQuery(query, null);
         return false;
     }
@@ -307,12 +310,13 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public boolean onClose() {
-        VmrDebug.printLogI(this.getClass(), "onQueryClose");
+        VmrDebug.printLogI(this.getClass(), "onQueryClose->");
         return false;
     }
 
     @Override
     public boolean onSuggestionSelect(int position) {
+        VmrDebug.printLogI(this.getClass(), "onSuggestionSelect->");
         return false;
     }
 
@@ -320,12 +324,12 @@ public class HomeActivity extends AppCompatActivity
     public boolean onSuggestionClick(int position) {
 
         Cursor c = searchView.getSuggestionsAdapter().getCursor();
-        VmrDebug.printLogI(this.getClass(), "Search item clicked ->" +c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
+        VmrDebug.printLogI(this.getClass(), "onSuggestionClick->" +c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
 
         Intent intent = new Intent(this, SearchResultActivity.class);
         intent.setAction(Intent.ACTION_VIEW);
 
-        intent.putExtra("id", id);
+//        intent.putExtra("id", id);
 
         PendingIntent pendingIntent =
                 TaskStackBuilder.create(this)
@@ -336,6 +340,8 @@ public class HomeActivity extends AppCompatActivity
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
         builder.setContentIntent(pendingIntent);
+
+
 
         startActivity(intent);
 

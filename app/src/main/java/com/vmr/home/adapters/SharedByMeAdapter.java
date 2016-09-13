@@ -34,7 +34,7 @@ public class SharedByMeAdapter extends RecyclerView.Adapter<SharedByMeAdapter.Sh
     @Override
     public SharedByMeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.shared_by_me_item_layout, parent, false);
+                .inflate(R.layout.item_layout_shared_by_me, parent, false);
         return new SharedByMeViewHolder(itemView);
     }
 

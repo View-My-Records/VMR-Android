@@ -64,6 +64,11 @@ public class DbManager {
         return this.recordDAO.getAllRecords(parentNode, false);
     }
 
+    // Retrieve all records for given parent
+    public List<Record> getFolders(String parentNode) {
+        return this.recordDAO.getFolders(parentNode);
+    }
+
     public List<Record> getAllRecords(String parentNode, boolean override) {
         return this.recordDAO.getAllRecords(parentNode, override);
     }

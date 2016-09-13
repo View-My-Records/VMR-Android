@@ -3,14 +3,14 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
     android:focusable="true"
+    android:orientation="vertical"
+    android:paddingBottom="10dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:clickable="true"
-    android:background="?android:attr/selectableItemBackground"
-    android:orientation="vertical" >
+    android:paddingTop="10dp" >
 
     <ImageView
         android:id="@+id/ivFileIcon"
@@ -21,53 +21,53 @@
         android:id="@+id/tvFileName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:singleLine="true"
-        android:textStyle="bold"
+        android:layout_marginLeft="2dp"
         android:layout_marginTop="5dp"
-        android:text="File Name"
+        android:layout_toEndOf="@+id/ivFileIcon"
         android:layout_toLeftOf="@+id/tvTimeStamp"
         android:layout_toRightOf="@+id/ivFileIcon"
-        android:layout_toEndOf="@+id/ivFileIcon"
-        android:layout_marginLeft="2dp" />
+        android:singleLine="true"
+        android:text="File Name"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/tvFileSize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/tvFileName"
-        android:text="Size / Items"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="2dp"
+        android:layout_toEndOf="@+id/ivFileIcon"
         android:layout_toLeftOf="@+id/tvTimeStamp"
         android:layout_toRightOf="@+id/ivFileIcon"
-        android:layout_toEndOf="@+id/ivFileIcon"
-        android:layout_marginTop="2dp"
-        android:layout_marginLeft="2dp" />
+        android:text="Size / Items" />
 
     <TextView
         android:id="@+id/tvTimeStamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Timestamp"
         android:layout_alignBottom="@+id/ivOverflow"
         android:layout_toLeftOf="@+id/ivOverflow"
-        android:layout_toStartOf="@+id/ivOverflow" />
+        android:layout_toStartOf="@+id/ivOverflow"
+        android:text="Timestamp" />
 
     <ImageView
         android:id="@+id/ivOverflow"
-        android:src="@drawable/ic_overflow"
-        android:scaleType="fitXY"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="5dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:paddingStart="15dp"
-        android:paddingEnd="5dp"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:contentDescription="Overflow Menu"
+        android:paddingBottom="10dp"
+        android:paddingEnd="5dp"
         android:paddingLeft="15dp"
         android:paddingRight="5dp"
-        android:layout_alignParentRight="true" />
+        android:paddingStart="15dp"
+        android:paddingTop="10dp"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_overflow" />
 
 </RelativeLayout>

@@ -4,5 +4,6 @@
     android:hint="Search..."
     android:label="@string/app_name"
     android:searchSuggestAuthority="com.vmr.home.SearchHistoryProvider"
+    android:searchSuggestIntentAction="android.intent.action.VIEW"
     android:searchSuggestSelection=" ?"
     android:voiceSearchMode="showVoiceSearchButton|launchRecognizer"/>
