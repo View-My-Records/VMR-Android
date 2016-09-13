@@ -63,12 +63,13 @@ public class FolderPicker extends DialogFragment {
         int style = DialogFragment.STYLE_NO_TITLE;
         int theme = android.R.style.Theme_Holo_Light;
         setStyle(style, theme);
+        setCancelable(true);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        final View dialogView = View.inflate(getActivity(), R.layout.dialog_fragment_folder_picker, null);
+        View dialogView = View.inflate(getActivity(), R.layout.dialog_fragment_folder_picker, null);
 
         AlertDialog dialog = new AlertDialog.Builder(getActivity())
                     .setTitle("Folder Picker")

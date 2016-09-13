@@ -65,6 +65,7 @@ public class FilePicker extends DialogFragment {
         int style = DialogFragment.STYLE_NO_TITLE;
         int theme = android.R.style.Theme_Holo_Light;
         setStyle(style, theme);
+        setCancelable(true);
     }
 
     @Override

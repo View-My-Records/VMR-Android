@@ -20,8 +20,8 @@ public class UploadService extends IntentService {
     String contentType;
     String parentNodeRef;
 
-    public UploadService(String name) {
-        super(name);
+    public UploadService() {
+        super("UploadService");
     }
 
 //    public UploadService(String name, List<File> files, String fileNames, String contentType, String parentNodeRef ) {

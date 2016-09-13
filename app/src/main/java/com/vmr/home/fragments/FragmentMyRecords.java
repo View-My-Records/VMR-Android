@@ -1,11 +1,11 @@
 package com.vmr.home.fragments;
 
+import android.Manifest;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcel;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -48,6 +48,7 @@ import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PermissionHandler;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -185,31 +186,45 @@ public class FragmentMyRecords extends Fragment
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
-            VmrDebug.printLine(record.getRecordName() + " File clicked");
-            HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
-                @Override
-                public void onFileDownloadSuccess(byte[] bytes) {
-                    try {
-                        if (bytes!=null) {
-                            FileOutputStream outputStream;
-                            String fileName= record.getRecordName();
-                            outputStream = Vmr.getVMRContext().openFileOutput(fileName, Context.MODE_PRIVATE);
-                            outputStream.write(bytes);
-                            outputStream.close();
-                            VmrDebug.printLogI(this.getClass(), "File download complete");
+
+            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                VmrDebug.printLine(record.getRecordName() + " File clicked");
+                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                    @Override
+                    public void onFileDownloadSuccess(byte[] bytes) {
+                        try {
+                            if (bytes != null) {
+                                String fileName = record.getRecordName();
+                                File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                                newFile.mkdirs();
+                                FileOutputStream outputStream = new FileOutputStream(newFile);
+//                                    outputStream = Vmr.getVMRContext().openFileOutput(newFile.getAbsolutePath(), Context.MODE_PRIVATE);
+                                outputStream.write(bytes);
+                                outputStream.close();
+                                VmrDebug.printLogI(this.getClass(), "File download complete");
+                            }
+                        } catch (Exception e) {
+                            VmrDebug.printLogI(this.getClass(), "File download failed");
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        VmrDebug.printLogI(this.getClass(), "File download failed");
-                        e.printStackTrace();
                     }
-                }
 
-                @Override
-                public void onFileDownloadFailure(VolleyError error) {
+                    @Override
+                    public void onFileDownloadFailure(VolleyError error) {
 
-                }
-            });
-            dlController.downloadFile(record);
+                    }
+                });
+                dlController.downloadFile(record);
+            } else {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
@@ -229,23 +244,34 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onFileClick() {
         VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
-        FragmentManager fm = getActivity().getFragmentManager();
-        FilePicker filePicker = new FilePicker();
-        filePicker.setOnFilePickedListener(new FilePicker.OnFilePickedListener() {
-            @Override
-            public void onFilePicked(File file) {
-                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
+        if(PermissionHandler.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
 
-                ArrayList<String> fileList = new ArrayList<>();
-                fileList.add(file.getAbsolutePath());
+            FragmentManager fm = getActivity().getFragmentManager();
+            FilePicker filePicker = new FilePicker();
+            filePicker.setOnFilePickedListener(new FilePicker.OnFilePickedListener() {
+                @Override
+                public void onFilePicked(File file) {
+                    VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
 
-                Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
-                uploadService.putStringArrayListExtra("fileList",fileList);
+                    ArrayList<String> fileList = new ArrayList<>();
+                    fileList.add(file.getAbsolutePath());
 
-            }
-        });
+                    Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
+                    uploadService.putStringArrayListExtra("fileList", fileList);
 
-        filePicker.show(fm, "file_picker");
+                }
+            });
+            filePicker.show(fm, "file_picker");
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE);
+                        }
+                    })
+                    .show();
+        }
     }
 
     @Override
