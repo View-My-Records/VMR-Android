@@ -34,14 +34,14 @@ public class SharedByMeRequest extends PostLoginRequest<List<VmrSharedItem>> {
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
-        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + this.formData.toString());
+//        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + this.formData.toString());
         return this.formData;
     }
 
     @Override
     protected Response<List<VmrSharedItem>> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + jsonString);
+//        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + jsonString);
         List<VmrSharedItem> vmrSharedItems;
 
         try {

@@ -15,9 +15,4 @@ public class Interaction {
         void onReceiveFromActivitySuccess(List<Record> records);
         void onReceiveFromActivityFailure(VolleyError error);
     }
-
-    public interface HomeToUnIndexedInterface {
-        void onReceiveFromActivitySuccess(VmrFolder vmrFolder);
-        void onReceiveFromActivityFailure(VolleyError error);
-    }
 }

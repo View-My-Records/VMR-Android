@@ -2,11 +2,11 @@ package com.vmr.home.fragments;
 
 import android.Manifest;
 import android.app.FragmentManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -45,7 +45,6 @@ import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
-import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PermissionHandler;
@@ -58,6 +57,8 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class FragmentMyRecords extends Fragment
         implements
@@ -92,7 +93,7 @@ public class FragmentMyRecords extends Fragment
     private Stack<String> recordStack;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
 
@@ -180,7 +181,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onItemClick(final Record record) {
         if(record.isFolder()){
-            VmrDebug.printLine(record.getRecordName() + " Folder clicked");
+            VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getNodeRef());
             refreshFolder();
@@ -188,7 +189,7 @@ public class FragmentMyRecords extends Fragment
         } else {
 
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                VmrDebug.printLine(record.getRecordName() + " File clicked");
+                VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(byte[] bytes) {
@@ -196,15 +197,32 @@ public class FragmentMyRecords extends Fragment
                             if (bytes != null) {
                                 String fileName = record.getRecordName();
                                 File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                                newFile.mkdirs();
-                                FileOutputStream outputStream = new FileOutputStream(newFile);
-//                                    outputStream = Vmr.getVMRContext().openFileOutput(newFile.getAbsolutePath(), Context.MODE_PRIVATE);
-                                outputStream.write(bytes);
-                                outputStream.close();
-                                VmrDebug.printLogI(this.getClass(), "File download complete");
+                                FileOutputStream outputStream = new FileOutputStream(newFile, false);
+
+                                if (newFile.createNewFile()) {
+                                    outputStream.write(bytes);
+                                    outputStream.close();
+                                    VmrDebug.printLogI(this.getClass(), "File download complete");
+                                    Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                    Notification notification =
+                                            new Notification.Builder(getActivity())
+                                                    .setContentTitle("Download complete")
+                                                    .setContentText("Subject")
+                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                                    .setAutoCancel(true)
+                                                    .build();
+
+                                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                    notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+                                    notificationManager.notify(0, notification);
+                                } else {
+                                    VmrDebug.printLogI(this.getClass(), "Could not create file");
+                                }
                             }
                         } catch (Exception e) {
                             VmrDebug.printLogI(this.getClass(), "File download failed");
+                            Snackbar.make(getActivity().findViewById(R.id.clayout), "File download failed", Snackbar.LENGTH_SHORT).show();
                             e.printStackTrace();
                         }
                     }
@@ -216,7 +234,7 @@ public class FragmentMyRecords extends Fragment
                 });
                 dlController.downloadFile(record);
             } else {
-                Snackbar.make(getActivity().findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -239,6 +257,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onCameraClick() {
         VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -253,11 +272,12 @@ public class FragmentMyRecords extends Fragment
                 public void onFilePicked(File file) {
                     VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
 
-                    ArrayList<String> fileList = new ArrayList<>();
-                    fileList.add(file.getAbsolutePath());
-
-                    Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
-                    uploadService.putStringArrayListExtra("fileList", fileList);
+                    Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+//                    ArrayList<String> fileList = new ArrayList<>();
+//                    fileList.add(file.getAbsolutePath());
+//
+//                    Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
+//                    uploadService.putStringArrayListExtra("fileList", fileList);
 
                 }
             });
@@ -362,6 +382,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onOpenClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -375,6 +396,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onShareClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Share button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -389,41 +411,58 @@ public class FragmentMyRecords extends Fragment
         userInput.setText(record.getRecordName());
         userInput.setSelection(userInput.getText().length());
 
-        // set dialog message
-        alertDialogBuilder
-            .setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
-                            @Override
-                            public void onRenameItemSuccess(JSONObject jsonObject) {
-                                VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
-                                try {
-                                    if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(Vmr.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
-                                        refreshFolder();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
+        final HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
+            @Override
+            public void onRenameItemSuccess(JSONObject jsonObject) {
+                try {
+                    if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " renamed.");
+                        refreshFolder();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                            @Override
-                            public void onRenameItemFailure(VolleyError error) {
-                                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                            }
+            @Override
+            public void onRenameItemFailure(VolleyError error) {
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+            }
 
-                        });
-                        renameController.renameItem(record, userInput.getText().toString());
+        });
+
+        final Snackbar snackBarOnUndo =
+                Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
+
+        final Snackbar snackBarOnOk =
+                Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " renamed",Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackBarOnUndo.show();
                     }
                 })
-            .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        })
-                .setTitle("Rename");
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        renameController.renameItem(record, userInput.getText().toString());
+                    }
+                });
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    snackBarOnOk.show();
+                }
+            })
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,int id) {
+                    dialog.cancel();
+                }
+            })
+            .setTitle("Rename");
         // create alert dialog
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
@@ -455,8 +494,80 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onDownloadClicked(Record vmrItem) {
+    public void onDownloadClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Download button clicked" );
+        if(record.isFolder()){
+            VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
+            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            recordStack.push(record.getNodeRef());
+            refreshFolder();
+            mSwipeRefreshLayout.setRefreshing(true);
+        } else {
+
+            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
+                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                    @Override
+                    public void onFileDownloadSuccess(byte[] bytes) {
+                        try {
+                            if (bytes != null) {
+                                String fileName = record.getRecordName();
+                                File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                                if(!newFile.exists() && newFile.createNewFile()) {
+                                    FileOutputStream outputStream = new FileOutputStream(newFile, false);
+                                    outputStream.write(bytes);
+                                    outputStream.close();
+                                    VmrDebug.printLogI(this.getClass(), "File download complete");
+                                    Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                    Notification downloadCompleteNotification =
+                                            new Notification.Builder(getActivity())
+                                                    .setContentTitle(record.getRecordName())
+                                                    .setContentText("Download complete")
+                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                                    .setAutoCancel(true)
+                                                    .build();
+
+                                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                    downloadCompleteNotification.flags |= Notification.FLAG_AUTO_CANCEL;
+                                    nm.cancel(record.getRecordName(), 0);
+                                    nm.notify(0, downloadCompleteNotification);
+                                } else {
+                                    VmrDebug.printLogI(this.getClass(), "File already exist or couldn't be created");
+                                }
+                            }
+                        } catch (Exception e) {
+                            VmrDebug.printLogI(this.getClass(), "File download failed");
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFileDownloadFailure(VolleyError error) {
+
+                    }
+                });
+                dlController.downloadFile(record);
+                Notification downloadingNotification =
+                        new Notification.Builder(getActivity())
+                        .setContentTitle(record.getRecordName())
+                        .setContentText("Download in progress")
+                        .setSmallIcon(android.R.drawable.stat_sys_download)
+                        .setProgress(0,0,true)
+                        .build();
+                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                nm.notify(record.getRecordName(), 0 ,downloadingNotification);
+
+            } else {
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .show();
+            }
+        }
     }
 
     @Override
@@ -468,6 +579,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onFolderPicked(Record record) {
                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " received in fragment");
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "Move item feature is not available.", Snackbar.LENGTH_SHORT).show();
             }
         });
 
@@ -477,16 +589,19 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onCopyClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Copy button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDuplicateClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPropertiesClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Properties button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -495,7 +610,7 @@ public class FragmentMyRecords extends Fragment
         final HomeController trashController = new HomeController(new VmrResponseListener.OnMoveToTrashListener() {
             @Override
             public void onMoveToTrashSuccess(List<DeleteMessage> deleteMessages) {
-                VmrDebug.printLogI(this.getClass(), deleteMessages.toString() );
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), deleteMessages.toString() );
                 refreshFolder();
 
                 for (DeleteMessage dm : deleteMessages) {
@@ -511,11 +626,11 @@ public class FragmentMyRecords extends Fragment
             }
 
         });
-        Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " moved to Trash",Snackbar.LENGTH_SHORT)
+        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " moved to Trash",Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
+                        Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
                         snackbar1.show();
                     }
                 })
