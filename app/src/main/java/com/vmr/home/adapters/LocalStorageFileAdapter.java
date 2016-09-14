@@ -15,6 +15,7 @@ import com.vmr.R;
 import com.vmr.debug.VmrDebug;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,12 +75,18 @@ public class LocalStorageFileAdapter extends ArrayAdapter<File> implements Filte
                     String temp = numOfFiles + " Items";
                     fileSize.setText(temp);
                 } else {
+                    DecimalFormat df = new DecimalFormat();
+                    df.setMaximumFractionDigits(2);
+
                     String value;
-                    long size = fileFolder.length() / 1024;
-                    if (size >= 1024)
-                        value = size / 1024 + " Mb";
+                    float size = fileFolder.length();
+                    if (size >= (1000*1000))
+                        value = df.format(size / (1000*1000)) + " Mb";
+                    else if(size >= 1000)
+                        value = df.format(size / 1000) + " Kb";
                     else
-                        value = size + " Kb";
+                        value = df.format(size) + " Bytes";
+
                     fileSize.setText(value);
                 }
             }

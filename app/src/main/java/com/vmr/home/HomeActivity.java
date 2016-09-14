@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -24,7 +25,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,14 +45,16 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
+import com.vmr.login.LoginActivity;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
-
-import static android.R.attr.id;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity
         implements
@@ -74,12 +76,14 @@ public class HomeActivity extends AppCompatActivity
 {
     // Views
     MenuItem toBeIndexed;
+    // Variables
+    boolean doubleBackToExitPressedOnce = false;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     // Models
     private UserInfo userInfo;
     private DbManager dbManager;
-    private SearchView searchView;
 //    private SearchSuggestionAdapter mSearchViewAdapter;
+    private SearchView searchView;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -141,7 +145,9 @@ public class HomeActivity extends AppCompatActivity
         }
 
         accountEmail.setText(Vmr.getLoggedInUserInfo().getEmailId());
-        lastLogin.setText(Vmr.getLoggedInUserInfo().getLastLoginTime().toString());
+
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.ENGLISH);
+        lastLogin.setText("Last Login: " + df.format(Vmr.getLoggedInUserInfo().getLastLoginTime()));
 
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
@@ -153,9 +159,21 @@ public class HomeActivity extends AppCompatActivity
         assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
-        } else {
+        } else if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
+            return;
         }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Please press BACK again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce=false;
+            }
+        }, 2000);
     }
 
     @Override
@@ -221,6 +239,10 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.help) {
             fragmentClass = FragmentHelp.class;
         } else if (id == R.id.log_out) {
+            Intent newIntent = new Intent(this,LoginActivity.class);
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(newIntent);
             finish();
             return true;
         }

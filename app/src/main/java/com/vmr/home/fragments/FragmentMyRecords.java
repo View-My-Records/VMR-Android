@@ -304,6 +304,43 @@ public class FragmentMyRecords extends Fragment
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
 
+        final HomeController createFolderController
+            = new HomeController(new VmrResponseListener.OnCreateFolderListener() {
+            @Override
+            public void onCreateFolderSuccess(JSONObject jsonObject) {
+                try {
+                    if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+                        Toast.makeText(Vmr.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+                        refreshFolder();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onCreateFolderFailure(VolleyError error) {
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        final Snackbar snackbar =
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "New folder created",Snackbar.LENGTH_LONG)
+            .setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(getActivity().findViewById(R.id.clayout), "Canceled", Snackbar.LENGTH_SHORT)
+                            .show();
+                }
+            })
+            .setCallback(new Snackbar.Callback() {
+                @Override
+                public void onDismissed(Snackbar snackbar, int event) {
+                    super.onDismissed(snackbar, event);
+                    createFolderController.createFolder( userInput.getText().toString(), recordStack.peek() );
+                }
+            });
+
         // set dialog message
         alertDialogBuilder
             .setPositiveButton("OK",
@@ -312,26 +349,7 @@ public class FragmentMyRecords extends Fragment
                         if(userInput.length() == 0) {
                             userInput.setError("Only alphabets, numbers and spaces are allowed");
                         } else {
-
-                            HomeController createFolderController = new HomeController(new VmrResponseListener.OnCreateFolderListener() {
-                                @Override
-                                public void onCreateFolderSuccess(JSONObject jsonObject) {
-                                    try {
-                                        if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-                                            Toast.makeText(Vmr.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
-                                            refreshFolder();
-                                        }
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-
-                                @Override
-                                public void onCreateFolderFailure(VolleyError error) {
-                                    Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            createFolderController.createFolder( userInput.getText().toString(), recordStack.peek() );
+                            snackbar.show();
                         }
                     }
                 })

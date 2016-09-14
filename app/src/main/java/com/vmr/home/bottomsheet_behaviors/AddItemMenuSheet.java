@@ -24,6 +24,10 @@ public class AddItemMenuSheet extends BottomSheetDialogFragment {
         View contentView = View.inflate(getContext(), R.layout.options_add_items, null);
         dialog.setContentView(contentView);
 
+//        RelativeLayout llScan = (RelativeLayout) contentView.findViewById(R.id.llScan);
+//        RelativeLayout llUpload = (RelativeLayout) contentView.findViewById(R.id.llUploadFile);
+//        RelativeLayout llFolder = (RelativeLayout) contentView.findViewById(R.id.llNewFolder);
+
         ImageButton cameraImage = (ImageButton) contentView.findViewById(R.id.ibCamera);
         ImageButton uploadFile = (ImageButton) contentView.findViewById(R.id.ibUpload);
         ImageButton createFolder = (ImageButton) contentView.findViewById(R.id.ibNewFolder);

@@ -33,11 +33,11 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_PARENT_NODE_REF + "=?" , // where
+                DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
                 new String[]{ parentNode }, // conditions
                 null, // group by
                 null, // having
-                null, // order by
+                DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
                 null );
 
         if (c.moveToFirst()) {
@@ -63,7 +63,7 @@ public class RecordDAO {
                 new String[]{ parentNode, 1+"" }, // conditions
                 null, // group by
                 null, // having
-                null, // order by
+                DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
                 null );
 
         if (c.moveToFirst()) {
@@ -92,7 +92,7 @@ public class RecordDAO {
                 new String[]{ parentNode, inClause[0], inClause[1] }, // conditions
                 null, // group by
                 null, // having
-                null, // order by
+                DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
                 null );
 
         if (c.moveToFirst()) {
@@ -233,9 +233,9 @@ public class RecordDAO {
             record.setFileSize(             c.getInt(       c.getColumnIndex(DbConstants.RECORD_FILE_SIZE)));
             record.setFileMimeType(         c.getString(    c.getColumnIndex(DbConstants.RECORD_FILE_MIME_TYPE)));
             record.setIsFolder(             c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_FOLDER)) > 0);
-            record.setIsShared(             c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_SHARED))>0);
-            record.setIsWritable(           c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_WRITABLE))>0);
-            record.setIsDeletable(          c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_DELETABLE))>0);
+            record.setIsShared(             c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_SHARED))> 0);
+            record.setIsWritable(           c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_WRITABLE))> 0);
+            record.setIsDeletable(          c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_DELETABLE))> 0);
             record.setCreatedBy(            c.getString(    c.getColumnIndex(DbConstants.RECORD_CREATED_BY)));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date date = null;

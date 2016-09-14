@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/nav_header_height"
+    android:layout_height="200dp"
     android:background="@drawable/side_nav_bar"
     android:gravity="bottom"
     android:orientation="vertical"
@@ -15,10 +15,11 @@
         android:id="@+id/accountLogo"
         android:layout_width="64dp"
         android:layout_height="64dp"
-        android:src="@drawable/logo"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true" />
+        android:layout_alignParentTop="true"
+        android:layout_margin="5dp"
+        android:src="@drawable/logo" />
 
     <LinearLayout
         android:id="@+id/accountInfo"
@@ -51,29 +52,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/accountInfo"
-        android:layout_marginTop="72dp"
         android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
         android:layout_alignRight="@id/accountInfo"
-        android:layout_alignParentRight="true">
+        android:layout_marginTop="72dp">
         <ImageButton
             android:id="@+id/action_notifications"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="2dp"
-            android:src="@drawable/ic_notifications"
-            android:scaleType="centerCrop"
             android:background="@android:color/transparent"
-            android:contentDescription="Notifications" />
+            android:contentDescription="Notifications"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_notifications" />
 
         <ImageButton
             android:id="@+id/action_settings"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:layout_margin="2dp"
-            android:src="@drawable/ic_settings"
-            android:scaleType="centerCrop"
             android:background="@android:color/transparent"
-            android:contentDescription="Settings" />
+            android:contentDescription="Settings"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_settings" />
     </LinearLayout>
 
 </RelativeLayout>

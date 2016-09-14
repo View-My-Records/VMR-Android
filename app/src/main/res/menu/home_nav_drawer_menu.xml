@@ -27,18 +27,20 @@
             android:id="@+id/trash"
             android:icon="@android:drawable/ic_menu_delete"
             android:title="Trash" />
-
+    </group>
 
     <item android:title="Sharing">
         <menu>
-            <item
-                android:id="@+id/shared_with_me"
-                android:icon="@drawable/ic_shared_with_me"
-                android:title="Shared with me" />
-            <item
-                android:id="@+id/shared_by_me"
-                android:icon="@drawable/ic_shared_with_me"
-                android:title="Shared By me" />
+            <group android:checkableBehavior="single">
+                <item
+                    android:id="@+id/shared_with_me"
+                    android:icon="@drawable/ic_shared_with_me"
+                    android:title="Shared with me" />
+                <item
+                    android:id="@+id/shared_by_me"
+                    android:icon="@drawable/ic_shared_with_me"
+                    android:title="Shared By me" />
+            </group>
         </menu>
     </item>
 
@@ -59,6 +61,6 @@
         android:id="@+id/log_out"
         android:icon="@drawable/ic_log_out"
         android:title="Log Out" />
-    </group>
+
 
 </menu>

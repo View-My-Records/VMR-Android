@@ -32,7 +32,7 @@ public class TrashRecordDAO {
                 null, // conditions
                 null, // group by
                 null, // having
-                DbConstants.TRASH_NAME, // order by
+                DbConstants.TRASH_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.TRASH_NAME + ") ASC ", // order by
                 null );
 
         if (c.moveToFirst()) {

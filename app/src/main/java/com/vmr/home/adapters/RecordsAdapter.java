@@ -12,6 +12,7 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
@@ -55,7 +56,20 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             }
         } else {
             holder.setItemImage(R.drawable.ic_file);
-            holder.setItemSize(record.getFileSize() + " bytes");
+
+            DecimalFormat df = new DecimalFormat();
+            df.setMaximumFractionDigits(2);
+
+            String value;
+            float size = record.getFileSize();
+            if (size >= (1000*1000))
+                value = df.format(size / (1000*1000)) + " Mb";
+            else if(size >= 1000)
+                value = df.format(size / 1000) + " Kb";
+            else
+                value = df.format(size) + " Bytes";
+
+            holder.setItemSize(value);
         }
         holder.setItemName(record.getRecordName());
         SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
