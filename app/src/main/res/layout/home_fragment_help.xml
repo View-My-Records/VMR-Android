@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vmr.home.fragments.FragmentReports">
+    tools:context="com.vmr.home.fragments.FragmentHelp">
+
 
     <TextView
+        android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Reports"
-        android:id="@+id/tvMyRecords"
-        android:layout_gravity="center" />
-
+        android:layout_gravity="center"
+        android:text="Help"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 </FrameLayout>

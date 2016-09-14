@@ -25,7 +25,7 @@ public class FragmentLoginProfessional extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_professional, container, false);
+        View rootView = inflater.inflate(R.layout.login_fragment_professional, container, false);
 
         final EditText etUsername = (EditText) rootView.findViewById(R.id.etProfessionalUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etProfessionalPassword);

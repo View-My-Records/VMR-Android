@@ -2,14 +2,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vmr.home.fragments.FragmentRecentlyAccessed">
+    tools:context="com.vmr.home.fragments.FragmentOffline">
 
     <TextView
+        android:id="@+id/tvMyRecords"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Recently Accessed"
-        android:id="@+id/tvMyRecords"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:text="Offline"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </FrameLayout>

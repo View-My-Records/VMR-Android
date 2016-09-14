@@ -28,7 +28,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.record_options_layout, null);
+        View contentView = View.inflate(getContext(), R.layout.options_records, null);
         dialog.setContentView(contentView);
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());

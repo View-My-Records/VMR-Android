@@ -95,7 +95,7 @@ public class FragmentSearch extends Fragment
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
 
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
+        View fragmentView = inflater.inflate(R.layout.home_fragment_shared_with_me, container, false);
 
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
@@ -181,7 +181,7 @@ public class FragmentSearch extends Fragment
     @Override
     public void onRenameClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Rename button clicked" );
-        View promptsView = View.inflate(getActivity(), R.layout.dialog_rename_folder, null);
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_rename, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setView(promptsView);

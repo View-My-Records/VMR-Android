@@ -100,7 +100,7 @@ public class FragmentToBeIndexed extends Fragment
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.TO_BE_INDEXED);
 
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_to_be_indexed, container, false);
+        View fragmentView = inflater.inflate(R.layout.home_fragment_to_be_indexed, container, false);
 
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
@@ -187,7 +187,7 @@ public class FragmentToBeIndexed extends Fragment
     @Override
     public void onRenameClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Rename button clicked" );
-        View promptsView = View.inflate(getActivity(), R.layout.dialog_rename_folder, null);
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_rename, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setView(promptsView);

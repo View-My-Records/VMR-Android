@@ -31,7 +31,7 @@ public class FragmentReports extends Fragment {
         }
         mListener.onFragmentInteraction(Constants.Fragment.REPORTS);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_reports, container, false);
+        return inflater.inflate(R.layout.home_fragment_reports, container, false);
     }
 
 

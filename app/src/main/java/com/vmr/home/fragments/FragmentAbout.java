@@ -31,7 +31,7 @@ public class FragmentAbout extends Fragment {
         }
         mListener.onFragmentInteraction(Constants.Fragment.ABOUT);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_about, container, false);
+        return inflater.inflate(R.layout.home_fragment_about, container, false);
     }
 
     @Override

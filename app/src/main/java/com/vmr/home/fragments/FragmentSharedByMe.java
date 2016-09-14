@@ -78,7 +78,7 @@ public class FragmentSharedByMe extends Fragment
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_BY_ME);
 
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_shared_by_me, container, false);
+        View fragmentView = inflater.inflate(R.layout.home_fragment_shared_by_me, container, false);
 
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);

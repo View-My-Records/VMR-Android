@@ -25,7 +25,7 @@ public class FragmentLoginIndividual extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_individual, container, false);
+        View rootView = inflater.inflate(R.layout.login_fragment_individual, container, false);
         final EditText etUsername = (EditText) rootView.findViewById(R.id.etIndividualUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etIndividualPassword);
         final CheckBox cbRememberMe = (CheckBox) rootView.findViewById(R.id.cbIndividualRememberPassword);

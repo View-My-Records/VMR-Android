@@ -95,7 +95,7 @@ public class FragmentSharedWithMe extends Fragment
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.SHARED_WITH_ME);
 
         // Inflate the layout for this fragment
-        View fragmentView = inflater.inflate(R.layout.fragment_shared_with_me, container, false);
+        View fragmentView = inflater.inflate(R.layout.home_fragment_shared_with_me, container, false);
 
         setupRecyclerView(fragmentView);
         setOnBackPress(fragmentView);
@@ -181,7 +181,7 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public void onRenameClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Rename button clicked" );
-        View promptsView = View.inflate(getActivity(), R.layout.dialog_rename_folder, null);
+        View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_rename, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setView(promptsView);
@@ -333,7 +333,7 @@ public class FragmentSharedWithMe extends Fragment
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                    if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+                    if (!recordStack.peek().equals(Vmr.getVmrRootFolder().getSharedFolder())) {
                         recordStack.pop();
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);

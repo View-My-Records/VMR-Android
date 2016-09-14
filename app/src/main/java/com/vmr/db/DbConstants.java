@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 9;
+    public static final int VERSION = 1;
 
     //Table Name
     public static final String TABLE_USER = "USER";

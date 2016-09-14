@@ -20,67 +20,67 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:singleLine="true"
-                android:inputType="textEmailAddress"
+                android:ems="15"
                 android:hint="Username"
-                android:text="admin"
-                android:ems="15" />
+                android:inputType="textEmailAddress"
+                android:singleLine="true"
+                android:text="admin" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/tilProfessionalPassword"
-            android:layout_below="@id/tilProfessionalEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tilProfessionalEmail"
             android:layout_centerHorizontal="true" >
             <EditText
                 android:id="@+id/etProfessionalPassword"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:singleLine="true"
-                android:inputType="textPassword"
+                android:ems="15"
                 android:hint="Password"
-                android:text="Qwer!234"
-                android:ems="15" />
+                android:inputType="textPassword"
+                android:singleLine="true"
+                android:text="Qwer!234" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/tilProfessionalId"
-            android:layout_below="@id/tilProfessionalPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/tilProfessionalPassword"
             android:layout_centerHorizontal="true" >
             <EditText
                 android:id="@+id/etProfessionalID"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
-                android:inputType="text"
+                android:ems="15"
                 android:hint="Professional-ID"
-                android:text="proid"
-                android:ems="15" />
+                android:inputType="text"
+                android:text="proid" />
         </android.support.design.widget.TextInputLayout>
 
+
         <CheckBox
+            android:id="@+id/cbProRememberPassword"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tilProfessionalId"
-            android:layout_marginLeft="50dp"
-            android:id="@+id/cbProRememberPassword"
-            android:text="Remember me"
-            android:layout_marginTop="5dp"
-            />
+            android:layout_alignLeft="@+id/tilProfessionalId"
+            android:layout_alignStart="@+id/tilProfessionalId"
+            android:layout_below="@+id/tilProfessionalId"
+            android:text="Remember me" />
 
         <Button
+            android:id="@+id/btnProfessionalSignIn"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="50dp"
             android:layout_below="@id/cbProRememberPassword"
-            android:id="@+id/btnProfessionalSignIn"
-            android:text="Sign In"
-            android:background="#3b8898"/>
+            android:layout_marginRight="40dp"
+            android:background="@color/colorPrimary"
+            android:text="Sign In"/>
 
 
     </RelativeLayout>

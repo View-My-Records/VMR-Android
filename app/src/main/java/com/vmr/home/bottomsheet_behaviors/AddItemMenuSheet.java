@@ -21,7 +21,7 @@ public class AddItemMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.add_items_layout, null);
+        View contentView = View.inflate(getContext(), R.layout.options_add_items, null);
         dialog.setContentView(contentView);
 
         ImageButton cameraImage = (ImageButton) contentView.findViewById(R.id.ibCamera);

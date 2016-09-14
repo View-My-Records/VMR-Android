@@ -12,7 +12,6 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.vmr.R;
-import com.vmr.login.LoginActivity;
 import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
@@ -27,7 +26,7 @@ public class FragmentLoginFamily extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_family, container, false);
+        View rootView = inflater.inflate(R.layout.login_fragment_family, container, false);
 
         final EditText etUsername = (EditText) rootView.findViewById(R.id.etFamilyUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etFamilyPassword);

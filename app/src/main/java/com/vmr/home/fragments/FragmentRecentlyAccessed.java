@@ -31,7 +31,7 @@ public class FragmentRecentlyAccessed extends Fragment {
         }
         fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.RECENTLY_ACCESSED);
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recently_accessed, container, false);
+        return inflater.inflate(R.layout.home_fragment_recently_accessed, container, false);
     }
 
     @Override

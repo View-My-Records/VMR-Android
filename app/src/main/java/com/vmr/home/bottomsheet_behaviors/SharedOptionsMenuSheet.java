@@ -26,7 +26,7 @@ public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.shared_options_layout, null);
+        View contentView = View.inflate(getContext(), R.layout.options_shared, null);
         dialog.setContentView(contentView);
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
