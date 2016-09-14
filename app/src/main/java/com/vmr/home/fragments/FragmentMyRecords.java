@@ -22,6 +22,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -59,6 +61,7 @@ import java.util.List;
 import java.util.Stack;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
+import static com.vmr.R.id.fab;
 
 public class FragmentMyRecords extends Fragment
         implements
@@ -633,8 +636,8 @@ public class FragmentMyRecords extends Fragment
 
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
-                    Toast.makeText(getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
-                    dbManager.deleteRecord(record);
+                    Toast.makeText(getActivity(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+                    dbManager.moveRecordToTrash(record);
                 }
             }
 
@@ -669,7 +672,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     private void setupFab(View view){
-        mFabAddItem = (FloatingActionButton) view.findViewById(R.id.fab);
+        mFabAddItem = (FloatingActionButton) view.findViewById(fab);
         mFabAddItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -721,6 +724,18 @@ public class FragmentMyRecords extends Fragment
         mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(recordsAdapter);
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "newState->"+newState);
+                if (newState == 0){
+                    mFabAddItem.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
+                } else {
+                    mFabAddItem.animate().translationY(mFabAddItem.getHeight() + 16).setInterpolator(new AccelerateInterpolator(2)).start();
+                }
+            }
+        });
     }
 
     private void refreshFolder(){

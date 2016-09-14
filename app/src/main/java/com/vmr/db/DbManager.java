@@ -89,8 +89,12 @@ public class DbManager {
     }
 
     // Delete given record
-    public boolean deleteRecord(Record record) {
+    public boolean moveRecordToTrash(Record record) {
         return this.recordDAO.deleteRecord(record);
+    }
+
+    public boolean deleteRecordFromTrash(TrashRecord record) {
+        return this.trashRecordDAO.deleteRecord(record);
     }
 
     public List<SharedRecord> getAllSharedByMe(){

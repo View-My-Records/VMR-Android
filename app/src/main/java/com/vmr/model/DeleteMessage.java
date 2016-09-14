@@ -1,5 +1,7 @@
 package com.vmr.model;
 
+import com.vmr.debug.VmrDebug;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,10 +33,14 @@ public class DeleteMessage {
 
     public static List<DeleteMessage> parseDeleteMessage(JSONObject response) {
         List<DeleteMessage> deleteMessages = new ArrayList<>();
-
+        VmrDebug.printLogI(DeleteMessage.class, response.toString());
         JSONArray jsonArray = new JSONArray();
         try {
-            jsonArray = (JSONArray) response.get("Deletemessages");
+            if(response.has("Deletemessages")) {
+                jsonArray = (JSONArray) response.get("Deletemessages");
+            } else if(response.has("trashMessages")){
+                jsonArray = (JSONArray) response.get("trashMessages");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }

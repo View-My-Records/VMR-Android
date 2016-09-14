@@ -6,6 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
+import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
@@ -47,9 +48,11 @@ public class HomeController {
     private VmrResponseListener.OnCreateFolderListener onCreateFolderListener;
     private VmrResponseListener.OnRenameItemListener onRenameItemListener;
     private VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener;
+    private VmrResponseListener.OnDeleteFromTrashListener onDeleteFromTrashListener;
     private VmrResponseListener.OnFetchClassifications onFetchClassifications;
     private VmrResponseListener.OnFetchProperties onFetchProperties;
     private VmrResponseListener.OnFileDownload onFileDownload;
+
 
 
     public HomeController(VmrResponseListener.OnFetchSharedByMeListener onFetchSharedByMe) {
@@ -74,6 +77,10 @@ public class HomeController {
 
     public HomeController(VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener) {
         this.onMoveToTrashListener = onMoveToTrashListener;
+    }
+
+    public HomeController(VmrResponseListener.OnDeleteFromTrashListener onDeleteFromTrashListener) {
+        this.onDeleteFromTrashListener = onDeleteFromTrashListener;
     }
 
     public HomeController(VmrResponseListener.OnFetchClassifications onFetchClassifications) {
@@ -269,6 +276,54 @@ public class HomeController {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 onMoveToTrashListener.onMoveToTrashFailure(error);
+                            }
+                        }
+                );
+        VmrRequestQueue.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
+    }
+
+    public void deleteFromTrash(TrashRecord record){
+
+        Map<String, String> formData = Vmr.getUserMap();
+//        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.DeleteFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DELETE_FILE_OR_FOLDER);
+
+        JSONObject deleteObjectValues = new JSONObject();
+        JSONArray deleteObjects = new JSONArray();
+
+        JSONObject trashObjectValues = new JSONObject();
+        JSONArray trashObjects = new JSONArray();
+
+        JSONObject objectToDelete = new JSONObject();
+
+        try {
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NAME, record.getRecordName());
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_NODE_REF, record.getNodeRef());
+            objectToDelete.put(Constants.Request.FolderNavigation.DeleteFileFolder.OBJECT_TYPE, true);
+            trashObjects.put(objectToDelete);
+            deleteObjectValues.put(Constants.Request.FolderNavigation.DeleteFileFolder.DELETE_OBJECTS, deleteObjects);
+            trashObjectValues.put(Constants.Request.FolderNavigation.DeleteFileFolder.TRASH_OBJECTS, trashObjects);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        formData.put(Constants.Request.FolderNavigation.DeleteFileFolder.DELETE_OBJECT_VALUES, deleteObjectValues.toString().replaceAll("\\\\", ""));
+        formData.put(Constants.Request.FolderNavigation.DeleteFileFolder.TRASH_OBJECT_VALUES, trashObjectValues.toString().replaceAll("\\\\", ""));
+        VmrDebug.printLogI(this.getClass(), formData.toString().replaceAll("\\\\", ""));
+
+        MoveToTrashRequest moveToTrashRequest =
+                new MoveToTrashRequest(
+                        formData,
+                        new Response.Listener<List<DeleteMessage>>() {
+                            @Override
+                            public void onResponse(List<DeleteMessage> response) {
+                                onDeleteFromTrashListener.onDeleteFromTrashSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onDeleteFromTrashListener.onDeleteFromTrashFailure(error);
                             }
                         }
                 );

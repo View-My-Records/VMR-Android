@@ -159,6 +159,7 @@ public class HomeActivity extends AppCompatActivity
         assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
+            return;
         } else if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             return;
@@ -166,9 +167,7 @@ public class HomeActivity extends AppCompatActivity
 
         this.doubleBackToExitPressedOnce = true;
         Toast.makeText(this, "Please press BACK again to exit", Toast.LENGTH_SHORT).show();
-
         new Handler().postDelayed(new Runnable() {
-
             @Override
             public void run() {
                 doubleBackToExitPressedOnce=false;

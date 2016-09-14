@@ -1,6 +1,7 @@
 package com.vmr.home.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -22,6 +23,7 @@ import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
 import com.vmr.home.bottomsheet_behaviors.TrashOptionsMenuSheet;
+import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrTrashItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
@@ -172,21 +174,62 @@ public class FragmentTrash extends Fragment
     @Override
     public void onOpenClicked(TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " open clicked");
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onRestoreClicked(TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " restore clicked");
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPropertiesClicked(TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " properties clicked");
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onDeleteClicked(TrashRecord record) {
+    public void onDeleteClicked(final TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " delete clicked");
+        VmrDebug.printLogI(this.getClass(), "Delete button clicked" );
+        final HomeController deleteController = new HomeController(new VmrResponseListener.OnDeleteFromTrashListener() {
+            @Override
+            public void onDeleteFromTrashSuccess(List<DeleteMessage> deleteMessages) {
+                VmrDebug.printLogI(FragmentTrash.this.getClass(), deleteMessages.toString() );
+                refreshFolder();
+
+                for (DeleteMessage dm : deleteMessages) {
+                    if(dm.getStatus().equals("success"))
+                        Toast.makeText(Vmr.getVMRContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+                    dbManager.deleteRecordFromTrash(record);
+                }
+            }
+
+            @Override
+            public void onDeleteFromTrashFailure(VolleyError error) {
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                dbManager.deleteRecordFromTrash(record);
+                refreshFolder();
+            }
+
+        });
+        Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " deleted permanently",Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
+                        snackbar1.show();
+                    }
+                })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        deleteController.deleteFromTrash(record);
+                    }
+                });
+        snackbar.show();
     }
 
     @Override

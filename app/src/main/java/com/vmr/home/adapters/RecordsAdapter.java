@@ -1,6 +1,5 @@
 package com.vmr.home.adapters;
 
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 
 import java.text.DecimalFormat;
@@ -49,11 +47,6 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
         if (record.isFolder()) {
             holder.setItemImage(R.drawable.ic_folder);
             holder.itemSize.setVisibility(View.GONE);
-            if (Build.VERSION.SDK_INT < 23) {
-                holder.itemName.setTextAppearance(Vmr.getVMRContext(), android.R.style.TextAppearance_Medium);
-            } else {
-                holder.itemName.setTextAppearance(android.R.style.TextAppearance_Medium);
-            }
         } else {
             holder.setItemImage(R.drawable.ic_file);
 

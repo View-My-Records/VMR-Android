@@ -196,41 +196,58 @@ public class FragmentToBeIndexed extends Fragment
         userInput.setText(record.getRecordName());
         userInput.setSelection(userInput.getText().length());
 
-        // set dialog message
-        alertDialogBuilder
-            .setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
-                            @Override
-                            public void onRenameItemSuccess(JSONObject jsonObject) {
-                                VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
-                                try {
-                                    if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(Vmr.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
-                                        refreshFolder();
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
+        final HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
+            @Override
+            public void onRenameItemSuccess(JSONObject jsonObject) {
+                try {
+                    if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
+                        VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), record.getRecordName() + " renamed.");
+                        refreshFolder();
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
 
-                            @Override
-                            public void onRenameItemFailure(VolleyError error) {
-                                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                            }
+            @Override
+            public void onRenameItemFailure(VolleyError error) {
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+            }
 
-                        });
-                        renameController.renameItem(record, userInput.getText().toString());
+        });
+
+        final Snackbar snackBarOnUndo =
+                Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
+
+        final Snackbar snackBarOnOk =
+                Snackbar.make(getActivity().findViewById(android.R.id.content), record.getRecordName() + " renamed",Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        snackBarOnUndo.show();
                     }
                 })
-            .setNegativeButton("Cancel",
-                        new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,int id) {
-                                dialog.cancel();
-                            }
-                        })
-                .setTitle("Rename");
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        renameController.renameItem(record, userInput.getText().toString());
+                    }
+                });
+
+        // set dialog message
+        alertDialogBuilder
+            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    snackBarOnOk.show();
+                }
+            })
+            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog,int id) {
+                    dialog.cancel();
+                }
+            })
+            .setTitle("Rename");
         // create alert dialog
         final AlertDialog alertDialog = alertDialogBuilder.create();
 
@@ -298,7 +315,7 @@ public class FragmentToBeIndexed extends Fragment
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
                     Toast.makeText(getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
-                    dbManager.deleteRecord(record);
+                    dbManager.moveRecordToTrash(record);
                 }
             }
 

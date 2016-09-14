@@ -38,7 +38,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
     @Override
     public void onBindViewHolder(TrashViewHolder holder, int position) {
         TrashRecord item = this.itemsList.get(position);
-        holder.setItemName(item.getRecordName());
+        holder.setItemName(item.getRecordName().replaceAll("[^A-Za-z0-9( _)\\[\\]]", ""));
         if (item.isFolder()) {
             holder.setItemImage(R.drawable.ic_folder);
         } else {

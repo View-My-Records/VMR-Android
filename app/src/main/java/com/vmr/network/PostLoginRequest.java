@@ -4,7 +4,6 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.vmr.app.Vmr;
-import com.vmr.debug.VmrDebug;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +37,7 @@ public abstract class PostLoginRequest<T> extends Request<T> {
         headers.put("Origin", "http://vmrdev.cloudapp.net:8080" );
         headers.put("Referer", "http://vmrdev.cloudapp.net:8080/vmr/main.do" );
         headers.put("X-Requested-With", "XMLHttpRequest" );
-        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + headers.toString());
+//        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + headers.toString());
         return headers;
     }
 }

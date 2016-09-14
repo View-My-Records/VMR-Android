@@ -47,6 +47,11 @@ public abstract class VmrResponseListener {
         void onMoveToTrashFailure(VolleyError error);
     }
 
+    public interface OnDeleteFromTrashListener {
+        void onDeleteFromTrashSuccess(List<DeleteMessage> jsonObject);
+        void onDeleteFromTrashFailure(VolleyError error);
+    }
+
     public interface OnLoginListener {
         void onLoginSuccess(UserInfo userInfo);
         void onLoginFailure(VolleyError error);

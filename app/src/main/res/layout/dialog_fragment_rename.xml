@@ -16,9 +16,10 @@
     <EditText
         android:id="@+id/etNewItemName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
         android:inputType="text"
-        android:maxLength="30" />
+        android:maxLength="30"
+        android:maxLines="1" />
 
 </LinearLayout>

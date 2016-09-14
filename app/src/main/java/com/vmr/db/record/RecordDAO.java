@@ -83,7 +83,7 @@ public class RecordDAO {
     // Fetch all records in db for current user
     public List<Record> getAllUnIndexedRecords(String parentNode){
         List<Record> records = new ArrayList<>();
-        String[] inClause = {"folder", "vmr:unindexed" };
+        String[] inClause = {"folder", "unindexed" };
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns

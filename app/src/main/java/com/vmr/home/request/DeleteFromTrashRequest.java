@@ -3,7 +3,7 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.model.VmrFolder;
+import com.vmr.model.DeleteMessage;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.Constants;
@@ -11,21 +11,21 @@ import com.vmr.utils.Constants;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 /*
- * Created by abhijit on 8/16/16.
+ * Created by abhijit on 8/29/16.
  */
-
-public class RecordsRequest extends PostLoginRequest<VmrFolder> {
+public class DeleteFromTrashRequest extends PostLoginRequest<List<DeleteMessage>> {
 
     private Map<String, String> formData;
 
-    public RecordsRequest(
+    public DeleteFromTrashRequest(
             Map<String, String> formData,
-            Response.Listener<VmrFolder> successListener,
+            Response.Listener<List<DeleteMessage>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST,Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
         this.formData = formData;
     }
 
@@ -35,20 +35,18 @@ public class RecordsRequest extends PostLoginRequest<VmrFolder> {
     }
 
     @Override
-    protected Response<VmrFolder> parseNetworkResponse(NetworkResponse response) {
-
+    protected Response<List<DeleteMessage>> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-
-        VmrFolder folder;
+        List<DeleteMessage> deleteMessages;
 
         try {
             JSONObject jsonObject = new JSONObject(jsonString);
-            folder = new VmrFolder(jsonObject);
+            deleteMessages = DeleteMessage.parseDeleteMessage(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new FetchError());
         }
 
-        return Response.success(folder, getCacheEntry());
+        return Response.success(deleteMessages, getCacheEntry());
     }
 }

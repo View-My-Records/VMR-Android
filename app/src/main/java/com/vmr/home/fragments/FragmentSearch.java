@@ -292,7 +292,7 @@ public class FragmentSearch extends Fragment
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
                     Toast.makeText(getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
-                    dbManager.deleteRecord(record);
+                    dbManager.moveRecordToTrash(record);
                 }
             }
 

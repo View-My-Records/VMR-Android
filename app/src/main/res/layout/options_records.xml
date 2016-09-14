@@ -17,30 +17,38 @@
         android:clickable="true"
         android:longClickable="true">
 
-        <ImageView
-            android:id="@+id/infoImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_margin="6dp"
-            android:clickable="false"
-            android:contentDescription="Info"
-            android:longClickable="false"
-            android:src="@android:drawable/ic_menu_view" />
-
         <TextView
             android:id="@+id/tvItemName"
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/infoImageView"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:layout_margin="6dp"
-            android:layout_toEndOf="@+id/infoImageView"
-            android:layout_toRightOf="@+id/infoImageView"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:layout_marginStart="6dp"
+            android:layout_marginTop="6dp"
+            android:layout_toLeftOf="@+id/infoImageView"
             android:clickable="false"
             android:longClickable="false"
+            android:maxLines="1"
             android:text="Info"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <ImageView
+            android:id="@+id/infoImageView"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="6dp"
+            android:clickable="false"
+            android:contentDescription="Info"
+            android:longClickable="false"
+            android:src="@drawable/ic_info_black_24dp" />
     </RelativeLayout>
     <View
         android:layout_width="fill_parent"
@@ -59,22 +67,25 @@
 
         <ImageView
             android:id="@+id/openImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="6dp"
             android:clickable="false"
             android:contentDescription="Open"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_view" />
+            android:src="@drawable/ic_open_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/openImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="6dp"
-            android:layout_toEndOf="@+id/openImageView"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
             android:layout_toRightOf="@+id/openImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -95,22 +106,25 @@
 
         <ImageView
             android:id="@+id/indexImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="6dp"
             android:clickable="false"
             android:contentDescription="Index"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_view" />
+            android:src="@drawable/ic_index_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/indexImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="6dp"
-            android:layout_toEndOf="@+id/indexImageView"
+            android:layout_marginBottom="6dp"
+            android:layout_marginLeft="6dp"
+            android:layout_marginTop="6dp"
             android:layout_toRightOf="@+id/indexImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -130,22 +144,25 @@
         android:longClickable="true">
         <ImageView
             android:id="@+id/shareImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Share"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_share_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/shareImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/shareImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/shareImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -157,7 +174,6 @@
         android:id="@+id/btnRename"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
@@ -165,22 +181,25 @@
         android:longClickable="true">
         <ImageView
             android:id="@+id/renameImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Rename"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_rename_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/renameImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/renameImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/renameImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -192,29 +211,31 @@
         android:id="@+id/btnDownload"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/downloadImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Download"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_get_app_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/downloadImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/downloadImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/downloadImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -226,29 +247,31 @@
         android:id="@+id/btnMove"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/moveImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Move"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_move_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/moveImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/moveImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/moveImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -260,29 +283,31 @@
         android:id="@+id/btnCopy"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/copyImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Copy"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_content_copy_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/copyImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/copyImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/copyImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -293,29 +318,31 @@
         android:id="@+id/btnDuplicate"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/duplicateImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Duplicate"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_duplicate_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/duplicateImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/duplicateImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/duplicateImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -328,29 +355,31 @@
         android:id="@+id/btnProperties"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/propertiesImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Properties"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_info_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/propertiesImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/propertiesImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/propertiesImageView"
             android:clickable="false"
             android:longClickable="false"
@@ -366,29 +395,31 @@
         android:id="@+id/btnDelete"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="2dp"
         android:layout_marginTop="2dp"
         android:background="@android:drawable/menuitem_background"
         android:clickable="true">
         <ImageView
             android:id="@+id/deleteImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_centerVertical="true"
             android:layout_margin="5dp"
             android:clickable="false"
             android:contentDescription="Delete"
             android:longClickable="false"
-            android:src="@android:drawable/ic_menu_add" />
+            android:src="@drawable/ic_delete_black_24dp" />
 
         <TextView
             android:layout_width="212dp"
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/deleteImageView"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_margin="5dp"
-            android:layout_toEndOf="@+id/deleteImageView"
+            android:layout_marginBottom="5dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
             android:layout_toRightOf="@+id/deleteImageView"
             android:clickable="false"
             android:longClickable="false"

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
@@ -30,6 +31,12 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         super.setupDialog(dialog, style);
         View contentView = View.inflate(getContext(), R.layout.options_records, null);
         dialog.setContentView(contentView);
+
+        if(record.isFolder()) {
+            ((ImageView) contentView.findViewById(R.id.infoImageView)).setImageResource(R.drawable.ic_folder_black_24dp);
+        } else {
+            ((ImageView) contentView.findViewById(R.id.infoImageView)).setImageResource(R.drawable.ic_insert_drive_file_black_24dp);
+        }
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
 
