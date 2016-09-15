@@ -60,6 +60,7 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         homeController = new HomeController(this);
         sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);

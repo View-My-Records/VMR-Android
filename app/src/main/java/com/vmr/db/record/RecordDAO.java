@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
+import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -33,14 +34,16 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
-                new String[]{ parentNode }, // conditions
+                DbConstants.RECORD_MASTER_OWNER + "=? AND "
+                    +DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                        parentNode }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
                 null );
 
-        if (c.moveToFirst()) {
+        if (c != null && c.moveToFirst()) {
             do {
                 Record record = buildFromCursor(c);
                 if (record != null) {
@@ -59,8 +62,12 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_PARENT_NODE_REF + "=? AND " + DbConstants.RECORD_IS_FOLDER + "=?" , // where
-                new String[]{ parentNode, 1+"" }, // conditions
+                DbConstants.RECORD_MASTER_OWNER + "=? AND "
+                        + DbConstants.RECORD_PARENT_NODE_REF + "=? AND "
+                        + DbConstants.RECORD_IS_FOLDER + "=?" , // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                        parentNode, // noderef
+                        1+"" }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
@@ -87,9 +94,13 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_PARENT_NODE_REF + " =? AND " + DbConstants.RECORD_DOC_TYPE + " IN ( " +
+                DbConstants.RECORD_MASTER_OWNER + "=? AND "
+                        + DbConstants.RECORD_PARENT_NODE_REF + " =? AND "
+                        + DbConstants.RECORD_DOC_TYPE + " IN ( " +
                         TextUtils.join(",", Collections.nCopies(inClause.length, "?")) + ")" , // where
-                new String[]{ parentNode, inClause[0], inClause[1] }, // conditions
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                        parentNode, // noderef
+                        inClause[0], inClause[1] }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.RECORD_NAME + ") ASC ", // order by
@@ -114,14 +125,14 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_PARENT_NODE_REF + " =? " , // where
-                new String[]{ parentNode }, // conditions
+                DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), parentNode }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_UPDATE_DATE, // order by
                 null );
 
-        if (c.moveToFirst()) {
+        if (c!= null && c.moveToFirst()) {
             do {
                 Record record = buildFromCursor(c);
                 if (record != null) {
@@ -148,6 +159,7 @@ public class RecordDAO {
     // Adds record to DB
     private Long addRecord(Record record) {
         ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.RECORD_MASTER_OWNER  , Vmr.getLoggedInUserInfo().getLoggedinUserId());
         contentValues.put(DbConstants.RECORD_NODE_REF  , record.getNodeRef());
         contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME      , record.getRecordName());
@@ -168,13 +180,14 @@ public class RecordDAO {
         contentValues.put(DbConstants.RECORD_UPDATED_BY, record.getUpdatedBy());
         date = sdf.format(record.getUpdatedDate());
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
-        VmrDebug.printLogI(this.getClass(), "Record added");
+        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " added");
         return db.insert(DbConstants.TABLE_RECORD, null, contentValues);
     }
 
     // Updates record in db
     private boolean updateRecord(Record record){
         ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.RECORD_MASTER_OWNER, Vmr.getLoggedInUserInfo().getLoggedinUserId());
         contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME, record.getRecordName());
         contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
@@ -194,12 +207,12 @@ public class RecordDAO {
         contentValues.put(DbConstants.RECORD_UPDATED_BY,record.getUpdatedBy());
         date = sdf.format(record.getUpdatedDate());
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
-        VmrDebug.printLogI(this.getClass(), "Records updated");
+        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " updated");
         return db.update(
                 DbConstants.TABLE_RECORD,
                 contentValues,
-                DbConstants.RECORD_NODE_REF + "=?",
-                new String[]{record.getNodeRef() + ""}) > 0;
+                DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_NODE_REF + "=?",
+                new String[]{record.getMasterRecordOwner()+"", record.getNodeRef() + "" }) > 0;
     }
 
     // Returns record from db
@@ -224,6 +237,8 @@ public class RecordDAO {
         Record record = null;
         if (c != null) {
             record = new Record();
+            record.setRecordId(             c.getString(    c.getColumnIndex(DbConstants.RECORD_ID)));
+            record.setMasterRecordOwner(    c.getString(    c.getColumnIndex(DbConstants.RECORD_MASTER_OWNER)));
             record.setRecordNodeRef(        c.getString(    c.getColumnIndex(DbConstants.RECORD_NODE_REF)));
             record.setRecordParentNodeRef(  c.getString(    c.getColumnIndex(DbConstants.RECORD_PARENT_NODE_REF)));
             record.setRecordName(           c.getString(    c.getColumnIndex(DbConstants.RECORD_NAME)));

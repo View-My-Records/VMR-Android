@@ -63,6 +63,7 @@ public class FragmentTrash extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         homeController = new HomeController(this);
         trashAdapter = new TrashAdapter(trashRecords, this, this);

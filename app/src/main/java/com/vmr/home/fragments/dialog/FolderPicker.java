@@ -56,6 +56,7 @@ public class FolderPicker extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         stack.push(ROOT_PATH);
         mFileList = getFileList(stack.peek());
         mAdapter = new DbFoldersAdapter(getActivity(), mFileList);

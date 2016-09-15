@@ -56,6 +56,8 @@ public class DbConstants {
                 USER_LAST_LOGIN };
 
     //Column Names
+    public static final String RECORD_ID              = "RECORD_ID";
+    public static final String RECORD_MASTER_OWNER    = "MASTER_OWNER";
     public static final String RECORD_NODE_REF        = "RECORD_NODE_REF";
     public static final String RECORD_PARENT_NODE_REF = "PARENT_NODE_REF";
     public static final String RECORD_NAME            = "RECORD_NAME";
@@ -77,6 +79,8 @@ public class DbConstants {
     //All Columns
     public static final String[] RECORD_COLUMNS
             = {
+                RECORD_ID,
+                RECORD_MASTER_OWNER,
                 RECORD_NODE_REF ,
                 RECORD_PARENT_NODE_REF ,
                 RECORD_NAME ,

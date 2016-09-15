@@ -137,6 +137,15 @@ public class FragmentMyRecords extends Fragment
         super.onStart();
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
+        refreshFolder();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        records = dbManager.getAllRecords(recordStack.peek());
+        recordsAdapter.updateDataset(records);
+        refreshFolder();
     }
 
     @Override
@@ -715,7 +724,7 @@ public class FragmentMyRecords extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                 refreshFolder();
             }
         });

@@ -45,7 +45,6 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.login.LoginActivity;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
@@ -238,10 +237,12 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.help) {
             fragmentClass = FragmentHelp.class;
         } else if (id == R.id.log_out) {
-            Intent newIntent = new Intent(this,LoginActivity.class);
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(newIntent);
+            Intent restartApp
+                    = getBaseContext()
+                    .getPackageManager()
+                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+            restartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(restartApp);
             finish();
             return true;
         }

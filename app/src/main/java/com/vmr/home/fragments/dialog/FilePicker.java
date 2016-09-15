@@ -58,6 +58,7 @@ public class FilePicker extends DialogFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         stack.push(ROOT_PATH);
         mFileList = getFileList(stack.peek());
         mAdapter = new LocalStorageFileAdapter(getActivity(), mFileList);

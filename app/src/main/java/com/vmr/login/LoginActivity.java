@@ -76,16 +76,6 @@ public class LoginActivity extends AppCompatActivity
                 loginController.fetchAlfrescoTicket();
             }
         }
-//        else {
-//            Snackbar.make(findViewById(android.R.id.content), "Internet access is required to connect to ViewMyRecords server.", Snackbar.LENGTH_SHORT)
-//                    .setAction("OK", new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            PermissionHandler.requestPermission(LoginActivity.this,Manifest.permission.INTERNET);
-//                        }
-//                    })
-//                    .show();
-//        }
     }
 
     @Override
@@ -99,17 +89,6 @@ public class LoginActivity extends AppCompatActivity
                 loginController.fetchAlfrescoTicket();
             }
         }
-//        if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
-//        } else {
-//            Snackbar.make(findViewById(android.R.id.content), "Internet access is required to connect to ViewMyRecords server.", Snackbar.LENGTH_SHORT)
-//                    .setAction("OK", new View.OnClickListener() {
-//                        @Override
-//                        public void onClick(View v) {
-//                            PermissionHandler.requestPermission(LoginActivity.this,Manifest.permission.INTERNET);
-//                        }
-//                    })
-//                    .show();
-//        }
     }
 
     @Override

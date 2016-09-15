@@ -4,6 +4,7 @@ package com.vmr.db.record;
  * Created by abhijit on 9/3/16.
  */
 
+import com.vmr.app.Vmr;
 import com.vmr.model.VmrFile;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrItem;
@@ -13,6 +14,10 @@ import java.util.Date;
 import java.util.List;
 
 public class Record {
+
+    // For Android
+    private String recordId;
+    private String masterRecordOwner;
 
     // Properties in vmrItem
     private String  recordNodeRef;           //  varchar(60) NOT NULL,
@@ -47,9 +52,10 @@ public class Record {
 
     public static List<Record> getRecordList(List<VmrItem> vmrItems, String recordParentNodeRef) {
         List<Record> recordList = new ArrayList<>();
-        Record record = null;
+        Record record;
         for(VmrItem item: vmrItems){
             record = new Record();
+            record.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
             record.setRecordNodeRef(item.getNodeRef());
             record.setRecordParentNodeRef(recordParentNodeRef);
             record.setRecordName(item.getName());
@@ -84,6 +90,22 @@ public class Record {
             recordList.add(record);
         }
         return recordList;
+    }
+
+    public String getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(String recordId) {
+        this.recordId = recordId;
+    }
+
+    public String getMasterRecordOwner() {
+        return masterRecordOwner;
+    }
+
+    public void setMasterRecordOwner(String masterRecordOwner) {
+        this.masterRecordOwner = masterRecordOwner;
     }
 
     public String getParentNodeRef() {

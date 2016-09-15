@@ -75,6 +75,7 @@ public class FragmentSearch extends Fragment
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
