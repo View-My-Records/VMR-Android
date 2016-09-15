@@ -254,6 +254,7 @@ public abstract class Constants {
 
     public final static class Key {
         public static final String USER_DETAILS = "USER_DETAILS";
+        public static final String RECORD = "RECORD";
     }
 
     public final static class Fragment {

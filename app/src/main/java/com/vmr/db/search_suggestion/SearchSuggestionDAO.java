@@ -7,6 +7,7 @@ package com.vmr.db.search_suggestion;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -27,8 +28,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 new String[] { DbConstants.RECORD_NAME, DbConstants.RECORD_IS_FOLDER, DbConstants.RECORD_NODE_REF, DbConstants.RECORD_PARENT_NODE_REF }, // Select columns
-                DbConstants.RECORD_NAME + " LIKE ? " , // where
-                new String[] { "%"+searchTerm+"%" } , // conditions
+                DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_NAME + " LIKE ? " , // where
+                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_NAME, // order by
@@ -89,8 +90,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_SHARED, // Table Name
                 new String[] { DbConstants.SHARED_FILE_NAME, DbConstants.SHARED_IS_FOLDER, DbConstants.SHARED_NODE_REF, DbConstants.SHARED_PARENT_NODE_REF }, // Select columns
-                "UPPER(" + DbConstants.SHARED_FILE_NAME + ")" + " LIKE ? " , // where
-                new String[] {  "UPPER(%"+searchTerm+"%)" } , // conditions
+                DbConstants.SHARED_FILE_NAME + " LIKE ? " , // where
+                new String[] {  "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.SHARED_FILE_NAME, // order by

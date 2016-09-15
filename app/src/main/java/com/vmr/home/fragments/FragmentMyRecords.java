@@ -38,6 +38,7 @@ import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
+import com.vmr.home.ViewActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
@@ -202,62 +203,7 @@ public class FragmentMyRecords extends Fragment
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
-
-            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
-                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
-                    @Override
-                    public void onFileDownloadSuccess(byte[] bytes) {
-                        try {
-                            if (bytes != null) {
-                                String fileName = record.getRecordName();
-                                File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                                FileOutputStream outputStream = new FileOutputStream(newFile, false);
-
-                                if (newFile.createNewFile()) {
-                                    outputStream.write(bytes);
-                                    outputStream.close();
-                                    VmrDebug.printLogI(this.getClass(), "File download complete");
-                                    Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                    Notification notification =
-                                            new Notification.Builder(getActivity())
-                                                    .setContentTitle("Download complete")
-                                                    .setContentText("Subject")
-                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                                    .setAutoCancel(true)
-                                                    .build();
-
-                                    NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                    notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-                                    notificationManager.notify(0, notification);
-                                } else {
-                                    VmrDebug.printLogI(this.getClass(), "Could not create file");
-                                }
-                            }
-                        } catch (Exception e) {
-                            VmrDebug.printLogI(this.getClass(), "File download failed");
-                            Snackbar.make(getActivity().findViewById(R.id.clayout), "File download failed", Snackbar.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFileDownloadFailure(VolleyError error) {
-
-                    }
-                });
-                dlController.downloadFile(record);
-            } else {
-                Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
-                        .setAction("OK", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
-                            }
-                        })
-                        .show();
-            }
+            startActivity(ViewActivity.getLauncherIntent(((HomeActivity)getActivity()), record));
         }
     }
 
@@ -288,12 +234,6 @@ public class FragmentMyRecords extends Fragment
                     VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
 
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-//                    ArrayList<String> fileList = new ArrayList<>();
-//                    fileList.add(file.getAbsolutePath());
-//
-//                    Intent uploadService = new Intent(Intent.ACTION_SYNC, null, getActivity(), UploadService.class);
-//                    uploadService.putStringArrayListExtra("fileList", fileList);
-
                 }
             });
             filePicker.show(fm, "file_picker");
@@ -413,9 +353,17 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onOpenClicked(Record vmrItem) {
+    public void onOpenClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        if(record.isFolder()){
+            VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
+            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            recordStack.push(record.getNodeRef());
+            refreshFolder();
+            mSwipeRefreshLayout.setRefreshing(true);
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -523,7 +471,13 @@ public class FragmentMyRecords extends Fragment
             }
         });
 
-        alertDialog.show();
+        if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Can not modify system folders", Snackbar.LENGTH_SHORT).show();
+        } else if(!record.getRecordOwner().equalsIgnoreCase(Vmr.getLoggedInUserInfo().getLoggedinUserId())) {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "This folder belongs to someone else", Snackbar.LENGTH_SHORT).show();
+        } else {
+            alertDialog.show();
+        }
     }
 
     @Override
@@ -660,22 +614,29 @@ public class FragmentMyRecords extends Fragment
             }
 
         });
-        Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " moved to Trash",Snackbar.LENGTH_LONG)
-                .setAction("UNDO", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
-                        snackbar1.show();
-                    }
-                })
-                .setCallback(new Snackbar.Callback() {
-                    @Override
-                    public void onDismissed(Snackbar snackbar, int event) {
-                        super.onDismissed(snackbar, event);
-                        trashController.moveToTrash(record);
-                    }
-                });
+
+        if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Can not delete system folders", Snackbar.LENGTH_SHORT).show();
+        } else if(!record.getRecordOwner().equalsIgnoreCase(Vmr.getLoggedInUserInfo().getLoggedinUserId())) {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "This folder belongs to someone else", Snackbar.LENGTH_SHORT).show();
+        } else {
+                Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " moved to Trash", Snackbar.LENGTH_LONG)
+                        .setAction("UNDO", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
+                                snackbar1.show();
+                            }
+                        })
+                        .setCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                super.onDismissed(snackbar, event);
+                                trashController.moveToTrash(record);
+                            }
+                        });
                 snackbar.show();
+        }
     }
 
     @Override

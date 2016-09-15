@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.vmr">
 
@@ -12,14 +11,13 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
 
     <application
-        android:name="com.vmr.app.Vmr"
+        android:name=".app.Vmr"
         android:allowBackup="true"
         android:icon="@drawable/logo"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-
         <activity
             android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -28,17 +26,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".home.HomeActivity"
             android:label="@string/title_activity_home"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".home.SearchResultActivity" />
@@ -46,10 +43,9 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
-
         <activity
             android:name=".home.SearchResultActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -57,14 +53,13 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".home.HomeActivity" />
-
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
 
-            <!--<meta-data-->
-                <!--android:name="android.app.searchable"-->
-                <!--android:resource="@xml/recent_searchable" />-->
+            <!-- <meta-data -->
+            <!-- android:name="android.app.searchable" -->
+            <!-- android:resource="@xml/recent_searchable" /> -->
 
         </activity>
 
@@ -73,31 +68,31 @@
             android:authorities="com.vmr.home.SearchSuggestionProvider"
             android:enabled="true"
             android:exported="false" />
-
         <provider
             android:name=".home.SearchHistoryProvider"
             android:authorities="com.vmr.home.SearchHistoryProvider"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
         <service
             android:name=".service.UploadService"
             android:exported="false" />
-
         <service
             android:name=".service.DownloadService"
             android:exported="false" />
 
         <activity
             android:name=".settings.SettingsActivity"
-            android:label="@string/title_activity_settings">
-
-        </activity>
-        <!-- ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information. -->
+            android:label="@string/title_activity_settings"></activity>
+        <!--
+     ATTENTION: This was auto-generated to add Google Play services to your project for
+     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
+        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
+
+        <activity android:name=".home.ViewActivity"></activity>
     </application>
 
 </manifest>
