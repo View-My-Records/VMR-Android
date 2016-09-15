@@ -5,6 +5,8 @@ import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.FloatingActionButton;
@@ -49,6 +51,7 @@ import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
 
 import org.json.JSONException;
@@ -541,7 +544,7 @@ public class FragmentMyRecords extends Fragment
                     public void onFileDownloadSuccess(byte[] bytes) {
                         try {
                             if (bytes != null) {
-                                String fileName = record.getRecordName();
+                                String fileName = FileUtils.getNewFileName(record.getRecordName());
                                 File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
                                 if(!newFile.exists() && newFile.createNewFile()) {
                                     FileOutputStream outputStream = new FileOutputStream(newFile, false);
@@ -551,16 +554,16 @@ public class FragmentMyRecords extends Fragment
                                     Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
                                     Notification downloadCompleteNotification =
                                             new Notification.Builder(getActivity())
-                                                    .setContentTitle(record.getRecordName())
+                                                    .setContentTitle(fileName)
                                                     .setContentText("Download complete")
                                                     .setSmallIcon(android.R.drawable.stat_sys_download_done)
                                                     .setAutoCancel(true)
                                                     .build();
 
                                     NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                    downloadCompleteNotification.flags |= Notification.FLAG_AUTO_CANCEL;
-                                    nm.cancel(record.getRecordName(), 0);
-                                    nm.notify(0, downloadCompleteNotification);
+                                    nm.cancel(fileName, Integer.valueOf(record.getRecordId()));
+                                    nm.notify(Integer.valueOf(record.getRecordId()), downloadCompleteNotification);
+                                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                                 } else {
                                     VmrDebug.printLogI(this.getClass(), "File already exist or couldn't be created");
                                 }
@@ -583,9 +586,10 @@ public class FragmentMyRecords extends Fragment
                         .setContentText("Download in progress")
                         .setSmallIcon(android.R.drawable.stat_sys_download)
                         .setProgress(0,0,true)
+                        .setOngoing(true)
                         .build();
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                nm.notify(record.getRecordName(), 0 ,downloadingNotification);
+                nm.notify(record.getRecordName(), Integer.valueOf(record.getRecordId()) ,downloadingNotification);
 
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
