@@ -251,6 +251,7 @@ public class RecordDAO {
             record.setIsShared(             c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_SHARED))> 0);
             record.setIsWritable(           c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_WRITABLE))> 0);
             record.setIsDeletable(          c.getInt(       c.getColumnIndex(DbConstants.RECORD_IS_DELETABLE))> 0);
+            record.setRecordOwner(          c.getString(    c.getColumnIndex(DbConstants.RECORD_OWNER)));
             record.setCreatedBy(            c.getString(    c.getColumnIndex(DbConstants.RECORD_CREATED_BY)));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date date = null;

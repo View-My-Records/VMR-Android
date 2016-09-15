@@ -9,6 +9,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -100,8 +102,9 @@ public class FragmentMyRecords extends Fragment
     private Stack<String> recordStack;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
 
         homeController = new HomeController(this);
@@ -142,6 +145,15 @@ public class FragmentMyRecords extends Fragment
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
         refreshFolder();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(getActivity().findViewById(R.id.clayout),
+                        "Logged in as " + Vmr.getLoggedInUserInfo().getEmailId(), Snackbar.LENGTH_SHORT).show();
+            }
+        }, 2000);
+
     }
 
     @Override
@@ -204,6 +216,7 @@ public class FragmentMyRecords extends Fragment
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
             startActivity(ViewActivity.getLauncherIntent(((HomeActivity)getActivity()), record));
+            VmrDebug.printLogI(record.getRecordName() + " File clicked");
         }
     }
 
@@ -471,10 +484,8 @@ public class FragmentMyRecords extends Fragment
             }
         });
 
-        if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
+        if(record.getRecordOwner().equals("admin") ) {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Can not modify system folders", Snackbar.LENGTH_SHORT).show();
-        } else if(!record.getRecordOwner().equalsIgnoreCase(Vmr.getLoggedInUserInfo().getLoggedinUserId())) {
-            Snackbar.make(getActivity().findViewById(R.id.clayout), "This folder belongs to someone else", Snackbar.LENGTH_SHORT).show();
         } else {
             alertDialog.show();
         }
@@ -617,8 +628,6 @@ public class FragmentMyRecords extends Fragment
 
         if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Can not delete system folders", Snackbar.LENGTH_SHORT).show();
-        } else if(!record.getRecordOwner().equalsIgnoreCase(Vmr.getLoggedInUserInfo().getLoggedinUserId())) {
-            Snackbar.make(getActivity().findViewById(R.id.clayout), "This folder belongs to someone else", Snackbar.LENGTH_SHORT).show();
         } else {
                 Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " moved to Trash", Snackbar.LENGTH_LONG)
                         .setAction("UNDO", new View.OnClickListener() {
@@ -691,6 +700,7 @@ public class FragmentMyRecords extends Fragment
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                 refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(true);
             }
         });
 

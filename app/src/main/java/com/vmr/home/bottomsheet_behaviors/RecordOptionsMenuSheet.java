@@ -57,6 +57,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         }
 
         tvRecordName.setText(record.getRecordName());
+
     }
 
     @Override

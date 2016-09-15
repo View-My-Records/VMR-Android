@@ -29,6 +29,7 @@ public class Record implements Parcelable {
             return new Record[size];
         }
     };
+
     // For Android
     private String recordId;
     private String masterRecordOwner;
