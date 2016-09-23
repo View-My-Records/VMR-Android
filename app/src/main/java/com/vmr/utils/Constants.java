@@ -8,16 +8,17 @@ public abstract class Constants {
 
     public static final String VMR_LOGIN_REQUEST_TAG = "VMR_LOGIN";
 
-    public final static class Url {
-        public  final static String BASE                = "http://vmrdev.cloudapp.net:8080";
-        public  final static String ALFRESCO_TICKET     = BASE + "/alfresco/service/api/login?u=admin&pw=alfresc0";
-        public  final static String LOGIN               = BASE + "/vmr/mlogin.do";
-        public  final static String FOLDER_NAVIGATION   = BASE + "/vmr/folderNavigation.do";
-        public  final static String FILE_UPLOAD         = BASE + "/vmr/fileUpload.do";
-        public  final static String RECENT              = BASE + "/vmr/recent.do";
-        public  final static String SHARE_RECORDS       = BASE + "/vmr/shareRecords.do";
-        public  final static String REPORT_DATA         = BASE + "/vmr/reportData.do";
-        public  final static String ACCOUNT_SETUP       = BASE + "/vmr/accountSetup.do";
+    public static class Url {
+        public final static String DEFAULT_BASE_URL = "http://vmrdev.cloudapp.net:8080";
+
+        public final static String ALFRESCO_TICKET     =  DEFAULT_BASE_URL + "/alfresco/service/api/login?u=admin&pw=alfresc0";
+        public final static String LOGIN               = "/vmr/mlogin.do";
+        public final static String FOLDER_NAVIGATION   = "/vmr/folderNavigation.do";
+        public final static String FILE_UPLOAD         = "/vmr/mFileUpload.do";
+        public final static String RECENT              = "/vmr/recent.do";
+        public final static String SHARE_RECORDS       = "/vmr/shareRecords.do";
+        public final static String REPORT_DATA         = "/vmr/reportData.do";
+        public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
     }
 
     public final static class Request {
@@ -161,6 +162,18 @@ public abstract class Constants {
                 public static final String TAG = "VMR_GET_PROPERTIES";
             }
 
+            public final static class SaveIndex {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String FILE_PROPERTY_JSON_STRING = "filePropertyJsonString";
+                public static final String FILE_SELECTED_NODE_REF = "fileSelectedNodeRef";
+                public static final String FILE_NAME = "fileSelectedName";
+                public static final String FILE_INDEX_STATUS = "fileIndexstatus";
+                public static final String DOCUMENT_CATEGORY_VALUE = "docCategoryVal";
+                public static final String DOCUMENT_TYPE = "docType";
+                public static final String PROGRAM_NAME = "programName";
+                public static final String TAG = "VMR_GET_PROPERTIES";
+            }
+
             public final static class DownloadFile {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String NODE_REF = "fileSelectedNodeRef";
@@ -170,7 +183,7 @@ public abstract class Constants {
             }
 
             public final static class UploadFile {
-                public static final String FILE_LIST = "upload";
+                public static final String FILE = "upload";
                 public static final String FILE_NAMES = "uploadFileName";
                 public static final String CONTENT_TYPE = "uploadContentType";
                 public static final String PARENT_NODE_REF = "selectedFolderNodeRef";
@@ -270,5 +283,10 @@ public abstract class Constants {
         public static final String HELP = "Help";
     }
 
-
+    public final static class MembershipType{
+        public static final String INDIVIDUAL = "IND";
+        public static final String FAMILY = "FAM";
+        public static final String PROFESSIONAL = "PROF";
+        public static final String CORPORATE = "CORP";
+    }
 }

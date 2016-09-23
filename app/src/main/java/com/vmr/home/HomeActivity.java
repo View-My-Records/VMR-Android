@@ -161,6 +161,8 @@ public class HomeActivity extends AppCompatActivity
             return;
         } else if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
+            Vmr.resetApp();
+            finish();
             return;
         }
 
@@ -237,6 +239,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.help) {
             fragmentClass = FragmentHelp.class;
         } else if (id == R.id.log_out) {
+            Vmr.resetApp();
             Intent restartApp
                     = getBaseContext()
                     .getPackageManager()

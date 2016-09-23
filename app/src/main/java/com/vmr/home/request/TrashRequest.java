@@ -7,7 +7,7 @@ import com.vmr.model.VmrTrashItem;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.network.error.ParseError;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +27,7 @@ public class TrashRequest extends PostLoginRequest<List<VmrTrashItem>> {
             Map<String, String> formData,
             Response.Listener<List<VmrTrashItem>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

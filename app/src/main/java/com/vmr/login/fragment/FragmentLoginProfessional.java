@@ -8,15 +8,22 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.vmr.R;
+import com.vmr.app.Vmr;
+import com.vmr.db.user.DbUser;
 import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PermissionHandler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class FragmentLoginProfessional extends Fragment {
@@ -34,11 +41,24 @@ public class FragmentLoginProfessional extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_professional, container, false);
 
-        final EditText etUsername = (EditText) rootView.findViewById(R.id.etProfessionalUsername);
+        final AutoCompleteTextView etUsername = (AutoCompleteTextView) rootView.findViewById(R.id.etProfessionalUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etProfessionalPassword);
         final EditText etProfessionalId = (EditText) rootView.findViewById(R.id.etProfessionalID);
         final CheckBox cbRememberMe = (CheckBox) rootView.findViewById(R.id.cbProRememberPassword);
         Button buttonSignIn = (Button) rootView.findViewById(R.id.btnProfessionalSignIn);
+
+        List<DbUser> userList = Vmr.getDbManager().getAllProfessionalUsers();
+
+        ArrayList<String> users =  new ArrayList<>();
+
+        for (DbUser user : userList) {
+            users.add(user.getUserId());
+        }
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, users);
+
+        etUsername.setAdapter(adapter);
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +72,7 @@ public class FragmentLoginProfessional extends Fragment {
                                 Constants.Request.Login.Domain.PROFESSIONAL,
                                 cbRememberMe.isChecked());
                     } else {
-                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.volley_error_internet_not_available , Snackbar.LENGTH_SHORT ).show();
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable) , Snackbar.LENGTH_SHORT ).show();
                     }
                 } else {
                     Snackbar.make(view.findViewById(android.R.id.content), "Internet access is required to connect to ViewMyRecords server.", Snackbar.LENGTH_SHORT)

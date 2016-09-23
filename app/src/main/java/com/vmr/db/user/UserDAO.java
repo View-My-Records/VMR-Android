@@ -10,7 +10,9 @@ import com.vmr.model.UserInfo;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /*
@@ -56,7 +58,7 @@ public class UserDAO {
     }
 
     // Updates record in db
-    public User updateUser(UserInfo userInfo){
+    public DbUser updateUser(UserInfo userInfo){
         VmrDebug.printLogI(this.getClass(), "User Info Updating");
         if(!checkUser(userInfo.getSerialNo())) {
             ContentValues contentValues = new ContentValues();
@@ -98,8 +100,8 @@ public class UserDAO {
         return ret;
     }
 
-    public User getUser(String  serialNo) {
-        User user = null;
+    public DbUser getUser(String  serialNo) {
+        DbUser user = null;
         Cursor c = db.query(true,
                 DbConstants.TABLE_USER,
                 DbConstants.USER_COLUMNS,
@@ -116,14 +118,34 @@ public class UserDAO {
         return user;
     }
 
+    public List<DbUser> getUsers(String  membershipType) {
+        List<DbUser> userList = new ArrayList<>();
+        Cursor c = db.query(true,
+                DbConstants.TABLE_USER,
+                DbConstants.USER_COLUMNS,
+                DbConstants.USER_MEMBERSHIP_TYPE + "=?",
+                new String[]{membershipType}, null, null, null, null, null);
+
+        if (c.moveToFirst()) {
+            do {
+                DbUser user = buildFromCursor(c);
+                if (user != null) {
+                    userList.add(user);
+                }
+            } while (c.moveToNext());
+        }
+        VmrDebug.printLogI(this.getClass(), "User Info retrieved");
+        return userList;
+    }
+
     public boolean deleteUser(String serialNo) {
         return db.delete(DbConstants.TABLE_USER, DbConstants.USER_SERIAL_NO + "=?", new String[]{ serialNo + ""}) > 0;
     }
 
-    private User buildFromCursor(Cursor c) {
-        User user = null;
+    private DbUser buildFromCursor(Cursor c) {
+        DbUser user = null;
         if (c != null) {
-            user = new User();
+            user = new DbUser();
             user.setSerialNo(c.getString(c.getColumnIndex(DbConstants.USER_SERIAL_NO)));
             user.setResult(c.getString(c.getColumnIndex(DbConstants.USER_RESULT)));
             user.setRootNodeRef(c.getString(c.getColumnIndex(DbConstants.USER_ROOT_NODE_REF)));

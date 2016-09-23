@@ -3,7 +3,6 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.model.VmrFolder;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.VmrURL;
@@ -14,16 +13,16 @@ import org.json.JSONObject;
 import java.util.Map;
 
 /*
- * Created by abhijit on 8/16/16.
+ * Created by abhijit on 9/21/16.
  */
 
-public class RecordsRequest extends PostLoginRequest<VmrFolder> {
+public class SaveIndexRequest extends PostLoginRequest<String> {
 
     private Map<String, String> formData;
 
-    public RecordsRequest(
+    public SaveIndexRequest(
             Map<String, String> formData,
-            Response.Listener<VmrFolder> successListener,
+            Response.Listener<String> successListener,
             Response.ErrorListener errorListener) {
         super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
@@ -31,24 +30,21 @@ public class RecordsRequest extends PostLoginRequest<VmrFolder> {
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
+//        VmrDebug.printLogI(this.getClass(), formData.toString());
         return this.formData;
     }
 
     @Override
-    protected Response<VmrFolder> parseNetworkResponse(NetworkResponse response) {
-
+    protected Response<String> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-
-        VmrFolder folder;
-
+        JSONObject jsonObject;
         try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            folder = new VmrFolder(jsonObject);
+            jsonObject = new JSONObject(jsonString);
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new FetchError());
         }
 
-        return Response.success(folder, getCacheEntry());
+        return Response.success(jsonString, getCacheEntry());
     }
 }

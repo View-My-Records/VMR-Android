@@ -6,7 +6,7 @@ import com.android.volley.Response;
 import com.vmr.model.DeleteMessage;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,7 +25,7 @@ public class MoveToTrashRequest extends PostLoginRequest<List<DeleteMessage>> {
             Map<String, String> formData,
             Response.Listener<List<DeleteMessage>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

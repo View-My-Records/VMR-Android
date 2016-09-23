@@ -10,9 +10,10 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.shared.SharedRecordDAO;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.db.trash.TrashRecordDAO;
-import com.vmr.db.user.User;
+import com.vmr.db.user.DbUser;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
+import com.vmr.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,12 +46,28 @@ public class DbManager {
     }
 
     // get user for given serial no
-    public User getUser(String serialNo) {
+    public DbUser getUser(String serialNo) {
         return this.userDAO.getUser(serialNo);
     }
 
+    public List<DbUser> getAllIndividualUsers() {
+        return this.userDAO.getUsers(Constants.MembershipType.INDIVIDUAL);
+    }
+
+    public List<DbUser> getAllFamilyUsers() {
+        return this.userDAO.getUsers(Constants.MembershipType.FAMILY);
+    }
+
+    public List<DbUser> getAllProfessionalUsers() {
+        return this.userDAO.getUsers(Constants.MembershipType.PROFESSIONAL);
+    }
+
+    public List<DbUser> getAllCorporateUsers() {
+        return this.userDAO.getUsers(Constants.MembershipType.CORPORATE);
+    }
+
     // Update userdata and returns updated data
-    public User updateUser(UserInfo userInfo) {
+    public DbUser updateUser(UserInfo userInfo) {
         return this.userDAO.updateUser(userInfo);
     }
 

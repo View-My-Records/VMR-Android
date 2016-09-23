@@ -14,7 +14,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true" >
-            <EditText
+            <AutoCompleteTextView
                 android:id="@+id/etFamilyUsername"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -39,7 +39,7 @@
                 android:ems="15"
                 android:hint="Password"
                 android:inputType="textPassword"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:text="Qwer!234" />
         </android.support.design.widget.TextInputLayout>
 
@@ -57,7 +57,7 @@
                 android:ems="15"
                 android:hint="Family-ID"
                 android:inputType="text"
-                android:singleLine="true"
+                android:maxLines="1"
                 android:text="familyid" />
         </android.support.design.widget.TextInputLayout>
 
@@ -79,7 +79,8 @@
             android:layout_below="@id/cbFamilyRememberPassword"
             android:layout_marginRight="40dp"
             android:background="@color/colorPrimary"
-            android:text="Sign In"/>
+            android:text="Sign In"
+            android:textColor="@android:color/white"/>
     </RelativeLayout>
 
 </FrameLayout>

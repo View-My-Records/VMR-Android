@@ -9,9 +9,6 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
     <string name="title_activity_home">HomeActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -19,6 +16,7 @@
 
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Login</string>
+
 
 
     <string name="individual_tab_text">Individual</string>
@@ -75,18 +73,6 @@
         <item>-1</item>
     </string-array>
 
-    <string-array name="planets">
-        <item>Sun</item>
-        <item>Mercury</item>
-        <item>Venus</item>
-        <item>Earth</item>
-        <item>Mars</item>
-        <item>Jupiter</item>
-        <item>Saturn</item>
-        <item>Uranus</item>
-        <item>Neptune</item>
-    </string-array>
-
     <string name="pref_title_system_sync_settings">System sync settings</string>
 
     <!-- Example settings for Notifications -->
@@ -109,6 +95,7 @@
     <string name="volley_error_file_retrieval_failed">Failed to retrieve files</string>
     <string name="volley_error_something_went_wrong">Something went wrong</string>
     <string name="volley_error_internet_not_available">"Internet not available"</string>
+    <string name="toast_internet_unavailable">Internet service is not available</string>
 
 
 </resources>

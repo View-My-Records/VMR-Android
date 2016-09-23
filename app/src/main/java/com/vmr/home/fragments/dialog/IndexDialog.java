@@ -1,5 +1,6 @@
 package com.vmr.home.fragments.dialog;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
@@ -14,11 +15,13 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -31,11 +34,16 @@ import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /*
@@ -44,19 +52,25 @@ import java.util.Map;
 public class IndexDialog extends DialogFragment
         implements
         VmrResponseListener.OnFetchClassifications,
-        AdapterView.OnItemSelectedListener
+        AdapterView.OnItemSelectedListener,
+        DateTimePickerDialog.VmrDateTimePicker
 {
 
     List<String> classificationsList = new ArrayList<>();
+    List<String> lifeSpanList = new ArrayList<>();
+    List<String> categoryList = new ArrayList<>();
     Map<String, String> classificationsMap =  new HashMap<>();
-    ArrayAdapter<String> adapter ;
-
+    Map<String, String> categoryMap =  new HashMap<>();
+    ArrayAdapter<String> classificationAdapter;
+    ArrayAdapter<String> lifeSpanAdapter;
+    ArrayAdapter<String> categoryAdapter;
+    SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
     private String recordDocType;
     private String recordNodeRef;
+    private String recordName;
     private String recordProgramName;
-
+    private Date nextActionDate;
     private ProgressDialog progressDialog;
-
     private LinearLayout indexFormLayout;
     private Spinner  spClassification;
     private EditText etQuickReference;
@@ -64,14 +78,10 @@ public class IndexDialog extends DialogFragment
     private EditText etGeoTag;
     private EditText etRemarks;
     private Spinner  spCategory;
-    private EditText etNextAction;
+    private TextView tvNextAction;
+    private TextView btnSetNextAction;
     private EditText etActionMessage;
-
     private HomeController homeController;
-
-    public IndexDialog() {
-
-    }
 
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
@@ -79,6 +89,7 @@ public class IndexDialog extends DialogFragment
         Bundle arguments = new Bundle();
         arguments.putString(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, record.getNodeRef());
         arguments.putString(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, null);
+        arguments.putString(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME, record.getRecordName());
         newDialog.setArguments(arguments);
 
         return newDialog;
@@ -92,17 +103,19 @@ public class IndexDialog extends DialogFragment
 
         recordNodeRef = getArguments().getString(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF);
         recordProgramName = getArguments().getString(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME);
+        recordName = getArguments().getString(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME);
 
         homeController =  new HomeController(this);
-        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, classificationsList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
+        classificationAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, classificationsList);
+        classificationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        return dialog;
     }
 
     @Override
@@ -112,6 +125,7 @@ public class IndexDialog extends DialogFragment
 
         Toolbar toolbar = (Toolbar) dialogView.findViewById(R.id.toolbar_index_dialog);
         toolbar.setTitle("Indexing...");
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
 
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -123,9 +137,36 @@ public class IndexDialog extends DialogFragment
 
         setHasOptionsMenu(true);
         setupFormFields(dialogView);
-        setupClassifications();
 
         homeController.fetchClassifications();
+
+        lifeSpanList.add("1");
+        lifeSpanList.add("2");
+        lifeSpanList.add("3");
+        lifeSpanList.add("5");
+        lifeSpanList.add("7");
+        lifeSpanList.add("10");
+        lifeSpanAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, lifeSpanList);
+        lifeSpanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        categoryMap.put("Normal", "NORM" );
+        categoryMap.put("Confidential", "CONF" );
+        categoryMap.put("Highly Secure", "HCON" );
+        categoryList.addAll(categoryMap.keySet());
+        categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        setupClassifications();
+
+        btnSetNextAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateTimePickerDialog dateTimePicker =  new DateTimePickerDialog();
+                dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
+                dateTimePicker.show(getActivity().getFragmentManager(), "datetimepicker");
+
+            }
+        });
 
         return dialogView;
     }
@@ -133,7 +174,9 @@ public class IndexDialog extends DialogFragment
     private void setupClassifications() {
         classificationsList.add(0,"Classification");
 
-        spClassification.setAdapter(adapter);
+        spLifeSpan.setAdapter(lifeSpanAdapter);
+        spCategory.setAdapter(categoryAdapter);
+        spClassification.setAdapter(classificationAdapter);
         spClassification.setOnItemSelectedListener(this);
     }
 
@@ -145,7 +188,8 @@ public class IndexDialog extends DialogFragment
         etGeoTag         = (EditText) dialogView.findViewById(R.id.etGeoTag);
         etRemarks        = (EditText) dialogView.findViewById(R.id.etRemarks);
         spCategory       = (Spinner) dialogView.findViewById(R.id.spinnerCategory);
-        etNextAction     = (EditText) dialogView.findViewById(R.id.etNextAction);
+        tvNextAction     = (TextView) dialogView.findViewById(R.id.tvNextAction);
+        btnSetNextAction = (TextView) dialogView.findViewById(R.id.btnSetDateTime);
         etActionMessage  = (EditText) dialogView.findViewById(R.id.etActionMessage);
     }
 
@@ -160,7 +204,9 @@ public class IndexDialog extends DialogFragment
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-
+            if(validateIndices()) {
+                saveIndex();
+            }
             return true;
         } else if (id == R.id.action_refresh) {
 
@@ -177,12 +223,105 @@ public class IndexDialog extends DialogFragment
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean validateIndices() {
+        if(spClassification.getSelectedItemPosition() == 0) {
+            new AlertDialog
+                    .Builder(getActivity())
+                    .setMessage("Please select document type.")
+                    .show();
+            return false;
+        }
+
+        if(nextActionDate == null || nextActionDate.before(new Date(System.currentTimeMillis()))){
+            new AlertDialog
+                    .Builder(getActivity())
+                    .setMessage("Please select next action date.")
+                    .show();
+            return false;
+        }
+
+        return true;
+    }
+
+    private void saveIndex() {
+        HomeController saveIndexController = new HomeController(new VmrResponseListener.OnSaveIndex() {
+            @Override
+            public void onSaveIndexSuccess(String response) {
+                VmrDebug.printLogI(IndexDialog.this.getClass(), "Index saved");
+                Toast.makeText(getActivity(), "Index saved successfully", Toast.LENGTH_SHORT).show();
+                getDialog().dismiss();
+            }
+
+            @Override
+            public void onSaveIndexFailure(VolleyError error) {
+                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        try {
+
+            JSONObject finalJson =  new JSONObject();
+            JSONArray propertiesArray = new JSONArray();
+
+            JSONObject quickRef =  new JSONObject();
+            quickRef.put("Name","vmr_quickref");
+            quickRef.put("Value",etQuickReference.getText().toString()+"");
+            propertiesArray.put(quickRef);
+
+            JSONObject geoTag =  new JSONObject();
+            geoTag.put("Name","vmr_geotag");
+            geoTag.put("Value",etGeoTag.getText().toString()+"");
+            propertiesArray.put(geoTag);
+
+            JSONObject remarks =  new JSONObject();
+            remarks.put("Name","vmr_remarks");
+            remarks.put("Value",etRemarks.getText().toString()+"");
+            propertiesArray.put(remarks);
+
+            String dateString = df.format(nextActionDate.getTime());
+            JSONObject reminderDate =  new JSONObject();
+            reminderDate.put("Name","vmr_reminderdate");
+            reminderDate.put("Value", dateString);
+            propertiesArray.put(reminderDate);
+
+            JSONObject reminderMessage =  new JSONObject();
+            reminderMessage.put("Name","vmr_remindermessage");
+            reminderMessage.put("Value",etActionMessage.getText().toString()+"");
+            propertiesArray.put(reminderMessage);
+
+            JSONObject docLifeSpan =  new JSONObject();
+            docLifeSpan.put("Name","vmr_doclifespan");
+            docLifeSpan.put("Value",spLifeSpan.getSelectedItem().toString());
+            propertiesArray.put(docLifeSpan);
+
+            JSONObject category =  new JSONObject();
+            category.put("Name","vmr_category");
+            category.put("Value",categoryMap.get(spCategory.getSelectedItem().toString()));
+            propertiesArray.put(category);
+
+            finalJson.put("Doctype", classificationsMap.get(spClassification.getSelectedItem().toString()));
+            finalJson.put("Properties", propertiesArray);
+
+            saveIndexController.saveIndex(finalJson.toString().replaceAll("\\\\", ""), // filePropertyJsonString
+                                        recordNodeRef,
+                                        recordName,
+                                        false,
+                                        categoryMap.get(spCategory.getSelectedItem().toString()),
+                                        recordDocType,
+                                        recordProgramName+"" );
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     @Override
     public void onFetchClassificationsSuccess( Map<String, String> classifications ) {
         VmrDebug.printLogI(this.getClass(), "Classifications retrieved");
         classificationsList.addAll(classifications.keySet());
         this.classificationsMap = classifications;
-        adapter.notifyDataSetChanged();
+        classificationAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -199,7 +338,8 @@ public class IndexDialog extends DialogFragment
             etGeoTag.setEnabled(false);
             etRemarks.setEnabled(false);
             spCategory.setEnabled(false);
-            etNextAction.setEnabled(false);
+            tvNextAction.setEnabled(false);
+            btnSetNextAction.setEnabled(false);
             etActionMessage.setEnabled(false);
 
         } else {
@@ -228,7 +368,9 @@ public class IndexDialog extends DialogFragment
                         spCategory.setEnabled(true);
                     }
                     if(properties.containsKey("vmr_reminderdate")){
-                        etNextAction.setEnabled(true);
+                        tvNextAction.setEnabled(true);
+                        btnSetNextAction.setEnabled(true);
+
                     }
                     if(properties.containsKey("vmr_remindermessage")){
                         etActionMessage.setEnabled(true);
@@ -251,5 +393,12 @@ public class IndexDialog extends DialogFragment
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
 
+    }
+
+    @Override
+    public void onDateTimePicked(Date nextActionDate) {
+        this.nextActionDate = nextActionDate;
+        String dateString = df.format(nextActionDate.getTime());
+        tvNextAction.setText(dateString);
     }
 }

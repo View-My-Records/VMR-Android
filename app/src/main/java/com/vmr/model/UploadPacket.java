@@ -1,46 +1,60 @@
 package com.vmr.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import java.io.File;
-import java.io.Serializable;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileInputStream;
 
-/**
+/*
  * Created by abhijit on 9/12/16.
  */
 
 public class UploadPacket {
 
-    private ArrayList<File> files =  new ArrayList<>();
-    private String fileNames ;
+    private String filePath;
+    private String fileName ;
     private String contentType;
     private String parentNodeRef;
 
-    public UploadPacket(ArrayList<String> files, String parentNodeRef) {
-        setFilePaths(files);
-        setFileNames();
+    public UploadPacket(String filePath, String parentNodeRef) {
+        setFilePaths(filePath);
+        setFileName();
         setContentType();
         setParentNodeRef(parentNodeRef);
     }
 
-    public ArrayList<File> getFiles() {
-        return files;
+    public byte[] getFileByteArray() {
+        FileInputStream fileInputStream=null;
+        File file = new File(filePath);
+        byte[] fileBytes = new byte[(int) file.length()];
+        try {
+            //convert file into array of bytes
+            fileInputStream = new FileInputStream(file);
+            fileInputStream.read(fileBytes);
+            fileInputStream.close();
+
+            for (byte fileByte : fileBytes) {
+                System.out.print((char) fileByte);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return fileBytes;
     }
 
-    private void setFilePaths(ArrayList<String> filePaths) {
-        for(String filePath : filePaths) this.files.add(new File(filePath));
+    public File getFile() {
+        return new File(filePath);
     }
 
-    public String getFileNames() {
-        return fileNames;
+    private void setFilePaths(String filePath) {
+        this.filePath =filePath;
     }
 
-    public void setFileNames() {
-        this.fileNames = fileNames;
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName() {
+        this.fileName = new File(filePath).getName();
     }
 
     public String getContentType() {
@@ -48,7 +62,7 @@ public class UploadPacket {
     }
 
     public void setContentType() {
-        this.contentType = contentType;
+        this.contentType = "multipart/form-data";
     }
 
     public String getParentNodeRef() {

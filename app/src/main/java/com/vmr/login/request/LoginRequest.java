@@ -4,10 +4,9 @@ import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.debug.VmrDebug;
 import com.vmr.model.UserInfo;
 import com.vmr.network.PreLoginRequest;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,7 +25,7 @@ public class LoginRequest extends PreLoginRequest<UserInfo> {
             Map<String, String> formData,
             Response.Listener<UserInfo> successListener,
             Response.ErrorListener errorListener) {
-        super( Method.POST,Constants.Url.LOGIN, successListener, errorListener);
+        super( Method.POST, VmrURL.getLoginUrl(), successListener, errorListener);
         this.formData = formData;
     }
 
@@ -37,9 +36,9 @@ public class LoginRequest extends PreLoginRequest<UserInfo> {
 
     @Override
     protected Response<UserInfo> parseNetworkResponse(NetworkResponse response) {
-        VmrDebug.printLogD(this.getClass(), response.headers.toString());
+//        VmrDebug.printLogD(this.getClass(), response.headers.toString());
         String jsonString = new String(response.data);
-        VmrDebug.printLogD(this.getClass(), jsonString);
+//        VmrDebug.printLogD(this.getClass(), jsonString);
         JSONObject jsonObject;
         UserInfo userInfo;
         try {

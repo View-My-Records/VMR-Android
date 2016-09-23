@@ -1,7 +1,9 @@
 package com.vmr.home;
 
 import android.net.Uri;
+import android.os.Build;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
@@ -12,12 +14,15 @@ import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.DownloadRequest;
 import com.vmr.home.request.MoveToTrashRequest;
+import com.vmr.home.request.NewUploadRequest;
 import com.vmr.home.request.PropertiesRequest;
 import com.vmr.home.request.RecordsRequest;
 import com.vmr.home.request.RemoveExpiredRecordsRequest;
 import com.vmr.home.request.RenameItemRequest;
+import com.vmr.home.request.SaveIndexRequest;
 import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
+import com.vmr.home.request.UploadRequest;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.UploadPacket;
 import com.vmr.model.VmrFolder;
@@ -26,13 +31,13 @@ import com.vmr.model.VmrTrashItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
-import com.vmr.utils.PrefConstants;
-import com.vmr.utils.PrefUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +57,8 @@ public class HomeController {
     private VmrResponseListener.OnFetchClassifications onFetchClassifications;
     private VmrResponseListener.OnFetchProperties onFetchProperties;
     private VmrResponseListener.OnFileDownload onFileDownload;
+    private VmrResponseListener.OnFileUpload onFileUpload;
+    private VmrResponseListener.OnSaveIndex onSaveIndex;
 
 
 
@@ -95,12 +102,20 @@ public class HomeController {
         this.onFileDownload = onFileDownload;
     }
 
+    public HomeController(VmrResponseListener.OnFileUpload onFileUpload) {
+        this.onFileUpload = onFileUpload;
+    }
+
+    public HomeController(VmrResponseListener.OnSaveIndex onSaveIndex) {
+        this.onSaveIndex = onSaveIndex;
+    }
+
     public void fetchAllFilesAndFolders(String nodeRef){
 
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -125,7 +140,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -151,7 +166,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
 //        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListTrashBin.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_TRASH_BIN);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         TrashRequest trashRequest =
                 new TrashRequest(
@@ -231,6 +246,16 @@ public class HomeController {
                             }
                         }
                 );
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                VmrDebug.printLogI(this.getClass(), renameItemRequest.getHeaders().toString());
+//                VmrDebug.printLogI(this.getClass(), new String(renameItemRequest.getBody(), StandardCharsets.UTF_8));
+            }
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
+
         VmrRequestQueue.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
     }
 
@@ -336,7 +361,7 @@ public class HomeController {
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_SHARED_BY_ME);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, Vmr.getLoggedInUserInfo().getLoggedinUserId());
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.VMR_ALFRESCO_TICKET));
+        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         SharedByMeRequest sharedByMeRequest =
                 new SharedByMeRequest(
@@ -411,7 +436,7 @@ public class HomeController {
         formData.put(Constants.Request.FolderNavigation.Properties.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_DETAILS);
         formData.put(Constants.Request.FolderNavigation.Properties.DOC_TYPE, docType);
         formData.put(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, nodeRef);
-//        formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName );
+//        formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName+"" );
 
         PropertiesRequest propertiesRequest =
                 new PropertiesRequest(
@@ -461,35 +486,123 @@ public class HomeController {
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
-    public void UploadFile(UploadPacket uploadPacket){
+    public void uploadFile(UploadPacket uploadPacket)  {
 
         Map<String, String> formData = Vmr.getUserMap();
+//        Map<String, UploadPacket> uploadPacketMap = new HashMap<>();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
-//        formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
-//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_LIST, uploadPacket.getFiles());
-        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileNames()));
-        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, "multipart/form-data");
+//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket.getFile());
+        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileName()));
+        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, uploadPacket.getContentType());
         formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
 
-        DownloadRequest downloadRequest =
-                new DownloadRequest(
+//        uploadPacketMap.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket);
+
+        NewUploadRequest uploadRequest =
+                new NewUploadRequest(
                         formData,
-                        new Response.Listener<byte[]>() {
+                        uploadPacket,
+                        new Response.Listener<JSONObject>() {
                             @Override
-                            public void onResponse(byte[] bytes) {
-                                onFileDownload.onFileDownloadSuccess(bytes);
+                            public void onResponse(JSONObject jsonObject) {
+                                onFileUpload.onFileUploadSuccess(jsonObject);
                             }
                         },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                onFileDownload.onFileDownloadFailure(error);
+                                onFileUpload.onFileUploadFailure(error);
+                            }
+                        }
+                );
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                VmrDebug.printLogI(this.getClass(), uploadRequest.getHeaders().toString());
+                VmrDebug.printLogI(this.getClass(), new String(uploadRequest.getBody(), StandardCharsets.UTF_8));
+            }
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
+        VmrRequestQueue.getInstance()
+                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
+    }
+
+    public void uploadFileViaRetroFit(UploadPacket uploadPacket){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        Map<String, UploadPacket> uploadPacketMap = new HashMap<>();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket.getFile());
+        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileName()));
+        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, uploadPacket.getContentType());
+        formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
+
+        uploadPacketMap.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket);
+
+        UploadRequest uploadRequest =
+                new UploadRequest(
+                        formData,
+                        uploadPacketMap,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject jsonObject) {
+                                onFileUpload.onFileUploadSuccess(jsonObject);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onFileUpload.onFileUploadFailure(error);
                             }
                         }
                 );
         VmrRequestQueue.getInstance()
-                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
+                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
+    public void saveIndex(String filePropertyJsonString,
+                          String fileSelectedNodeRef,
+                          String fileSelectedName,
+                          boolean fileIndexstatus,
+                          String docCategoryVal,
+                          String docType,
+                          String programName){
+
+        Map<String, String> formData = Vmr.getUserMap();
+
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.remove(Constants.Request.FolderNavigation.Properties.DOC_TYPE);
+
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.SAVE_FILE_PROPERTY);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_PROPERTY_JSON_STRING, filePropertyJsonString);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_SELECTED_NODE_REF, fileSelectedNodeRef);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME, fileSelectedName);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_INDEX_STATUS, String.valueOf(fileIndexstatus));
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_CATEGORY_VALUE, docCategoryVal);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_TYPE, docType);
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);
+
+        VmrDebug.printLogI(this.getClass(), formData.toString());
+
+        SaveIndexRequest saveIndexRequest =
+                new SaveIndexRequest(
+                        formData,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                onSaveIndex.onSaveIndexSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onSaveIndex.onSaveIndexFailure(error);
+                            }
+                        }
+                );
+
+        VmrRequestQueue.getInstance().addToRequestQueue(saveIndexRequest, Constants.Request.FolderNavigation.SaveIndex.TAG);
+    }
 
 }

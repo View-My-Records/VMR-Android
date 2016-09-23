@@ -5,7 +5,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.vmr.debug.VmrDebug;
 import com.vmr.network.PostLoginRequest;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +21,7 @@ public class RemoveExpiredRecordsRequest extends PostLoginRequest<String> {
             Map<String, String> formData,
             Response.Listener<String> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.SHARE_RECORDS, successListener, errorListener);
+        super(Method.POST, VmrURL.getShareRecordsUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

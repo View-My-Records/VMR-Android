@@ -5,7 +5,7 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,7 +23,7 @@ public class CreateFolderRequest extends PostLoginRequest<JSONObject> {
             Map<String, String> formData,
             Response.Listener<JSONObject> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

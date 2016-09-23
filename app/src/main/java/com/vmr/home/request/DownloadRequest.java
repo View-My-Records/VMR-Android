@@ -3,13 +3,8 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.model.Properties;
 import com.vmr.network.PostLoginRequest;
-import com.vmr.network.error.FetchError;
-import com.vmr.utils.Constants;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.vmr.utils.VmrURL;
 
 import java.util.Map;
 
@@ -24,7 +19,7 @@ public class DownloadRequest extends PostLoginRequest<byte[]> {
             Map<String, String> formData,
             Response.Listener<byte[]> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

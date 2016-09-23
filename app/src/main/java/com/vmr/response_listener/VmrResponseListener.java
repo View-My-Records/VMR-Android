@@ -81,4 +81,9 @@ public abstract class VmrResponseListener {
         void onFileUploadSuccess(JSONObject response);
         void onFileUploadFailure(VolleyError error);
     }
+
+    public interface OnSaveIndex{
+        void onSaveIndexSuccess(String  response);
+        void onSaveIndexFailure(VolleyError error);
+    }
 }

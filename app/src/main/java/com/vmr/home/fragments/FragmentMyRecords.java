@@ -49,6 +49,7 @@ import com.vmr.home.fragments.dialog.FolderPicker;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
+import com.vmr.model.UploadPacket;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
@@ -247,8 +248,31 @@ public class FragmentMyRecords extends Fragment
                     VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
 
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+
+                    HomeController uploadController = new HomeController(new VmrResponseListener.OnFileUpload() {
+                        @Override
+                        public void onFileUploadSuccess(JSONObject jsonObject) {
+
+                            try {
+                                if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
+                                    Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+                                    refreshFolder();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+
+                        @Override
+                        public void onFileUploadFailure(VolleyError error) {
+                            Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+                    uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
                 }
             });
+
             filePicker.show(fm, "file_picker");
         } else {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
@@ -446,12 +470,12 @@ public class FragmentMyRecords extends Fragment
 
         // set dialog message
         alertDialogBuilder
-            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     snackBarOnOk.show();
                 }
             })
-            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog,int id) {
                     dialog.cancel();
                 }

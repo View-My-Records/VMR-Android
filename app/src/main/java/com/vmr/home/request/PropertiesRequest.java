@@ -6,7 +6,7 @@ import com.android.volley.Response;
 import com.vmr.model.Properties;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +24,7 @@ public class PropertiesRequest extends PostLoginRequest<Map<String , JSONObject 
             Map<String, String> formData,
             Response.Listener<Map<String , JSONObject >> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.FOLDER_NAVIGATION, successListener, errorListener);
+        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

@@ -3,12 +3,11 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.debug.VmrDebug;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.network.error.ParseError;
-import com.vmr.utils.Constants;
+import com.vmr.utils.VmrURL;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -28,7 +27,7 @@ public class SharedByMeRequest extends PostLoginRequest<List<VmrSharedItem>> {
             Map<String, String> formData,
             Response.Listener<List<VmrSharedItem>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, Constants.Url.SHARE_RECORDS, successListener, errorListener);
+        super(Method.POST, VmrURL.getShareRecordsUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

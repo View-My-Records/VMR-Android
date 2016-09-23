@@ -6,7 +6,7 @@ package com.vmr.db.user;
 
 import java.util.Date;
 
-public class User {
+public class DbUser {
 
     private String serialNo;       // double NOT NULL,
     private String result;        // varchar(50) NOT NULL,
@@ -29,7 +29,7 @@ public class User {
     private String lastName;
     private String firstName;
 
-    public User() {
+    public DbUser() {
 
     }
 

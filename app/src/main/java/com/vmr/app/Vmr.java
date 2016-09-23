@@ -18,6 +18,7 @@ public class Vmr extends Application {
 
     private static Vmr appInstance;
     private static Context appContext;
+    private static String AlfrescoTicket;
     private static VmrFolder vmrRootFolder;
     private static VmrFolder vmrSharedWithMeRootFolder;
     private static VmrFolder vmrSharedByMeRootFolder;
@@ -79,6 +80,24 @@ public class Vmr extends Application {
 
     public static void setDbManager(DbManager dbManager) {
         Vmr.dbManager = dbManager;
+    }
+
+    public static String getAlfrescoTicket() {
+        return AlfrescoTicket;
+    }
+
+    public static void setAlfrescoTicket(String alfrescoTicket) {
+        AlfrescoTicket = alfrescoTicket;
+    }
+
+    public static void resetApp(){
+        Vmr.setAlfrescoTicket(null);
+        Vmr.setLoggedInUserInfo(null);
+        Vmr.setDbManager(null);
+        Vmr.setUserMap(null);
+        Vmr.setVmrRootFolder(null);
+        Vmr.setVmrSharedByMeRootFolder(null);
+        Vmr.setVmrSharedWithMeRootFolder(null);
     }
 
     @Override
