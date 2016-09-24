@@ -15,12 +15,17 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
+import com.vmr.login.LoginController;
+import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+
+import static org.apache.http.HttpStatus.SC_OK;
 
 /*
  * Created by abhijit on 9/22/16.
@@ -89,6 +94,22 @@ public class LoginSettingsDialog extends DialogFragment {
                 userInput.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
                 userInput.setSelection(userInput.getText().length());
 
+                final LoginController checkUrlController = new LoginController(new VmrResponseListener.OnCheckUrlResponse() {
+                    @Override
+                    public void onCheckUrlResponseSuccess(Integer responseCode) {
+                        if(responseCode == SC_OK ) {
+                            Toast.makeText(getActivity(), "Connection successful", Toast.LENGTH_SHORT).show();
+                        } else {
+                            userInput.setError("Invalid URL");
+                        }
+                    }
+
+                    @Override
+                    public void onCheckUrlResponseFailure(VolleyError error) {
+                        userInput.setError("Invalid URL");
+                    }
+                });
+
                 final AlertDialog customUrlEditDialog
                         = new AlertDialog.Builder(getActivity())
                         .setView(promptsView)
@@ -106,7 +127,7 @@ public class LoginSettingsDialog extends DialogFragment {
                         .setNeutralButton("Check", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(getActivity(), "This will test the connection to server", Toast.LENGTH_SHORT).show();
+                                checkUrlController.checkUrl(userInput.getText().toString());
                             }
                         })
                         .create();
@@ -122,8 +143,10 @@ public class LoginSettingsDialog extends DialogFragment {
                     public void afterTextChanged(Editable editable) {
                         if(!Patterns.WEB_URL.matcher(editable).matches()){
                             customUrlEditDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                            customUrlEditDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(false);
                         } else {
                             customUrlEditDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                            customUrlEditDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(true);
                         }
                     }
                 });

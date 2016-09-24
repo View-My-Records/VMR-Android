@@ -27,7 +27,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
     private RelativeLayout tvRecordOpen;
     private RelativeLayout tvRecordIndex;
     private RelativeLayout tvRecordShare;
-    private RelativeLayout tvRecordRename;
+    private RelativeLayout optionRename;
     private RelativeLayout tvRecordDownload;
     private RelativeLayout tvRecordMove;
     private RelativeLayout tvRecordCopy;
@@ -44,20 +44,12 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.options_records, null);
+        View contentView = View.inflate(getActivity(), R.layout.options_records, null);
         dialog.setContentView(contentView);
 
         setupViews(contentView);
         setupListeners();
-
-        if(record.isFolder()) {
-            ivInfo.setImageResource(R.drawable.ic_folder_black_24dp);
-        } else {
-            ivInfo.setImageResource(R.drawable.ic_insert_drive_file_black_24dp);
-        }
-
-        tvRecordName.setText(record.getRecordName());
-
+        setupOptions(record);
     }
 
     @Override
@@ -74,6 +66,22 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         this.record = record;
     }
 
+    private void setupOptions(Record record) {
+        if(record.isFolder()) {
+            ivInfo.setImageResource(R.drawable.ic_folder_black_24dp);
+        } else {
+            ivInfo.setImageResource(R.drawable.ic_insert_drive_file_black_24dp);
+        }
+
+        tvRecordName.setText(record.getRecordName());
+
+        if(record.getRecordOwner().equals("admin")){
+            optionRename.setVisibility(View.GONE);
+        } else {
+            optionRename.setVisibility(View.VISIBLE);
+        }
+    }
+
     public void setVmrSharedItem(VmrSharedItem vmrSharedItem) {
         this.vmrSharedItem = vmrSharedItem;
     }
@@ -84,7 +92,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         tvRecordOpen = (RelativeLayout) contentView.findViewById(R.id.btnOpen);
         tvRecordIndex = (RelativeLayout) contentView.findViewById(R.id.btnIndex);
         tvRecordShare = (RelativeLayout) contentView.findViewById(R.id.btnShare);
-        tvRecordRename = (RelativeLayout) contentView.findViewById(R.id.btnRename);
+        optionRename = (RelativeLayout) contentView.findViewById(R.id.btnRename);
         tvRecordDownload = (RelativeLayout) contentView.findViewById(R.id.btnDownload);
         tvRecordMove = (RelativeLayout) contentView.findViewById(R.id.btnMove);
         tvRecordCopy = (RelativeLayout) contentView.findViewById(R.id.btnCopy);
@@ -113,7 +121,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
                 optionClickListener.onShareClicked(record);  dismiss();
             }
         });
-        tvRecordRename.setOnClickListener(new View.OnClickListener() {
+        optionRename.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onRenameClicked(record);  dismiss();

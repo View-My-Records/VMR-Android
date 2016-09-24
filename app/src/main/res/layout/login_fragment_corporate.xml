@@ -26,8 +26,7 @@
                 android:ems="15"
                 android:hint="Username"
                 android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:text="admin" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -62,8 +61,7 @@
                 android:ems="15"
                 android:hint="Corporate-ID"
                 android:inputType="text"
-                android:maxLines="1"
-                android:text="crpid" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
 

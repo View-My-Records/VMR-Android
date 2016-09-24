@@ -90,7 +90,7 @@ public class LoginActivity extends AppCompatActivity
                 Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
             } else {
-//                loginController.fetchAlfrescoTicket();
+                loginController.fetchAlfrescoTicket();
             }
         }
     }
@@ -103,14 +103,13 @@ public class LoginActivity extends AppCompatActivity
                 Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
             } else {
-//                loginController.fetchAlfrescoTicket();
+                loginController.fetchAlfrescoTicket();
             }
         }
     }
 
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
-        Vmr.getDbManager().addUser(userInfo);
         onLoginComplete(userInfo);
     }
 

@@ -6,6 +6,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.login.request.AlfrescoTicketRequest;
+import com.vmr.login.request.CheckUrlRequest;
 import com.vmr.login.request.LoginRequest;
 import com.vmr.model.UserInfo;
 import com.vmr.network.VmrRequestQueue;
@@ -23,10 +24,15 @@ public class LoginController {
 
     private VmrResponseListener.OnLoginListener onLoginListener;
     private VmrResponseListener.OnFetchTicketListener onFetchTicketListener;
+    private VmrResponseListener.OnCheckUrlResponse onCheckUrlResponse;
 
-    LoginController(VmrResponseListener.OnLoginListener onLoginListener, VmrResponseListener.OnFetchTicketListener onFetchTicketListener) {
+    public LoginController(VmrResponseListener.OnLoginListener onLoginListener, VmrResponseListener.OnFetchTicketListener onFetchTicketListener) {
         this.onLoginListener = onLoginListener;
         this.onFetchTicketListener = onFetchTicketListener;
+    }
+
+    public LoginController(VmrResponseListener.OnCheckUrlResponse onCheckUrlResponse){
+        this.onCheckUrlResponse = onCheckUrlResponse;
     }
 
     void fetchIndividualDetail(String email, String password, String domain){
@@ -157,4 +163,26 @@ public class LoginController {
                         } );
         VmrRequestQueue.getInstance().addToRequestQueue(loginRequest, Constants.VMR_LOGIN_REQUEST_TAG);
     }
+
+    public void checkUrl(String url){
+
+        CheckUrlRequest checkUrlRequest =
+                new CheckUrlRequest(
+                        url,
+                        new Response.Listener<Integer>() {
+                            @Override
+                            public void onResponse(Integer response) {
+                                onCheckUrlResponse.onCheckUrlResponseSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onCheckUrlResponse.onCheckUrlResponseFailure(error);
+                            }
+                        });
+
+        VmrRequestQueue.getInstance().addToRequestQueue(checkUrlRequest, Constants.VMR_LOGIN_REQUEST_TAG);
+    }
+
 }

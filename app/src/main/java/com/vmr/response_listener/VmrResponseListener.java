@@ -57,6 +57,11 @@ public abstract class VmrResponseListener {
         void onLoginFailure(VolleyError error);
     }
 
+    public interface OnCheckUrlResponse {
+        void onCheckUrlResponseSuccess(Integer responseCode);
+        void onCheckUrlResponseFailure(VolleyError error);
+    }
+
     public interface OnFetchTicketListener{
         void onFetchTicketSuccess(String ticket);
         void onFetchTicketFailure(VolleyError error);

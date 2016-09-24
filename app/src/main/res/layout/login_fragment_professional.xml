@@ -23,8 +23,7 @@
                 android:ems="15"
                 android:hint="Username"
                 android:inputType="textEmailAddress"
-                android:maxLines="1"
-                android:text="admin" />
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -58,8 +57,7 @@
                 android:layout_centerHorizontal="true"
                 android:ems="15"
                 android:hint="Professional-ID"
-                android:inputType="text"
-                android:text="proid" />
+                android:inputType="text" />
         </android.support.design.widget.TextInputLayout>
 
 
