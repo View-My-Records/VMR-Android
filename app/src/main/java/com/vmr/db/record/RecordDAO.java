@@ -205,11 +205,16 @@ public class RecordDAO {
         contentValues.put(DbConstants.RECORD_OWNER, record.getRecordOwner());
         contentValues.put(DbConstants.RECORD_CREATED_BY, record.getCreatedBy());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-        String date = sdf.format(record.getCreatedDate());
+        String date = "";
+        if(record.getCreatedDate() != null)
+            date = sdf.format(record.getCreatedDate());
         contentValues.put(DbConstants.RECORD_CREATION_DATE, date);
         contentValues.put(DbConstants.RECORD_UPDATED_BY, record.getUpdatedBy());
-        date = sdf.format(record.getUpdatedDate());
+        if(record.getUpdatedDate() != null)
+            date = sdf.format(record.getUpdatedDate());
+        else date = "";
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
+        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, "");
 //        date = sdf.format(record.getLastUpdateTimestamp());
 //        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, date);
         if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " added");
@@ -329,20 +334,22 @@ public class RecordDAO {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date date = null;
             try {
-                date = sdf.parse(           c.getString(    c.getColumnIndex(DbConstants.RECORD_CREATION_DATE)));
+                if(!c.getString(    c.getColumnIndex(DbConstants.RECORD_CREATION_DATE)).equals(""))
+                    date = sdf.parse(           c.getString(    c.getColumnIndex(DbConstants.RECORD_CREATION_DATE)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             record.setCreatedDate(date);
             record.setUpdatedBy(            c.getString(    c.getColumnIndex(DbConstants.RECORD_UPDATED_BY)));
             try {
-                date = sdf.parse(           c.getString(    c.getColumnIndex(DbConstants.RECORD_UPDATE_DATE)));
+                if(!c.getString(    c.getColumnIndex(DbConstants.RECORD_UPDATE_DATE)).equals(""))
+                    date = sdf.parse(           c.getString(    c.getColumnIndex(DbConstants.RECORD_UPDATE_DATE)));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
             record.setUpdatedDate(date);
             try {
-                if( c.getString(c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP)) != null )
+                if( !(c.getString(c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP)) == null ) )
                     date = sdf.parse(       c.getString(    c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP))+"");
                 else
                     date = null;

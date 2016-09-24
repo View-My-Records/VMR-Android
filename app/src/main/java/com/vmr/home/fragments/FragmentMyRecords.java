@@ -141,6 +141,14 @@ public class FragmentMyRecords extends Fragment
         setupFab(fragmentView);
         setOnBackPress(fragmentView);
 
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(getActivity().findViewById(R.id.clayout),
+                        "Logged in as " + Vmr.getLoggedInUserInfo().getEmailId(), Snackbar.LENGTH_SHORT).show();
+            }
+        }, 2000);
+
         return fragmentView;
     }
 
@@ -150,15 +158,6 @@ public class FragmentMyRecords extends Fragment
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
         refreshFolder();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(getActivity().findViewById(R.id.clayout),
-                        "Logged in as " + Vmr.getLoggedInUserInfo().getEmailId(), Snackbar.LENGTH_SHORT).show();
-            }
-        }, 2000);
-
     }
 
     @Override
@@ -254,8 +253,8 @@ public class FragmentMyRecords extends Fragment
                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
             }
         } else {
-            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
         }
     }
 
@@ -433,14 +432,40 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onOpenClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
+
         if(record.isFolder()){
-            VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+
+            fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
+
             recordStack.push(record.getNodeRef());
-            refreshFolder();
-            mSwipeRefreshLayout.setRefreshing(true);
+
+            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+            if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 5* 60 * 1000))) {
+                    refreshFolder();
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+                } else {
+                    records = dbManager.getAllRecords(recordStack.peek());
+                    recordsAdapter.updateDataset(records);
+                    if(records.isEmpty()){
+                        mRecyclerView.setVisibility(View.GONE);
+                        mTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mTextView.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(true);
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+            }
         } else {
-            Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+            VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
         }
     }
 
@@ -653,6 +678,12 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onCopyClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Copy button clicked" );
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPasteClicked(Record record) {
+        VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
         Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 

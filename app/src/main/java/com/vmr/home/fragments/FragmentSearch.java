@@ -272,6 +272,11 @@ public class FragmentSearch extends Fragment
     }
 
     @Override
+    public void onPasteClicked(Record record) {
+
+    }
+
+    @Override
     public void onDuplicateClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
     }

@@ -410,6 +410,11 @@ public class FragmentToBeIndexed extends Fragment
     }
 
     @Override
+    public void onPasteClicked(Record record) {
+
+    }
+
+    @Override
     public void onDuplicateClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
         Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();

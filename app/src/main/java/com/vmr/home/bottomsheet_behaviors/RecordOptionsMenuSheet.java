@@ -24,16 +24,17 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
 
     private ImageView ivInfo;
     private TextView tvRecordName;
-    private RelativeLayout tvRecordOpen;
-    private RelativeLayout tvRecordIndex;
-    private RelativeLayout tvRecordShare;
+    private RelativeLayout optionOpen;
+    private RelativeLayout optionIndex;
+    private RelativeLayout optionShare;
     private RelativeLayout optionRename;
-    private RelativeLayout tvRecordDownload;
-    private RelativeLayout tvRecordMove;
-    private RelativeLayout tvRecordCopy;
-    private RelativeLayout tvRecordDuplicate;
-    private RelativeLayout tvRecordProperties;
-    private RelativeLayout tvRecordDelete;
+    private RelativeLayout optionDownload;
+    private RelativeLayout optionMove;
+    private RelativeLayout optionCopy;
+    private RelativeLayout optionPaste;
+    private RelativeLayout optionDuplicate;
+    private RelativeLayout optionProperties;
+    private RelativeLayout optionDelete;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -68,17 +69,27 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
 
     private void setupOptions(Record record) {
         if(record.isFolder()) {
-            ivInfo.setImageResource(R.drawable.ic_folder_black_24dp);
+            ivInfo.setImageResource(R.drawable.ic_folder);
+            optionIndex.setVisibility(View.GONE);
+            optionDownload.setVisibility(View.GONE);
         } else {
-            ivInfo.setImageResource(R.drawable.ic_insert_drive_file_black_24dp);
+            ivInfo.setImageResource(R.drawable.ic_file);
+            optionIndex.setVisibility(View.VISIBLE);
+            optionDownload.setVisibility(View.VISIBLE);
         }
 
         tvRecordName.setText(record.getRecordName());
 
         if(record.getRecordOwner().equals("admin")){
             optionRename.setVisibility(View.GONE);
+            optionMove.setVisibility(View.GONE);
+            optionDuplicate.setVisibility(View.GONE);
+            optionDelete.setVisibility(View.GONE);
         } else {
             optionRename.setVisibility(View.VISIBLE);
+            optionMove.setVisibility(View.VISIBLE);
+            optionDuplicate.setVisibility(View.VISIBLE);
+            optionDelete.setVisibility(View.VISIBLE);
         }
     }
 
@@ -89,33 +100,34 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
     private void setupViews(View contentView){
         ivInfo = ((ImageView) contentView.findViewById(R.id.infoImageView));
         tvRecordName = (TextView) contentView.findViewById(R.id.tvItemName);
-        tvRecordOpen = (RelativeLayout) contentView.findViewById(R.id.btnOpen);
-        tvRecordIndex = (RelativeLayout) contentView.findViewById(R.id.btnIndex);
-        tvRecordShare = (RelativeLayout) contentView.findViewById(R.id.btnShare);
+        optionOpen = (RelativeLayout) contentView.findViewById(R.id.btnOpen);
+        optionIndex = (RelativeLayout) contentView.findViewById(R.id.btnIndex);
+        optionShare = (RelativeLayout) contentView.findViewById(R.id.btnShare);
         optionRename = (RelativeLayout) contentView.findViewById(R.id.btnRename);
-        tvRecordDownload = (RelativeLayout) contentView.findViewById(R.id.btnDownload);
-        tvRecordMove = (RelativeLayout) contentView.findViewById(R.id.btnMove);
-        tvRecordCopy = (RelativeLayout) contentView.findViewById(R.id.btnCopy);
-        tvRecordDuplicate = (RelativeLayout) contentView.findViewById(R.id.btnDuplicate);
-        tvRecordProperties = (RelativeLayout) contentView.findViewById(R.id.btnProperties);
-        tvRecordDelete = (RelativeLayout) contentView.findViewById(R.id.btnDelete);
+        optionDownload = (RelativeLayout) contentView.findViewById(R.id.btnDownload);
+        optionMove = (RelativeLayout) contentView.findViewById(R.id.btnMove);
+        optionCopy = (RelativeLayout) contentView.findViewById(R.id.btnCopy);
+        optionPaste = (RelativeLayout) contentView.findViewById(R.id.btnPaste);
+        optionDuplicate = (RelativeLayout) contentView.findViewById(R.id.btnDuplicate);
+        optionProperties = (RelativeLayout) contentView.findViewById(R.id.btnProperties);
+        optionDelete = (RelativeLayout) contentView.findViewById(R.id.btnDelete);
     }
 
     private void setupListeners(){
-        tvRecordOpen.setOnClickListener(new View.OnClickListener() {
+        optionOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onOpenClicked(record);
                 dismiss();
             }
         });
-        tvRecordIndex.setOnClickListener(new View.OnClickListener() {
+        optionIndex.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onIndexClicked(record);  dismiss();
             }
         });
-        tvRecordShare.setOnClickListener(new View.OnClickListener() {
+        optionShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onShareClicked(record);  dismiss();
@@ -127,37 +139,43 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
                 optionClickListener.onRenameClicked(record);  dismiss();
             }
         });
-        tvRecordDownload.setOnClickListener(new View.OnClickListener() {
+        optionDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onDownloadClicked(record);  dismiss();
             }
         });
-        tvRecordMove.setOnClickListener(new View.OnClickListener() {
+        optionMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onMoveClicked(record);  dismiss();
             }
         });
-        tvRecordCopy.setOnClickListener(new View.OnClickListener() {
+        optionCopy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onCopyClicked(record);  dismiss();
             }
         });
-        tvRecordDuplicate.setOnClickListener(new View.OnClickListener() {
+        optionPaste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                optionClickListener.onPasteClicked(record);  dismiss();
+            }
+        });
+        optionDuplicate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onDuplicateClicked(record);  dismiss();
             }
         });
-        tvRecordProperties.setOnClickListener(new View.OnClickListener() {
+        optionProperties.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onPropertiesClicked(record);  dismiss();
             }
         });
-        tvRecordDelete.setOnClickListener(new View.OnClickListener() {
+        optionDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onMoveToTrashClicked(record);  dismiss();
@@ -173,6 +191,7 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         void onDownloadClicked(Record record);
         void onMoveClicked(Record record);
         void onCopyClicked(Record record);
+        void onPasteClicked(Record record);
         void onDuplicateClicked(Record record);
         void onPropertiesClicked(Record record);
         void onMoveToTrashClicked(Record record);

@@ -87,7 +87,8 @@
                     android:clickable="false"
                     android:contentDescription="Open"
                     android:longClickable="false"
-                    android:src="@drawable/ic_open_black_24dp" />
+                    android:src="@drawable/ic_open_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -126,7 +127,8 @@
                     android:clickable="false"
                     android:contentDescription="Index"
                     android:longClickable="false"
-                    android:src="@drawable/ic_index_black_24dp" />
+                    android:src="@drawable/ic_index_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -164,7 +166,8 @@
                     android:clickable="false"
                     android:contentDescription="Share"
                     android:longClickable="false"
-                    android:src="@drawable/ic_share_black_24dp" />
+                    android:src="@drawable/ic_share_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -201,7 +204,8 @@
                     android:clickable="false"
                     android:contentDescription="Rename"
                     android:longClickable="false"
-                    android:src="@drawable/ic_rename_black_24dp" />
+                    android:src="@drawable/ic_rename_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -237,7 +241,8 @@
                     android:clickable="false"
                     android:contentDescription="Download"
                     android:longClickable="false"
-                    android:src="@drawable/ic_get_app_black_24dp" />
+                    android:src="@drawable/ic_get_app_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -273,7 +278,8 @@
                     android:clickable="false"
                     android:contentDescription="Move"
                     android:longClickable="false"
-                    android:src="@drawable/ic_move_black_24dp" />
+                    android:src="@drawable/ic_move_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -309,7 +315,8 @@
                     android:clickable="false"
                     android:contentDescription="Copy"
                     android:longClickable="false"
-                    android:src="@drawable/ic_content_copy_black_24dp" />
+                    android:src="@drawable/ic_content_copy_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -325,6 +332,42 @@
                     android:clickable="false"
                     android:longClickable="false"
                     android:text="Copy"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/btnPaste"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="2dp"
+                android:layout_marginTop="2dp"
+                android:background="@android:drawable/menuitem_background"
+                android:clickable="true">
+                <ImageView
+                    android:id="@+id/pasteImageView"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_centerVertical="true"
+                    android:layout_margin="5dp"
+                    android:clickable="false"
+                    android:contentDescription="Paste"
+                    android:longClickable="false"
+                    android:src="@drawable/ic_content_paste_black_24dp"
+                    android:tint="@android:color/darker_gray" />
+
+                <TextView
+                    android:layout_width="212dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/pasteImageView"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_toRightOf="@+id/pasteImageView"
+                    android:clickable="false"
+                    android:longClickable="false"
+                    android:text="Paste"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </RelativeLayout>
             <RelativeLayout
@@ -344,7 +387,8 @@
                     android:clickable="false"
                     android:contentDescription="Duplicate"
                     android:longClickable="false"
-                    android:src="@drawable/ic_duplicate_black_24dp" />
+                    android:src="@drawable/ic_duplicate_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -381,7 +425,8 @@
                     android:clickable="false"
                     android:contentDescription="Properties"
                     android:longClickable="false"
-                    android:src="@drawable/ic_info_black_24dp" />
+                    android:src="@drawable/ic_info_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -399,11 +444,7 @@
                     android:text="Properties"
                     android:textAppearance="?android:attr/textAppearanceMedium" />
             </RelativeLayout>
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dip"
-                android:alpha="150"
-                android:background="#000000" />
+
             <RelativeLayout
                 android:id="@+id/btnDelete"
                 android:layout_width="match_parent"
@@ -412,6 +453,11 @@
                 android:layout_marginTop="2dp"
                 android:background="@android:drawable/menuitem_background"
                 android:clickable="true">
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dip"
+                    android:alpha="150"
+                    android:background="#000000" />
                 <ImageView
                     android:id="@+id/deleteImageView"
                     android:layout_width="32dp"
@@ -421,7 +467,8 @@
                     android:clickable="false"
                     android:contentDescription="Delete"
                     android:longClickable="false"
-                    android:src="@drawable/ic_delete_black_24dp" />
+                    android:src="@drawable/ic_delete_black_24dp"
+                    android:tint="@android:color/darker_gray" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -442,4 +489,3 @@
         </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 </LinearLayout>
-

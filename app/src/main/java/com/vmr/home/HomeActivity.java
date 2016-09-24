@@ -148,6 +148,14 @@ public class HomeActivity extends AppCompatActivity
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.ENGLISH);
         lastLogin.setText("Last Login: " + df.format(Vmr.getLoggedInUserInfo().getLastLoginTime()));
 
+        if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
+            Record newRecord = new Record();
+            newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
+//            newRecord.setCreatedDate(new Date());
+//            newRecord.setUpdatedDate(new Date());
+            dbManager.addRecord(newRecord);
+        }
+
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
     }
@@ -276,7 +284,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onStart() {
         super.onStart();
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     @Override

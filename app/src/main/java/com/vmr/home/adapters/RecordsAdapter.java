@@ -1,6 +1,7 @@
 package com.vmr.home.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,7 +67,8 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
         }
         holder.setItemName(record.getRecordName());
         SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
-        holder.setItemTimeStamp(ft.format(record.getCreatedDate()));
+//        holder.setItemTimeStamp(ft.format(record.getCreatedDate()));
+        holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(record.getCreatedDate().getTime()).toString());
         holder.bind(records.get(position), itemClickListener);
         holder.bind(records.get(position), optionsClickListener);
     }
