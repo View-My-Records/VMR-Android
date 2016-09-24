@@ -51,7 +51,8 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.RECORD_CREATED_BY + " TEXT, " +
             DbConstants.RECORD_CREATION_DATE + " DATETIME, " +
             DbConstants.RECORD_UPDATED_BY + " TEXT, " +
-            DbConstants.RECORD_UPDATE_DATE + " DATETIME );";
+            DbConstants.RECORD_UPDATE_DATE + " DATETIME, " +
+            DbConstants.RECORD_LAST_UPDATE_TIMESTAMP + " DATETIME );";
 
     private static final String createSharedTable
             = ("CREATE TABLE " + DbConstants.TABLE_SHARED + " (") +

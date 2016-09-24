@@ -13,6 +13,7 @@ import com.vmr.db.trash.TrashRecordDAO;
 import com.vmr.db.user.DbUser;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
+import com.vmr.model.VmrFolder;
 import com.vmr.utils.Constants;
 
 import java.util.ArrayList;
@@ -81,9 +82,33 @@ public class DbManager {
         return this.recordDAO.getAllRecords(parentNode, false);
     }
 
+    public Long addRecord(Record record) {
+        return this.recordDAO.addRecord(record);
+    }
+
+    public boolean updateTimestamp(String nodeRef) {
+        return this.recordDAO.updateTimestamp(nodeRef);
+    }
+
+    public Record getRecord(String parentNode) {
+        return this.recordDAO.getRecord(parentNode);
+    }
+
     // Retrieve all records for given parent
     public List<Record> getFolders(String parentNode) {
         return this.recordDAO.getFolders(parentNode);
+    }
+
+    public void removeAllRecords(String parentNode) {
+        this.recordDAO.removeAllRecords(parentNode);
+    }
+
+    public void removeAllRecords(String parentNode, VmrFolder vmrFolder) {
+        if(vmrFolder.getAll().size() > 0){
+            this.recordDAO.removeAllRecords(parentNode, vmrFolder);
+        } else {
+            this.recordDAO.removeAllRecords(parentNode);
+        }
     }
 
     public List<Record> getAllRecords(String parentNode, boolean override) {

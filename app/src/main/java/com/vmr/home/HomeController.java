@@ -14,7 +14,6 @@ import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.DownloadRequest;
 import com.vmr.home.request.MoveToTrashRequest;
-import com.vmr.home.request.NewUploadRequest;
 import com.vmr.home.request.PropertiesRequest;
 import com.vmr.home.request.RecordsRequest;
 import com.vmr.home.request.RemoveExpiredRecordsRequest;
@@ -37,7 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -498,8 +496,8 @@ public class HomeController {
 
 //        uploadPacketMap.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket);
 
-        NewUploadRequest uploadRequest =
-                new NewUploadRequest(
+        UploadRequest uploadRequest =
+                new UploadRequest(
                         formData,
                         uploadPacket,
                         new Response.Listener<JSONObject>() {
@@ -524,39 +522,6 @@ public class HomeController {
         } catch (AuthFailureError authFailureError) {
             authFailureError.printStackTrace();
         }
-        VmrRequestQueue.getInstance()
-                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
-    }
-
-    public void uploadFileViaRetroFit(UploadPacket uploadPacket){
-
-        Map<String, String> formData = Vmr.getUserMap();
-        Map<String, UploadPacket> uploadPacketMap = new HashMap<>();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
-//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket.getFile());
-        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileName()));
-        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, uploadPacket.getContentType());
-        formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
-
-        uploadPacketMap.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket);
-
-        UploadRequest uploadRequest =
-                new UploadRequest(
-                        formData,
-                        uploadPacketMap,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                onFileUpload.onFileUploadSuccess(jsonObject);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                onFileUpload.onFileUploadFailure(error);
-                            }
-                        }
-                );
         VmrRequestQueue.getInstance()
                 .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }

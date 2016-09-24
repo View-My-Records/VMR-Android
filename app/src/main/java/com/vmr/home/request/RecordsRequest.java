@@ -3,6 +3,7 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.vmr.debug.VmrDebug;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
@@ -18,6 +19,8 @@ import java.util.Map;
  */
 
 public class RecordsRequest extends PostLoginRequest<VmrFolder> {
+
+    private boolean DEBUG = false;
 
     private Map<String, String> formData;
 
@@ -38,6 +41,8 @@ public class RecordsRequest extends PostLoginRequest<VmrFolder> {
     protected Response<VmrFolder> parseNetworkResponse(NetworkResponse response) {
 
         String jsonString = new String(response.data);
+
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), jsonString);
 
         VmrFolder folder;
 

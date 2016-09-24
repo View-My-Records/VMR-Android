@@ -37,7 +37,7 @@ public class LoginActivity extends AppCompatActivity
 
     // Controller for queuing requests
     private LoginController loginController;
-    private boolean remember;
+    private boolean remember = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

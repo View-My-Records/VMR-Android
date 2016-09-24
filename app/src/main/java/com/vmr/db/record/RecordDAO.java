@@ -8,6 +8,8 @@ import android.text.TextUtils;
 import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.model.VmrFolder;
+import com.vmr.model.VmrItem;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,6 +23,8 @@ import java.util.Locale;
  * Created by abhijit on 9/5/16.
  */
 public class RecordDAO {
+
+    private boolean DEBUG = true;
 
     private SQLiteDatabase db;
 
@@ -52,7 +56,7 @@ public class RecordDAO {
             } while (c.moveToNext());
         }
 
-        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        VmrDebug.printLogI(this.getClass(), records.size() + " Records retrieved");
         return records;
     }
 
@@ -82,8 +86,34 @@ public class RecordDAO {
             } while (c.moveToNext());
         }
 
-        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        VmrDebug.printLogI(this.getClass(), records.size() + " Records retrieved");
         return records;
+    }
+
+    // Fetch all records in db for current user
+    public Record getRecord(String nodeRef){
+        Record record = new Record();
+        Cursor c = db.query(
+                DbConstants.TABLE_RECORD, // Table Name
+                DbConstants.RECORD_COLUMNS, // Select columns
+                DbConstants.RECORD_MASTER_OWNER + "=? AND "
+                        + DbConstants.RECORD_NODE_REF + "=?" , // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                        nodeRef }, // noderef
+                null, // group by
+                null, // having
+                null, // order by
+                null );
+
+        if (c.moveToFirst()) {
+           Record newRecord = buildFromCursor(c);
+            if (newRecord != null) {
+                record = newRecord;
+            }
+        }
+
+        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " retrieved");
+        return record;
     }
 
 
@@ -115,7 +145,7 @@ public class RecordDAO {
             } while (c.moveToNext());
         }
 
-        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        VmrDebug.printLogI(this.getClass(), records.size() + " Records retrieved");
         return records;
     }
 
@@ -141,7 +171,7 @@ public class RecordDAO {
             } while (c.moveToNext());
         }
 
-        VmrDebug.printLogI(this.getClass(), "Records retrieved");
+        VmrDebug.printLogI(this.getClass(), records.size() + " Records retrieved");
         return records;
     }
 
@@ -157,7 +187,7 @@ public class RecordDAO {
     }
 
     // Adds record to DB
-    private Long addRecord(Record record) {
+    public Long addRecord(Record record) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.RECORD_MASTER_OWNER  , Vmr.getLoggedInUserInfo().getLoggedinUserId());
         contentValues.put(DbConstants.RECORD_NODE_REF  , record.getNodeRef());
@@ -180,7 +210,9 @@ public class RecordDAO {
         contentValues.put(DbConstants.RECORD_UPDATED_BY, record.getUpdatedBy());
         date = sdf.format(record.getUpdatedDate());
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
-        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " added");
+//        date = sdf.format(record.getLastUpdateTimestamp());
+//        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, date);
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " added");
         return db.insert(DbConstants.TABLE_RECORD, null, contentValues);
     }
 
@@ -207,7 +239,9 @@ public class RecordDAO {
         contentValues.put(DbConstants.RECORD_UPDATED_BY,record.getUpdatedBy());
         date = sdf.format(record.getUpdatedDate());
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
-        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " updated");
+//        date = sdf.format(record.getLastUpdateTimestamp());
+//        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, date);
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " updated");
         return db.update(
                 DbConstants.TABLE_RECORD,
                 contentValues,
@@ -215,22 +249,61 @@ public class RecordDAO {
                 new String[]{record.getMasterRecordOwner()+"", record.getNodeRef() + "" }) > 0;
     }
 
+    public boolean updateTimestamp(String nodeRef){
+        ContentValues contentValues = new ContentValues();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+        String date = sdf.format(new Date(System.currentTimeMillis()));
+        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, date);
+        return db.update(
+                DbConstants.TABLE_RECORD,
+                contentValues,
+                DbConstants.RECORD_NODE_REF + "=?",
+                new String[]{nodeRef + "" }) > 0;
+    }
+
     // Returns record from db
     private boolean checkRecord(String nodeRef) {
         Cursor c = db.query(true,
                 DbConstants.TABLE_RECORD,
                 new String[]{DbConstants.RECORD_NODE_REF},
-                DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef + ""},
+                DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef},
                 null, null, null, null, null);
-        boolean ret = c.moveToFirst();
-        c.close();
-        return ret;
+        if(c != null && c.moveToFirst()){
+            c.close();
+            return true;
+        }
+        return false;
     }
 
     // Delete record
     public boolean deleteRecord(Record record){
-        VmrDebug.printLogI(this.getClass(), "Records deleted");
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " deleted");
         return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getNodeRef() + ""}) > 0;
+    }
+
+    public void removeAllRecords(String parentNodeRef){
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Records deleted");
+        db.rawQuery("DELETE FROM " + DbConstants.TABLE_RECORD
+                + " WHERE "
+                + DbConstants.RECORD_PARENT_NODE_REF + "=?" ,
+                new String[]{ parentNodeRef});
+    }
+
+    public void removeAllRecords(String parentNodeRef, VmrFolder vmrFolder){
+        ArrayList<String > notInClause = new ArrayList<>();
+
+        for (VmrItem vmrItem : vmrFolder.getAll()){
+            notInClause.add(vmrItem.getNodeRef());
+        }
+
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Records deleted");
+        String notInClauseString = notInClause.toString().replace("[", "'").replace("]", "'").replace( ",", "\",\"");
+        db.rawQuery("DELETE FROM " + DbConstants.TABLE_RECORD
+                + " WHERE "
+                + DbConstants.RECORD_PARENT_NODE_REF + "=?"
+                + " AND "
+                + DbConstants.RECORD_NODE_REF + " NOT IN ( ? )" ,
+                new String[]{ parentNodeRef , notInClauseString});
     }
 
     private Record buildFromCursor(Cursor c) {
@@ -268,6 +341,15 @@ public class RecordDAO {
                 e.printStackTrace();
             }
             record.setUpdatedDate(date);
+            try {
+                if( c.getString(c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP)) != null )
+                    date = sdf.parse(       c.getString(    c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP))+"");
+                else
+                    date = null;
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            record.setLastUpdateTimestamp(date);
         }
         return record;
     }

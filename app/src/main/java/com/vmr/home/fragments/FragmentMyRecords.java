@@ -64,6 +64,7 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Stack;
 
@@ -121,6 +122,9 @@ public class FragmentMyRecords extends Fragment
 
         recordStack = new Stack<>();
         recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
+
+        VmrDebug.printLogI(this.getClass(), recordStack.peek());
+        VmrDebug.printLogI(this.getClass(), Vmr.getLoggedInUserInfo().getRootNodref());
     }
 
     @Override
@@ -175,7 +179,16 @@ public class FragmentMyRecords extends Fragment
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         VmrDebug.printLogI(this.getClass(), "Records retrieved.");
 
+        if(vmrFolder.getAll().size()>0)
+        dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
+
+        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+        VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
+        dbManager.updateTimestamp(recordStack.peek());
+        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+        VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString()+"");
+
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
 
@@ -212,11 +225,36 @@ public class FragmentMyRecords extends Fragment
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+
+            fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
+
             recordStack.push(record.getNodeRef());
-            refreshFolder();
-            mSwipeRefreshLayout.setRefreshing(true);
+
+            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+            if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 5* 60 * 1000))) {
+                    refreshFolder();
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+                } else {
+                    records = dbManager.getAllRecords(recordStack.peek());
+                    recordsAdapter.updateDataset(records);
+                    if(records.isEmpty()){
+                        mRecyclerView.setVisibility(View.GONE);
+                        mTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mTextView.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(true);
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+            }
         } else {
-            startActivity(ViewActivity.getLauncherIntent(((HomeActivity)getActivity()), record));
+            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
         }
     }
@@ -253,6 +291,8 @@ public class FragmentMyRecords extends Fragment
                         @Override
                         public void onFileUploadSuccess(JSONObject jsonObject) {
 
+                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
+                            Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                             try {
                                 if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
                                     Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
@@ -261,6 +301,7 @@ public class FragmentMyRecords extends Fragment
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+                            refreshFolder();
                         }
 
                         @Override
@@ -699,10 +740,35 @@ public class FragmentMyRecords extends Fragment
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
                         recordStack.pop();
-                        records = dbManager.getAllRecords(recordStack.peek());
-                        recordsAdapter.updateDataset(records);
-                        refreshFolder();
-                        mSwipeRefreshLayout.setRefreshing(true);
+                        if (recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+                            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
+                        } else {
+                            fragmentInteractionListener.onFragmentInteraction(dbManager.getRecord(recordStack.peek()).getRecordName());
+                        }
+
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+                        if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                            if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 60 * 1000))) {
+                                refreshFolder();
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+                            } else {
+                                records = dbManager.getAllRecords(recordStack.peek());
+                                recordsAdapter.updateDataset(records);
+                                if(records.isEmpty()){
+                                    mRecyclerView.setVisibility(View.GONE);
+                                    mTextView.setVisibility(View.VISIBLE);
+                                } else {
+                                    mRecyclerView.setVisibility(View.VISIBLE);
+                                    mTextView.setVisibility(View.GONE);
+                                }
+                            }
+                        } else {
+                            refreshFolder();
+                            mSwipeRefreshLayout.setRefreshing(true);
+                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+                        }
                         return true;
                     } else {
                         return false;
@@ -723,7 +789,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                refreshFolder();
+                homeController.fetchAllFilesAndFolders(recordStack.peek());
                 mSwipeRefreshLayout.setRefreshing(true);
             }
         });

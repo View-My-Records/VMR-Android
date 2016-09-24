@@ -14,7 +14,7 @@ public abstract class Constants {
         public final static String ALFRESCO_TICKET     =  DEFAULT_BASE_URL + "/alfresco/service/api/login?u=admin&pw=alfresc0";
         public final static String LOGIN               = "/vmr/mlogin.do";
         public final static String FOLDER_NAVIGATION   = "/vmr/folderNavigation.do";
-        public final static String FILE_UPLOAD         = "/vmr/mFileUpload.do";
+        public final static String FILE_UPLOAD         = "/vmr/fileUpload.do";
         public final static String RECENT              = "/vmr/recent.do";
         public final static String SHARE_RECORDS       = "/vmr/shareRecords.do";
         public final static String REPORT_DATA         = "/vmr/reportData.do";

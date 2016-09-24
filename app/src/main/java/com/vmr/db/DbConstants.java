@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 1;
+    public static final int VERSION = 7;
 
     //Table Name
     public static final String TABLE_USER = "USER";
@@ -56,25 +56,26 @@ public class DbConstants {
                 USER_LAST_LOGIN };
 
     //Column Names
-    public static final String RECORD_ID              = "RECORD_ID";
-    public static final String RECORD_MASTER_OWNER    = "MASTER_OWNER";
-    public static final String RECORD_NODE_REF        = "RECORD_NODE_REF";
-    public static final String RECORD_PARENT_NODE_REF = "PARENT_NODE_REF";
-    public static final String RECORD_NAME            = "RECORD_NAME";
-    public static final String RECORD_DOC_TYPE        = "RECORD_DOC_TYPE";
-    public static final String RECORD_FOLDER_CATEGORY = "FOLDER_CATEGORY";
-    public static final String RECORD_FILE_CATEGORY   = "FILE_CATEGORY";
-    public static final String RECORD_FILE_SIZE       = "FILE_SIZE";
-    public static final String RECORD_FILE_MIME_TYPE  = "FILE_MIME_TYPE";
-    public static final String RECORD_IS_FOLDER       = "IS_FOLDER";
-    public static final String RECORD_IS_SHARED       = "IS_SHARED";
-    public static final String RECORD_IS_WRITABLE     = "IS_WRITABLE";
-    public static final String RECORD_IS_DELETABLE    = "IS_DELETABLE";
-    public static final String RECORD_OWNER           = "ITEM_OWNER";
-    public static final String RECORD_CREATED_BY      = "CREATED_BY";
-    public static final String RECORD_CREATION_DATE   = "CREATED_DATE";
-    public static final String RECORD_UPDATED_BY      = "UPDATED_BY";
-    public static final String RECORD_UPDATE_DATE     = "UPDATED_DATE";
+    public static final String RECORD_ID                    = "RECORD_ID";
+    public static final String RECORD_MASTER_OWNER          = "MASTER_OWNER";
+    public static final String RECORD_NODE_REF              = "RECORD_NODE_REF";
+    public static final String RECORD_PARENT_NODE_REF       = "PARENT_NODE_REF";
+    public static final String RECORD_NAME                  = "RECORD_NAME";
+    public static final String RECORD_DOC_TYPE              = "RECORD_DOC_TYPE";
+    public static final String RECORD_FOLDER_CATEGORY       = "FOLDER_CATEGORY";
+    public static final String RECORD_FILE_CATEGORY         = "FILE_CATEGORY";
+    public static final String RECORD_FILE_SIZE             = "FILE_SIZE";
+    public static final String RECORD_FILE_MIME_TYPE        = "FILE_MIME_TYPE";
+    public static final String RECORD_IS_FOLDER             = "IS_FOLDER";
+    public static final String RECORD_IS_SHARED             = "IS_SHARED";
+    public static final String RECORD_IS_WRITABLE           = "IS_WRITABLE";
+    public static final String RECORD_IS_DELETABLE          = "IS_DELETABLE";
+    public static final String RECORD_OWNER                 = "ITEM_OWNER";
+    public static final String RECORD_CREATED_BY            = "CREATED_BY";
+    public static final String RECORD_CREATION_DATE         = "CREATED_DATE";
+    public static final String RECORD_UPDATED_BY            = "UPDATED_BY";
+    public static final String RECORD_UPDATE_DATE           = "UPDATED_DATE";
+    public static final String RECORD_LAST_UPDATE_TIMESTAMP = "LAST_UPDATE_TIMESTAMP";
 
     //All Columns
     public static final String[] RECORD_COLUMNS
@@ -97,7 +98,8 @@ public class DbConstants {
                 RECORD_CREATED_BY ,
                 RECORD_CREATION_DATE ,
                 RECORD_UPDATED_BY ,
-                RECORD_UPDATE_DATE
+                RECORD_UPDATE_DATE,
+            RECORD_LAST_UPDATE_TIMESTAMP
     };
 
     public static final String SHARED_RECORD_ID          = "RECORD_ID";

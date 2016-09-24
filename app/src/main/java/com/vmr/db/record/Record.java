@@ -33,6 +33,7 @@ public class Record implements Parcelable {
     // For Android
     private String recordId;
     private String masterRecordOwner;
+    private Date lastUpdateTimestamp;
     // Properties in vmrItem
     private String  recordNodeRef;           //  varchar(60) NOT NULL,
     private String  recordParentNodeRef;   // varchar(60) NOT NULL,
@@ -279,6 +280,14 @@ public class Record implements Parcelable {
 
     public void setUpdatedDate(Date updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    public Date getLastUpdateTimestamp() {
+        return lastUpdateTimestamp;
+    }
+
+    public void setLastUpdateTimestamp(Date lastUpdatedDate) {
+        this.lastUpdateTimestamp = lastUpdatedDate;
     }
 
     @Override
