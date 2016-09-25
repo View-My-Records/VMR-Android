@@ -5,8 +5,13 @@ package com.vmr.utils;
  */
 
 import android.os.Environment;
+import android.webkit.MimeTypeMap;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,8 +19,8 @@ public class FileUtils {
 
     final static Pattern PATTERN = Pattern.compile("(.*?)(?:\\((\\d+)\\))?(\\.[^.]*)?");
 
-    public static String getNewFileName(String fileName) {
-        File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+    public static String getNewFileName(String fileName, File parent) {
+        File newFile = new File(parent, fileName);
 
         if (newFile.exists()) {
             Matcher m = PATTERN.matcher(fileName);
@@ -33,5 +38,24 @@ public class FileUtils {
             }
         }
         return fileName;
+    }
+
+    public static void copyFile(File src, File dst) throws IOException {
+        FileInputStream inStream = new FileInputStream(src);
+        FileOutputStream outStream = new FileOutputStream(dst);
+        FileChannel inChannel = inStream.getChannel();
+        FileChannel outChannel = outStream.getChannel();
+        inChannel.transferTo(0, inChannel.size(), outChannel);
+        inStream.close();
+        outStream.close();
+    }
+
+    public static String getMimeType(String filePath) {
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        }
+        return type;
     }
 }

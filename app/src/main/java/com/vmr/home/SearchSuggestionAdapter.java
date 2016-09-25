@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -23,8 +24,8 @@ public class SearchSuggestionAdapter extends SimpleCursorAdapter {
         super(context,
                 R.layout.item_layout_search,
                 c,
-                new String[]{SearchManager.SUGGEST_COLUMN_TEXT_1},
-                new int[]{R.id.tvItemName},
+                new String[]{SearchManager.SUGGEST_COLUMN_TEXT_1,SearchManager.SUGGEST_COLUMN_ICON_1 },
+                new int[]{R.id.tvItemName, R.id.ivFileIcon},
                 SimpleCursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
     }
 
@@ -35,7 +36,7 @@ public class SearchSuggestionAdapter extends SimpleCursorAdapter {
         view.setBackgroundResource(android.R.drawable.menuitem_background);
         ViewHolder holder  =   new ViewHolder();
         holder.tvFileName    =   (TextView)  view.findViewById(R.id.tvItemName);
-//        holder.ibtnOpen   =   (ImageButton)  view.findViewById(R.id.ibtnOpen);
+        holder.ivFileIcon   =   (ImageView)  view.findViewById(R.id.ivFileIcon);
         view.setTag(holder);
         return view;
     }
@@ -44,10 +45,13 @@ public class SearchSuggestionAdapter extends SimpleCursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
         ViewHolder holder  =   (ViewHolder)    view.getTag();
         holder.tvFileName.setText(cursor.getString(cursor.getColumnIndex(DbConstants.RECORD_NAME)));
+        if(cursor.getString(cursor.getColumnIndex(DbConstants.RECORD_IS_FOLDER)).equals("1"))
+            holder.ivFileIcon.setImageResource(R.drawable.ic_folder);
+        else holder.ivFileIcon.setImageResource(R.drawable.ic_file);
     }
 
     private static class ViewHolder {
         TextView tvFileName;
-//        ImageButton ibtnOpen;
+        ImageView ivFileIcon;
     }
 }

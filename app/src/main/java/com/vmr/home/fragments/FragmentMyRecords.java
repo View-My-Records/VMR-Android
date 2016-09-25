@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -62,10 +63,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -157,7 +158,7 @@ public class FragmentMyRecords extends Fragment
         super.onStart();
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
-        refreshFolder();
+//        refreshFolder();
     }
 
     @Override
@@ -165,7 +166,7 @@ public class FragmentMyRecords extends Fragment
         super.onResume();
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
-        refreshFolder();
+//        refreshFolder();
     }
 
     @Override
@@ -183,10 +184,10 @@ public class FragmentMyRecords extends Fragment
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
 
         if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
-        VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
+            VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
         dbManager.updateTimestamp(recordStack.peek());
         if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
-        VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString()+"");
+            VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString()+"");
 
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
@@ -254,8 +255,70 @@ public class FragmentMyRecords extends Fragment
             }
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
-            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+//            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                    @Override
+                    public void onFileDownloadSuccess(File file) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
+                        try {
+                            if (file != null) {
+                                final File tempFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), record.getRecordName());
+                                if (tempFile.exists())
+                                    tempFile.delete();
+                                FileUtils.copyFile(file, tempFile);
+
+                                addPhotoToGallery(tempFile);
+
+
+//                                MediaScannerConnection.scanFile(getActivity(),
+//                                        new String[] { tempFile.getPath() }, null,
+//                                        new MediaScannerConnection.OnScanCompletedListener() {
+//                                            public void onScanCompleted(String path, Uri uri) {
+                                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                                Uri fileUri = Uri.fromFile(tempFile);
+                                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                                                try {
+                                                    startActivity(openFileIntent);
+                                                } catch (ActivityNotFoundException e) {
+                                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
+                                                }
+//                                            }
+//                                        });
+                            } else VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "null file");
+                        } catch (Exception e) {
+                            VmrDebug.printLogI(this.getClass(), "File download failed");
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFileDownloadFailure(VolleyError error) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download failed");
+                    }
+                });
+                dlController.downloadFile(record);
+                VmrDebug.printLogI(this.getClass(), "Downloading...");
+                // TODO: 9/24/16 Show progress dialog till file downloads
+            } else {
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .show();
+            }
         }
+    }
+
+    protected void addPhotoToGallery(File file) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(file);
+        mediaScanIntent.setData(contentUri);
+        this.getActivity().sendBroadcast(mediaScanIntent);
     }
 
     @Override
@@ -281,10 +344,12 @@ public class FragmentMyRecords extends Fragment
             FilePicker filePicker = new FilePicker();
             filePicker.setOnFilePickedListener(new FilePicker.OnFilePickedListener() {
                 @Override
-                public void onFilePicked(File file) {
+                public void onFilePicked(final File file) {
                     VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
 
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+
+                    final int notificationId = new Random().nextInt();
 
                     HomeController uploadController = new HomeController(new VmrResponseListener.OnFileUpload() {
                         @Override
@@ -292,13 +357,19 @@ public class FragmentMyRecords extends Fragment
 
                             VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
                             Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-                            try {
-                                if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-                                    Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-                                    refreshFolder();
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                            if (jsonObject.has("files")) {
+                                Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+                                Notification downloadCompleteNotification =
+                                        new Notification.Builder(getActivity())
+                                                .setContentTitle(file.getName())
+                                                .setContentText("Upload complete")
+                                                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                                .setAutoCancel(true)
+                                                .build();
+
+                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                nm.cancel(file.getName(), notificationId);
+                                nm.notify(notificationId, downloadCompleteNotification);
                             }
                             refreshFolder();
                         }
@@ -310,6 +381,18 @@ public class FragmentMyRecords extends Fragment
                     });
 
                     uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
+
+                    Notification downloadingNotification =
+                            new Notification.Builder(getActivity())
+                                    .setContentTitle(file.getName())
+                                    .setContentText("Uploading...")
+                                    .setSmallIcon(android.R.drawable.stat_sys_download)
+                                    .setProgress(0,0,true)
+                                    .setOngoing(true)
+                                    .build();
+                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                    nm.notify(file.getName(), notificationId ,downloadingNotification);
+
                 }
             });
 
@@ -594,34 +677,31 @@ public class FragmentMyRecords extends Fragment
 
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
+
+                final int notificationId = new Random().nextInt();
+
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
-                    public void onFileDownloadSuccess(byte[] bytes) {
+                    public void onFileDownloadSuccess(File file) {
                         try {
-                            if (bytes != null) {
-                                String fileName = FileUtils.getNewFileName(record.getRecordName());
+                            if (file != null) {
+                                String fileName = FileUtils.getNewFileName(record.getRecordName(), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) );
                                 File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                                if(!newFile.exists() && newFile.createNewFile()) {
-                                    FileOutputStream outputStream = new FileOutputStream(newFile, false);
-                                    outputStream.write(bytes);
-                                    outputStream.close();
-                                    VmrDebug.printLogI(this.getClass(), "File download complete");
-                                    Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                    Notification downloadCompleteNotification =
-                                            new Notification.Builder(getActivity())
-                                                    .setContentTitle(fileName)
-                                                    .setContentText("Download complete")
-                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                                    .setAutoCancel(true)
-                                                    .build();
+                                FileUtils.copyFile(file, newFile);
+                                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File saved");
+                                Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                Notification downloadCompleteNotification =
+                                    new Notification.Builder(getActivity())
+                                            .setContentTitle(fileName)
+                                            .setContentText("Download complete")
+                                            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                            .setAutoCancel(true)
+                                            .build();
 
-                                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                    nm.cancel(fileName, Integer.valueOf(record.getRecordId()));
-                                    nm.notify(Integer.valueOf(record.getRecordId()), downloadCompleteNotification);
-                                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-                                } else {
-                                    VmrDebug.printLogI(this.getClass(), "File already exist or couldn't be created");
-                                }
+                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                nm.cancel(record.getRecordId(), notificationId);
+                                nm.notify(notificationId, downloadCompleteNotification);
+                                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                             }
                         } catch (Exception e) {
                             VmrDebug.printLogI(this.getClass(), "File download failed");
@@ -644,7 +724,7 @@ public class FragmentMyRecords extends Fragment
                         .setOngoing(true)
                         .build();
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                nm.notify(record.getRecordName(), Integer.valueOf(record.getRecordId()) ,downloadingNotification);
+                nm.notify(record.getRecordId(), notificationId ,downloadingNotification);
 
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)

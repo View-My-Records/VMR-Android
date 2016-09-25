@@ -35,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -467,10 +468,10 @@ public class HomeController {
         DownloadRequest downloadRequest =
                 new DownloadRequest(
                         formData,
-                        new Response.Listener<byte[]>() {
+                        new Response.Listener<File>() {
                             @Override
-                            public void onResponse(byte[] bytes) {
-                                onFileDownload.onFileDownloadSuccess(bytes);
+                            public void onResponse(File file) {
+                                onFileDownload.onFileDownloadSuccess(file);
                             }
                         },
                         new Response.ErrorListener() {

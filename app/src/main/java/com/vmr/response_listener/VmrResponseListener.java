@@ -9,6 +9,7 @@ import com.vmr.model.VmrTrashItem;
 
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -78,7 +79,7 @@ public abstract class VmrResponseListener {
     }
 
     public interface OnFileDownload{
-        void onFileDownloadSuccess(byte[] bytes);
+        void onFileDownloadSuccess(File file);
         void onFileDownloadFailure(VolleyError error);
     }
 

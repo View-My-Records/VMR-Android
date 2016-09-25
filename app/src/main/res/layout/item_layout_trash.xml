@@ -7,15 +7,29 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
-    android:padding="10dp" >
+    android:padding="8dp">
 
     <ImageView
         android:id="@+id/ivFileIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="8dp"
         android:contentDescription="Icon"
         android:src="@drawable/ic_folder" />
+
+    <ImageView
+        android:id="@+id/ivOverflow"
+        android:layout_width="20dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="Overflow Menu"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_more_options_black_24dp"
+        android:tint="@android:color/tertiary_text_dark" />
 
     <TextView
         android:id="@+id/tvFileName"
@@ -32,18 +46,5 @@
         android:text="File Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="bold" />
-
-    <ImageView
-        android:id="@+id/ivOverflow"
-        android:layout_width="20dp"
-        android:layout_height="40dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:contentDescription="Overflow Menu"
-        android:padding="8dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_more_options_black_24dp" />
 
 </RelativeLayout>

@@ -2,9 +2,9 @@ package com.vmr.home;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.Toast;
 
 import com.vmr.R;
@@ -20,7 +20,7 @@ public class SearchResultActivity extends AppCompatActivity {
 
         Intent intent  = getIntent();
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
             getSupportActionBar().setTitle(query);
             Toast.makeText(this, query, Toast.LENGTH_SHORT).show();

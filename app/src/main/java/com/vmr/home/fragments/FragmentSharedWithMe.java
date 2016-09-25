@@ -53,7 +53,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -324,32 +323,27 @@ public class FragmentSharedWithMe extends Fragment
                 VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
-                    public void onFileDownloadSuccess(byte[] bytes) {
+                    public void onFileDownloadSuccess(File file) {
                         try {
-                            if (bytes != null) {
-                                String fileName = FileUtils.getNewFileName(record.getRecordName());
+                            if (file != null) {
+                                String fileName = FileUtils.getNewFileName(record.getRecordName(), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) );
                                 File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-                                if(!newFile.exists() && newFile.createNewFile()) {
-                                    FileOutputStream outputStream = new FileOutputStream(newFile, false);
-                                    outputStream.write(bytes);
-                                    outputStream.close();
-                                    VmrDebug.printLogI(this.getClass(), "File download complete");
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                    Notification downloadCompleteNotification =
-                                            new Notification.Builder(getActivity())
-                                                    .setContentTitle(fileName)
-                                                    .setContentText("Download complete")
-                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                                    .setAutoCancel(true)
-                                                    .build();
 
-                                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                    nm.cancel(fileName, Integer.valueOf(record.getRecordId()));
-                                    nm.notify(Integer.valueOf(record.getRecordId()), downloadCompleteNotification);
-                                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-                                } else {
-                                    VmrDebug.printLogI(this.getClass(), "File already exist or couldn't be created");
-                                }
+                                FileUtils.copyFile(file, newFile);
+                                VmrDebug.printLogI(FragmentSharedWithMe.this.getClass(), "File saved");
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                Notification downloadCompleteNotification =
+                                    new Notification.Builder(getActivity())
+                                        .setContentTitle(fileName)
+                                        .setContentText("Download complete")
+                                        .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                        .setAutoCancel(true)
+                                        .build();
+
+                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                nm.cancel(fileName, Integer.valueOf(record.getRecordId()));
+                                nm.notify(Integer.valueOf(record.getRecordId()), downloadCompleteNotification);
+                                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                             }
                         } catch (Exception e) {
                             VmrDebug.printLogI(this.getClass(), "File download failed");

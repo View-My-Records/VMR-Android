@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="64dp"
     android:background="?android:attr/selectableItemBackground"
@@ -12,7 +13,7 @@
         android:id="@+id/ivFileIcon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginRight="8dp"
         android:contentDescription="Icon"
         android:src="@drawable/ic_folder" />
 
@@ -62,8 +63,9 @@
         android:layout_toEndOf="@+id/ivFileIcon"
         android:layout_toLeftOf="@+id/ivOverflow"
         android:layout_toRightOf="@+id/ivFileIcon"
-        android:ellipsize="marquee"
-        android:gravity="center_horizontal"
+        android:ellipsize="end"
+        android:gravity="center_horizontal|end"
+        android:maxLines="1"
         android:scrollHorizontally="true"
         android:text="File Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"

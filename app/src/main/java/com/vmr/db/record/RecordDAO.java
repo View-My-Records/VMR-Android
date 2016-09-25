@@ -350,7 +350,8 @@ public class RecordDAO {
             record.setUpdatedDate(date);
             try {
                 if( !(c.getString(c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP)) == null ) )
-                    date = sdf.parse(       c.getString(    c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP))+"");
+                    if( !(c.getString(c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP)).equals("") ) )
+                        date = sdf.parse(       c.getString(    c.getColumnIndex(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP))+"");
                 else
                     date = null;
             } catch (ParseException e) {
