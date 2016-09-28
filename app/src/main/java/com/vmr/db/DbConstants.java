@@ -6,7 +6,7 @@ package com.vmr.db;
 public class DbConstants {
     //DB Constants
     public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 8;
+    public static final int VERSION = 9;
 
     //Table Name
     public static final String TABLE_USER = "USER";
@@ -76,6 +76,7 @@ public class DbConstants {
     public static final String RECORD_UPDATED_BY            = "UPDATED_BY";
     public static final String RECORD_UPDATE_DATE           = "UPDATED_DATE";
     public static final String RECORD_LAST_UPDATE_TIMESTAMP = "LAST_UPDATE_TIMESTAMP";
+    public static final String RECORD_IS_AVAILABLE_OFFLINE = "IS_AVAILABLE_OFFLINE";
 
     //All Columns
     public static final String[] RECORD_COLUMNS
@@ -99,7 +100,8 @@ public class DbConstants {
                 RECORD_CREATION_DATE ,
                 RECORD_UPDATED_BY ,
                 RECORD_UPDATE_DATE,
-            RECORD_LAST_UPDATE_TIMESTAMP
+                RECORD_LAST_UPDATE_TIMESTAMP,
+                RECORD_IS_AVAILABLE_OFFLINE
     };
 
     public static final String SHARED_RECORD_ID          = "RECORD_ID";

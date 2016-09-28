@@ -94,6 +94,14 @@ public class DbManager {
         return this.recordDAO.getRecord(parentNode);
     }
 
+    public boolean isRecordAvailableOffline(String nodeRef) {
+        return this.recordDAO.isRecordAvailableOffline(nodeRef);
+    }
+
+    public boolean setRecordAvailableOffline(String nodeRef) {
+        return this.recordDAO.setRecordAvailableOffline(nodeRef);
+    }
+
     // Retrieve all records for given parent
     public List<Record> getFolders(String parentNode) {
         return this.recordDAO.getFolders(parentNode);

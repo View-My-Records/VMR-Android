@@ -34,6 +34,7 @@ public class Record implements Parcelable {
     private String recordId;
     private String masterRecordOwner;
     private Date lastUpdateTimestamp;
+    private boolean isAvailableOffline;
     // Properties in vmrItem
     private String  recordNodeRef;           //  varchar(60) NOT NULL,
     private String  recordParentNodeRef;   // varchar(60) NOT NULL,
@@ -144,6 +145,14 @@ public class Record implements Parcelable {
 
     public void setRecordParentNodeRef(String recordParentNodeRef) {
         this.recordParentNodeRef = recordParentNodeRef;
+    }
+
+    public boolean isAvailableOffline() {
+        return isAvailableOffline;
+    }
+
+    public void setIsAvailableOffline(boolean availableOffline) {
+        isAvailableOffline = availableOffline;
     }
 
     public String getNodeRef() {

@@ -215,6 +215,7 @@ public class RecordDAO {
         else date = "";
         contentValues.put(DbConstants.RECORD_UPDATE_DATE, date);
         contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, "");
+        contentValues.put(DbConstants.RECORD_IS_AVAILABLE_OFFLINE, 0);
 //        date = sdf.format(record.getLastUpdateTimestamp());
 //        contentValues.put(DbConstants.RECORD_LAST_UPDATE_TIMESTAMP, date);
         if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " added");
@@ -278,6 +279,31 @@ public class RecordDAO {
             return true;
         }
         return false;
+    }
+
+    // Returns record from db
+    public boolean isRecordAvailableOffline(String nodeRef) {
+        Cursor c = db.query(true,
+                DbConstants.TABLE_RECORD,
+                new String[]{DbConstants.RECORD_NODE_REF, DbConstants.RECORD_IS_AVAILABLE_OFFLINE},
+                DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef, "1"},
+                null, null, null, null, null);
+        if(c != null && c.moveToFirst()){
+            c.close();
+            return true;
+        }
+        return false;
+    }
+
+    // Updates record in db
+    public boolean setRecordAvailableOffline(String nodeRef){
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.RECORD_IS_AVAILABLE_OFFLINE, "1");
+        return db.update(
+                DbConstants.TABLE_RECORD,
+                contentValues,
+                DbConstants.RECORD_NODE_REF + "=? AND " + DbConstants.RECORD_IS_AVAILABLE_OFFLINE + "=?",
+                new String[]{nodeRef, "1"}) > 0;
     }
 
     // Delete record
