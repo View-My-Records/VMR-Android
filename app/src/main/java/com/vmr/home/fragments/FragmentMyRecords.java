@@ -4,13 +4,17 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -257,35 +261,28 @@ public class FragmentMyRecords extends Fragment
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
 //            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(File file) {
                         VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
+                        downloadPregoress.dismiss();
                         try {
                             if (file != null) {
-                                final File tempFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), record.getRecordName());
+                                final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
                                 if (tempFile.exists())
                                     tempFile.delete();
                                 FileUtils.copyFile(file, tempFile);
 
-                                addPhotoToGallery(tempFile);
-
-
-//                                MediaScannerConnection.scanFile(getActivity(),
-//                                        new String[] { tempFile.getPath() }, null,
-//                                        new MediaScannerConnection.OnScanCompletedListener() {
-//                                            public void onScanCompleted(String path, Uri uri) {
-                                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-                                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                                Uri fileUri = Uri.fromFile(tempFile);
-                                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                                                try {
-                                                    startActivity(openFileIntent);
-                                                } catch (ActivityNotFoundException e) {
-                                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
-                                                }
-//                                            }
-//                                        });
+                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                Uri fileUri = Uri.fromFile(tempFile);
+                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                                try {
+                                    startActivity(openFileIntent);
+                                } catch (ActivityNotFoundException e) {
+                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
+                                }
                             } else VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "null file");
                         } catch (Exception e) {
                             VmrDebug.printLogI(this.getClass(), "File download failed");
@@ -300,6 +297,9 @@ public class FragmentMyRecords extends Fragment
                 });
                 dlController.downloadFile(record);
                 VmrDebug.printLogI(this.getClass(), "Downloading...");
+                downloadPregoress.setMessage("Receiving file...");
+                downloadPregoress.setCanceledOnTouchOutside(false);
+                downloadPregoress.show();
                 // TODO: 9/24/16 Show progress dialog till file downloads
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
@@ -312,6 +312,28 @@ public class FragmentMyRecords extends Fragment
                         .show();
             }
         }
+    }
+
+    public Uri saveMediaEntry(File file) {
+
+        ContentValues v = new ContentValues();
+
+        v.put(MediaStore.Images.Media.TITLE, file.getName());
+        v.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
+        v.put(MediaStore.Images.Media.DATE_ADDED, new Date().toString());
+        v.put(MediaStore.Images.Media.MIME_TYPE, FileUtils.getMimeType(file.getAbsolutePath()));
+
+        File parent = file.getParentFile();
+        String path = parent.toString().toLowerCase();
+        String name = parent.getName().toLowerCase();
+
+        v.put(MediaStore.Images.ImageColumns.BUCKET_ID, path.hashCode());
+        v.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, name);
+        v.put(MediaStore.Images.Media.SIZE,file.length());
+        v.put("_data",file.getAbsolutePath());
+
+        ContentResolver c = getActivity().getContentResolver();
+        return c.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v);
     }
 
     protected void addPhotoToGallery(File file) {
@@ -685,8 +707,8 @@ public class FragmentMyRecords extends Fragment
                     public void onFileDownloadSuccess(File file) {
                         try {
                             if (file != null) {
-                                String fileName = FileUtils.getNewFileName(record.getRecordName(), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) );
-                                File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
+                                String fileName = FileUtils.getNewFileName(record.getRecordName(), getActivity().getCacheDir() );
+                                File newFile = new File(getActivity().getCacheDir(), fileName);
                                 FileUtils.copyFile(file, newFile);
                                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File saved");
                                 Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();

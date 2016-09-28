@@ -488,14 +488,10 @@ public class HomeController {
     public void uploadFile(UploadPacket uploadPacket)  {
 
         Map<String, String> formData = Vmr.getUserMap();
-//        Map<String, UploadPacket> uploadPacketMap = new HashMap<>();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
-//        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket.getFile());
         formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileName()));
         formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, uploadPacket.getContentType());
         formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
-
-//        uploadPacketMap.put(Constants.Request.FolderNavigation.UploadFile.FILE, uploadPacket);
 
         UploadRequest uploadRequest =
                 new UploadRequest(
@@ -524,13 +520,13 @@ public class HomeController {
             authFailureError.printStackTrace();
         }
         VmrRequestQueue.getInstance()
-                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
+                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.UploadFile.TAG);
     }
 
     public void saveIndex(String filePropertyJsonString,
                           String fileSelectedNodeRef,
                           String fileSelectedName,
-                          boolean fileIndexstatus,
+                          boolean fileIndexStatus,
                           String docCategoryVal,
                           String docType,
                           String programName){
@@ -544,7 +540,7 @@ public class HomeController {
         formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_PROPERTY_JSON_STRING, filePropertyJsonString);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_SELECTED_NODE_REF, fileSelectedNodeRef);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME, fileSelectedName);
-        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_INDEX_STATUS, String.valueOf(fileIndexstatus));
+        formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_INDEX_STATUS, String.valueOf(fileIndexStatus));
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_CATEGORY_VALUE, docCategoryVal);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_TYPE, docType);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);

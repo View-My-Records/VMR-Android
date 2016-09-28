@@ -25,6 +25,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,7 @@ import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
+import com.vmr.settings.SettingsActivity;
 import com.vmr.utils.Constants;
 
 import java.text.DateFormat;
@@ -118,7 +120,7 @@ public class HomeActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         assert drawer != null;
@@ -134,8 +136,18 @@ public class HomeActivity extends AppCompatActivity
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
         TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
-//        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
+        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
 //        ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
+
+        settingButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+                settingsIntent.setAction(Intent.ACTION_VIEW);
+                drawer.closeDrawer(GravityCompat.START);
+                startActivity(settingsIntent);
+            }
+        });
 
         if (Vmr.getLoggedInUserInfo().getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
             accountName.setText(Vmr.getLoggedInUserInfo().getFirstName() + " " + Vmr.getLoggedInUserInfo().getLastName());
@@ -151,8 +163,6 @@ public class HomeActivity extends AppCompatActivity
         if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
             Record newRecord = new Record();
             newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
-//            newRecord.setCreatedDate(new Date());
-//            newRecord.setUpdatedDate(new Date());
             dbManager.addRecord(newRecord);
         }
 

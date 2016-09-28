@@ -18,7 +18,6 @@
     <string name="title_activity_login">Login</string>
 
 
-
     <string name="individual_tab_text">Individual</string>
     <string name="family_tab_text">Family</string>
     <string name="professional_tab_text">Professional</string>
@@ -96,6 +95,20 @@
     <string name="volley_error_something_went_wrong">Something went wrong</string>
     <string name="volley_error_internet_not_available">"Internet not available"</string>
     <string name="toast_internet_unavailable">Internet service is not available</string>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
 
 
 </resources>

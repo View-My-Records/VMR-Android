@@ -7,6 +7,7 @@ import com.vmr.network.PostLoginRequest;
 import com.vmr.utils.VmrURL;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
 
@@ -36,6 +37,9 @@ public class DownloadRequest extends PostLoginRequest<File> {
         File tempFile = null;
         try {
             tempFile = File.createTempFile(String.valueOf(System.currentTimeMillis()), null);
+            FileOutputStream fileOutputStream = new FileOutputStream(tempFile.getAbsolutePath());
+            fileOutputStream.write(response.data);
+            fileOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

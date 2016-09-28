@@ -6,6 +6,13 @@
     android:padding="16dp">
 
     <android.support.v7.widget.SwitchCompat
+        android:id="@+id/swOfflineMode"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Offline"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"/>
+
+    <android.support.v7.widget.SwitchCompat
         android:id="@+id/swCustomUrl"
         android:layout_width="match_parent"
         android:layout_height="56dp"
