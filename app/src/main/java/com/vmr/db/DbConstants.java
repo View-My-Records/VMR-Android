@@ -76,7 +76,7 @@ public class DbConstants {
     public static final String RECORD_UPDATED_BY            = "UPDATED_BY";
     public static final String RECORD_UPDATE_DATE           = "UPDATED_DATE";
     public static final String RECORD_LAST_UPDATE_TIMESTAMP = "LAST_UPDATE_TIMESTAMP";
-    public static final String RECORD_IS_AVAILABLE_OFFLINE = "IS_AVAILABLE_OFFLINE";
+    public static final String RECORD_IS_AVAILABLE_OFFLINE  = "IS_AVAILABLE_OFFLINE";
 
     //All Columns
     public static final String[] RECORD_COLUMNS
