@@ -132,6 +132,7 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onItemClick(SharedRecord record) {
         VmrDebug.printLine(record.getRecordName() + " clicked");
+        dbManager.addNewRecent(record);
     }
 
     @Override
@@ -144,6 +145,7 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onOpenClicked(SharedRecord record) {
         VmrDebug.printLine( record.getRecordName() + " open clicked.");
+        dbManager.addNewRecent(record);
     }
 
     @Override

@@ -114,6 +114,7 @@ public class FragmentTrash extends Fragment
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListTrashBin.TAG);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
+            dbManager.addNewRecent(record);
         }
     }
 

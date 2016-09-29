@@ -6,15 +6,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,7 +42,6 @@ import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
-import com.vmr.home.ViewActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
 import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
@@ -184,7 +180,7 @@ public class FragmentMyRecords extends Fragment
         VmrDebug.printLogI(this.getClass(), "Records retrieved.");
 
         if(vmrFolder.getAll().size()>0)
-        dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
+            dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
 
         if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
@@ -228,6 +224,7 @@ public class FragmentMyRecords extends Fragment
     public void onItemClick(final Record record) {
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
+
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
@@ -259,6 +256,7 @@ public class FragmentMyRecords extends Fragment
             }
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            dbManager.addNewRecent(record);
 //            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
@@ -300,7 +298,6 @@ public class FragmentMyRecords extends Fragment
                 downloadPregoress.setMessage("Receiving file...");
                 downloadPregoress.setCanceledOnTouchOutside(false);
                 downloadPregoress.show();
-                // TODO: 9/24/16 Show progress dialog till file downloads
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {
@@ -312,35 +309,6 @@ public class FragmentMyRecords extends Fragment
                         .show();
             }
         }
-    }
-
-    public Uri saveMediaEntry(File file) {
-
-        ContentValues v = new ContentValues();
-
-        v.put(MediaStore.Images.Media.TITLE, file.getName());
-        v.put(MediaStore.Images.Media.DISPLAY_NAME, file.getName());
-        v.put(MediaStore.Images.Media.DATE_ADDED, new Date().toString());
-        v.put(MediaStore.Images.Media.MIME_TYPE, FileUtils.getMimeType(file.getAbsolutePath()));
-
-        File parent = file.getParentFile();
-        String path = parent.toString().toLowerCase();
-        String name = parent.getName().toLowerCase();
-
-        v.put(MediaStore.Images.ImageColumns.BUCKET_ID, path.hashCode());
-        v.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, name);
-        v.put(MediaStore.Images.Media.SIZE,file.length());
-        v.put("_data",file.getAbsolutePath());
-
-        ContentResolver c = getActivity().getContentResolver();
-        return c.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, v);
-    }
-
-    protected void addPhotoToGallery(File file) {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri contentUri = Uri.fromFile(file);
-        mediaScanIntent.setData(contentUri);
-        this.getActivity().sendBroadcast(mediaScanIntent);
     }
 
     @Override
@@ -535,7 +503,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onOpenClicked(Record record) {
+    public void onOpenClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
 
         if(record.isFolder()){
@@ -570,7 +538,58 @@ public class FragmentMyRecords extends Fragment
             }
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
-            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+            dbManager.addNewRecent(record);
+//            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
+                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                    @Override
+                    public void onFileDownloadSuccess(File file) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
+                        downloadPregoress.dismiss();
+                        try {
+                            if (file != null) {
+                                final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
+                                if (tempFile.exists())
+                                    tempFile.delete();
+                                FileUtils.copyFile(file, tempFile);
+
+                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                Uri fileUri = Uri.fromFile(tempFile);
+                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                                try {
+                                    startActivity(openFileIntent);
+                                } catch (ActivityNotFoundException e) {
+                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
+                                }
+                            } else VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "null file");
+                        } catch (Exception e) {
+                            VmrDebug.printLogI(this.getClass(), "File download failed");
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFileDownloadFailure(VolleyError error) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download failed");
+                    }
+                });
+                dlController.downloadFile(record);
+                VmrDebug.printLogI(this.getClass(), "Downloading...");
+                downloadPregoress.setMessage("Receiving file...");
+                downloadPregoress.setCanceledOnTouchOutside(false);
+                downloadPregoress.show();
+            } else {
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
@@ -952,6 +971,4 @@ public class FragmentMyRecords extends Fragment
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
     }
-
-
 }

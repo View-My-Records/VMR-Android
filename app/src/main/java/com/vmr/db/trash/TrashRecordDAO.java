@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -28,8 +29,8 @@ public class TrashRecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_TRASH, // Table Name
                 DbConstants.TRASH_COLUMNS, // Select columns
-                null, // where
-                null, // conditions
+                DbConstants.TRASH_MASTER_OWNER + "=?", // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.TRASH_NAME + ") ASC ", // order by
@@ -116,13 +117,14 @@ public class TrashRecordDAO {
         TrashRecord record = null;
         if (c != null) {
             record = new TrashRecord();
-            record.setId(            c.getInt(    c.getColumnIndex(DbConstants.TRASH_RECORD_ID)));
-            record.setNodeRef(       c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
-            record.setParentNodeRef( c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
-            record.setIsFolder(      c.getInt(    c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);
-            record.setCreatedBy(     c.getString( c.getColumnIndex(DbConstants.TRASH_CREATED_BY)));
-            record.setName(          c.getString( c.getColumnIndex(DbConstants.TRASH_NAME)));
-            record.setOwner(         c.getString( c.getColumnIndex(DbConstants.TRASH_OWNER)));
+            record.setId(               c.getInt(    c.getColumnIndex(DbConstants.TRASH_RECORD_ID)));
+            record.setMasterRecordOwner(c.getString( c.getColumnIndex(DbConstants.TRASH_MASTER_OWNER)));
+            record.setNodeRef(          c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
+            record.setParentNodeRef(    c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
+            record.setIsFolder(         c.getInt(    c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);
+            record.setCreatedBy(        c.getString( c.getColumnIndex(DbConstants.TRASH_CREATED_BY)));
+            record.setName(             c.getString( c.getColumnIndex(DbConstants.TRASH_NAME)));
+            record.setOwner(            c.getString( c.getColumnIndex(DbConstants.TRASH_OWNER)));
         }
         return record;
     }

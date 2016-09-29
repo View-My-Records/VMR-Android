@@ -2,6 +2,9 @@ package com.vmr.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
+import com.vmr.app.Vmr;
+import com.vmr.db.recently_accessed.Recent;
+import com.vmr.db.recently_accessed.RecentDAO;
 import com.vmr.db.record.Record;
 import com.vmr.db.record.RecordDAO;
 import com.vmr.db.search_suggestion.SearchSuggestion;
@@ -17,6 +20,7 @@ import com.vmr.model.VmrFolder;
 import com.vmr.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /*
@@ -27,6 +31,7 @@ public class DbManager {
 
     private UserDAO userDAO;
     private RecordDAO recordDAO;
+    private RecentDAO recentDAO;
     private TrashRecordDAO trashRecordDAO;
     private SharedRecordDAO sharedRecordDAO;
     private SearchSuggestionDAO searchSuggestionDAO;
@@ -36,6 +41,7 @@ public class DbManager {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         userDAO = new UserDAO(database);
         recordDAO = new RecordDAO(database);
+        recentDAO = new RecentDAO(database);
         trashRecordDAO = new TrashRecordDAO(database);
         sharedRecordDAO = new SharedRecordDAO(database);
         searchSuggestionDAO =  new SearchSuggestionDAO(database);
@@ -161,6 +167,98 @@ public class DbManager {
 
     public void updateAllTrash(List<TrashRecord> trashRecords){
         this.trashRecordDAO.updateAllRecords(trashRecords);
+    }
+
+    public List<Recent> getAllRecentlyAccsseed(){
+        return this.recentDAO.getAllRecents();
+    }
+
+    public void addNewRecent(Record record){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(record.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(record.getRecordName());
+        recent.setLocation(DbConstants.TABLE_RECORD);
+        recent.setLastAccess(new Date());
+
+        if(this.recentDAO.checkRecord(record.getNodeRef())){
+            this.recentDAO.updateRecord(recent);
+        } else {
+            this.recentDAO.addRecent(recent);
+        }
+    }
+
+    public void addNewRecent(SharedRecord record){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(record.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(record.getRecordName());
+        recent.setLocation(DbConstants.TABLE_SHARED);
+        recent.setLastAccess(new Date());
+
+        if(this.recentDAO.checkRecord(record.getNodeRef())){
+            this.recentDAO.updateRecord(recent);
+        } else {
+            this.recentDAO.addRecent(recent);
+        }
+    }
+
+    public void addNewRecent(TrashRecord record){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(record.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(record.getRecordName());
+        recent.setLocation(DbConstants.TABLE_TRASH);
+        recent.setLastAccess(new Date());
+
+        if(this.recentDAO.checkRecord(record.getNodeRef())) {
+            this.recentDAO.updateRecord(recent);
+        } else {
+            this.recentDAO.addRecent(recent);
+        }
+    }
+
+    public void deleteRecent(Recent recent){
+        this.recentDAO.deleteRecord(recent);
+    }
+
+    public void deleteRecent(Record record){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(record.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(record.getRecordName());
+        recent.setLocation(DbConstants.TABLE_RECORD);
+        recent.setLastAccess(new Date());
+
+        this.recentDAO.deleteRecord(recent);
+    }
+
+    public void deleteRecent(SharedRecord sharedRecord){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(sharedRecord.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(sharedRecord.getRecordName());
+        recent.setLocation(DbConstants.TABLE_SHARED);
+        recent.setLastAccess(new Date());
+
+        this.recentDAO.deleteRecord(recent);
+    }
+
+    public void deleteRecent(TrashRecord trashRecord){
+
+        Recent recent = new Recent();
+        recent.setNodeRef(trashRecord.getNodeRef());
+        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setName(trashRecord.getRecordName());
+        recent.setLocation(DbConstants.TABLE_TRASH);
+        recent.setLastAccess(new Date());
+
+        this.recentDAO.deleteRecord(recent);
     }
 
     public List<SearchSuggestion> getSuggestions(String searchTerm){

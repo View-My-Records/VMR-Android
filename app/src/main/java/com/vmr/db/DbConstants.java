@@ -4,17 +4,12 @@ package com.vmr.db;
  * Created by abhijit on 9/6/16.
  */
 public class DbConstants {
-    //DB Constants
-    public static final String DATABASE_NAME = "vmr.db";
-    public static final int VERSION = 9;
-
     //Table Name
     public static final String TABLE_USER = "USER";
     public static final String TABLE_RECORD = "RECORD";
     public static final String TABLE_TRASH = "TRASH";
     public static final String TABLE_SHARED = "SHARED";
-
-
+    public static final String TABLE_RECENT = "RECENT";
     //Column Names
     public static final String USER_SERIAL_NO         = "SERIAL_NO";
     public static final String USER_RESULT            = "RESULT";
@@ -33,7 +28,6 @@ public class DbConstants {
     public static final String USER_LAST_LOGIN        = "LAST_LOGIN_TIME";
     public static final String USER_FIRST_NAME        = "FIRST_NAME";
     public static final String USER_LAST_NAME         = "LAST_NAME";
-
     //All Columns
     public static final String[] USER_COLUMNS
             = {
@@ -54,7 +48,6 @@ public class DbConstants {
                 USER_LAST_NAME,
                 USER_FIRST_NAME,
                 USER_LAST_LOGIN };
-
     //Column Names
     public static final String RECORD_ID                    = "RECORD_ID";
     public static final String RECORD_MASTER_OWNER          = "MASTER_OWNER";
@@ -77,7 +70,6 @@ public class DbConstants {
     public static final String RECORD_UPDATE_DATE           = "UPDATED_DATE";
     public static final String RECORD_LAST_UPDATE_TIMESTAMP = "LAST_UPDATE_TIMESTAMP";
     public static final String RECORD_IS_AVAILABLE_OFFLINE  = "IS_AVAILABLE_OFFLINE";
-
     //All Columns
     public static final String[] RECORD_COLUMNS
             = {
@@ -103,8 +95,8 @@ public class DbConstants {
                 RECORD_LAST_UPDATE_TIMESTAMP,
                 RECORD_IS_AVAILABLE_OFFLINE
     };
-
     public static final String SHARED_RECORD_ID          = "RECORD_ID";
+    public static final String SHARED_MASTER_OWNER       = "MASTER_OWNER";
     public static final String SHARED_NODE_REF           = "NODE_REF";
     public static final String SHARED_PARENT_NODE_REF    = "PARENT_NODE_REF";
     public static final String SHARED_OWNER_NAME         = "OWNER_NAME";
@@ -114,11 +106,11 @@ public class DbConstants {
     public static final String SHARED_USER_ID            = "USER_ID";
     public static final String SHARED_FILE_NAME          = "FILE_NAME";
     public static final String SHARED_PERMISSIONS        = "PERMISSIONS";
-
     //All Columns
     public static final String[] SHARED_COLUMNS
             = {
             SHARED_RECORD_ID,
+            SHARED_MASTER_OWNER,
             SHARED_NODE_REF,
             SHARED_PARENT_NODE_REF,
             SHARED_OWNER_NAME,
@@ -129,19 +121,19 @@ public class DbConstants {
             SHARED_FILE_NAME,
             SHARED_PERMISSIONS
     };
-
     public static final String TRASH_RECORD_ID       = "RECORD_ID";
+    public static final String TRASH_MASTER_OWNER    = "MASTER_OWNER";
     public static final String TRASH_IS_FOLDER       = "IS_FOLDER";
     public static final String TRASH_CREATED_BY      = "CREATED_BY";
     public static final String TRASH_NAME            = "NAME";
     public static final String TRASH_OWNER           = "OWNER";
     public static final String TRASH_NODE_REF        = "NODE_REF";
     public static final String TRASH_PARENT_NODE_REF = "PARENT_NODE_REF";
-
     //All Columns
     public static final String[] TRASH_COLUMNS
             = {
             TRASH_RECORD_ID,
+            TRASH_MASTER_OWNER,
             TRASH_IS_FOLDER,
             TRASH_CREATED_BY,
             TRASH_NAME,
@@ -149,5 +141,24 @@ public class DbConstants {
             TRASH_NODE_REF,
             TRASH_PARENT_NODE_REF
     };
+    public static final String RECENT_RECORD_ID       = "RECORD_ID";
+    public static final String RECENT_MASTER_OWNER    = "MASTER_OWNER";
+    public static final String RECENT_NODE_REF        = "NODE_REF";
+    public static final String RECENT_NAME            = "NAME";
+    public static final String RECENT_LOCATION        = "LOCATION";
+    public static final String RECENT_LAST_ACCESSED   = "LAST_ACCESSED";
+    //All Columns
+    public static final String[] RECENT_COLUMNS
+            = {
+            RECENT_RECORD_ID,
+            RECENT_MASTER_OWNER,
+            RECENT_NODE_REF,
+            RECENT_NAME,
+            RECENT_LOCATION,
+            RECENT_LAST_ACCESSED
+    };
+    //DB Constants
+    static final String DATABASE_NAME = "vmr.db";
+    static final int VERSION = 10;
 
 }

@@ -58,6 +58,7 @@ class DbHelper extends SQLiteOpenHelper {
     private static final String createSharedTable
             = ("CREATE TABLE " + DbConstants.TABLE_SHARED + " (") +
             DbConstants.SHARED_RECORD_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.SHARED_MASTER_OWNER    + " TEXT, " +
             DbConstants.SHARED_NODE_REF        + " TEXT, " +
             DbConstants.SHARED_PARENT_NODE_REF + " TEXT, " +
             DbConstants.SHARED_IS_FOLDER       + " NUMERIC, " +
@@ -70,13 +71,23 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String createTrashTable
             = "CREATE TABLE "        + DbConstants.TABLE_TRASH + " (" +
-            DbConstants.SHARED_RECORD_ID      + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.TRASH_RECORD_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.TRASH_MASTER_OWNER    + " TEXT, " +
             DbConstants.TRASH_NODE_REF        + " TEXT, " +
             DbConstants.TRASH_PARENT_NODE_REF + " TEXT, " +
             DbConstants.TRASH_IS_FOLDER       + " NUMERIC, " +
             DbConstants.TRASH_CREATED_BY      + " TEXT, " +
             DbConstants.TRASH_NAME            + " TEXT, " +
             DbConstants.TRASH_OWNER           + " TEXT );" ;
+
+    private static final String createRecentTable
+            = "CREATE TABLE "        + DbConstants.TABLE_RECENT + " (" +
+            DbConstants.RECENT_RECORD_ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.RECENT_MASTER_OWNER     + " TEXT, " +
+            DbConstants.RECENT_NODE_REF         + " TEXT, " +
+            DbConstants.RECENT_NAME             + " TEXT, " +
+            DbConstants.RECENT_LOCATION         + " TEXT, " +
+            DbConstants.RECENT_LAST_ACCESSED    + " DATETIME );" ;
 
     DbHelper() {
         super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
@@ -88,6 +99,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(createRecordTable);
         db.execSQL(createSharedTable);
         db.execSQL(createTrashTable);
+        db.execSQL(createRecentTable);
     }
 
     @Override
@@ -96,6 +108,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_RECORD);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_SHARED);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_TRASH);
+        db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_RECENT);
         this.onCreate(db);
     }
 }

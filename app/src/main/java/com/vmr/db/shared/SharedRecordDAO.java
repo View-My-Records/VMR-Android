@@ -8,6 +8,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 
@@ -32,8 +33,8 @@ public class SharedRecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_SHARED, // Table Name
                 DbConstants.SHARED_COLUMNS, // Select columns
-                null,
-                null,
+                DbConstants.TRASH_MASTER_OWNER + "=?", // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // conditions
                 null, // group by
                 null, // having
                 null, // order by
@@ -86,6 +87,7 @@ public class SharedRecordDAO {
         } else {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DbConstants.SHARED_NODE_REF, record.getNodeRef());
+            contentValues.put(DbConstants.SHARED_MASTER_OWNER, record.getMasterRecordOwner());
             contentValues.put(DbConstants.SHARED_OWNER_NAME, record.getOwnerName());
             contentValues.put(DbConstants.SHARED_IS_FOLDER, record.isFolder());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -108,7 +110,8 @@ public class SharedRecordDAO {
     private Long addRecord(SharedRecord record){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.SHARED_NODE_REF  , record.getNodeRef());
-        contentValues.put(DbConstants.SHARED_OWNER_NAME      , record.getOwnerName());
+        contentValues.put(DbConstants.SHARED_OWNER_NAME, record.getOwnerName());
+        contentValues.put(DbConstants.SHARED_MASTER_OWNER, record.getMasterRecordOwner());
         contentValues.put(DbConstants.SHARED_IS_FOLDER, record.isFolder());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         String date = sdf.format(record.getRecordLife());
@@ -136,6 +139,7 @@ public class SharedRecordDAO {
         if (c != null) {
             record = new SharedRecord();
             record.setId(               c.getInt(       c.getColumnIndex(DbConstants.SHARED_RECORD_ID)));
+            record.setMasterRecordOwner(c.getString(    c.getColumnIndex(DbConstants.SHARED_MASTER_OWNER)));
             record.setOwnerName(        c.getString(    c.getColumnIndex(DbConstants.SHARED_OWNER_NAME)));
             record.setIsFolder(         c.getInt(       c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);
             record.setSharedToEmailId(  c.getString(    c.getColumnIndex(DbConstants.SHARED_TO_EMAIL_ID)));

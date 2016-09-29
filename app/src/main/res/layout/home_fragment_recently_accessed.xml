@@ -4,12 +4,27 @@
     android:layout_height="match_parent"
     tools:context="com.vmr.home.fragments.FragmentRecentlyAccessed">
 
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvRecent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
     <TextView
-        android:id="@+id/tvMyRecords"
+        android:id="@+id/tvEmptyFolder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Recently Accessed"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:text="Folder is empty"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
 
 </FrameLayout>

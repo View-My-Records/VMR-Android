@@ -12,6 +12,7 @@ import java.util.List;
 public class SharedRecord {
 
     private int id;
+    private String masterRecordOwner;
     private String nodeRef;
     private String ownerName;
     private boolean isFolder;
@@ -49,6 +50,14 @@ public class SharedRecord {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getMasterRecordOwner() {
+        return masterRecordOwner;
+    }
+
+    public void setMasterRecordOwner(String masterRecordOwner) {
+        this.masterRecordOwner = masterRecordOwner;
     }
 
     public String getOwnerName() {

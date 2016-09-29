@@ -4,6 +4,8 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -36,7 +38,6 @@ import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.home.HomeController;
-import com.vmr.home.ViewActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
 import com.vmr.home.fragments.dialog.FolderPicker;
@@ -55,7 +56,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -96,10 +99,10 @@ public class FragmentToBeIndexed extends Fragment
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
 
+        dbManager = ((HomeActivity) getActivity()).getDbManager();
+
         recordOptionsMenuSheet = new RecordOptionsMenuSheet();
         recordOptionsMenuSheet.setOptionClickListener(this);
-
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
 
         recordStack = new Stack<>();
         recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
@@ -126,6 +129,15 @@ public class FragmentToBeIndexed extends Fragment
         super.onStart();
         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
+//        refreshFolder();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        records = dbManager.getAllUnIndexedRecords(recordStack.peek());
+        recordsAdapter.updateDataset(records);
+//        refreshFolder();
     }
 
     @Override
@@ -138,7 +150,16 @@ public class FragmentToBeIndexed extends Fragment
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         VmrDebug.printLine("Un-indexed files retrieved.");
 
+        if(vmrFolder.getAll().size()>0)
+            dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
+
+        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+            VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
+        dbManager.updateTimestamp(recordStack.peek());
+        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+            VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString()+"");
+
         records = dbManager.getAllUnIndexedRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
 
@@ -160,16 +181,93 @@ public class FragmentToBeIndexed extends Fragment
     }
 
     @Override
-    public void onItemClick(Record record) {
+    public void onItemClick(final Record record) {
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
+
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+
+            fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
+
             recordStack.push(record.getNodeRef());
-            refreshFolder();
-            mSwipeRefreshLayout.setRefreshing(true);
+
+            VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+            if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 5* 60 * 1000))) {
+                    refreshFolder();
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "Folder refreshed.");
+                } else {
+                    records = dbManager.getAllUnIndexedRecords(recordStack.peek());
+                    recordsAdapter.updateDataset(records);
+                    if(records.isEmpty()){
+                        mRecyclerView.setVisibility(View.GONE);
+                        mTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mTextView.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(true);
+                VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "Folder refreshed.");
+            }
         } else {
-            startActivity(ViewActivity.getLauncherIntent(((HomeActivity)getActivity()), record));
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            dbManager.addNewRecent(record);
+//            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
+                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                    @Override
+                    public void onFileDownloadSuccess(File file) {
+                        VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "File download complete");
+                        downloadPregoress.dismiss();
+                        try {
+                            if (file != null) {
+                                final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
+                                if (tempFile.exists())
+                                    tempFile.delete();
+                                FileUtils.copyFile(file, tempFile);
+
+                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                Uri fileUri = Uri.fromFile(tempFile);
+                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                                try {
+                                    startActivity(openFileIntent);
+                                } catch (ActivityNotFoundException e) {
+                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
+                                }
+                            } else VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "null file");
+                        } catch (Exception e) {
+                            VmrDebug.printLogI(this.getClass(), "File download failed");
+                            e.printStackTrace();
+                        }
+                    }
+
+                    @Override
+                    public void onFileDownloadFailure(VolleyError error) {
+                        VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "File download failed");
+                    }
+                });
+                dlController.downloadFile(record);
+                VmrDebug.printLogI(this.getClass(), "Downloading...");
+                downloadPregoress.setMessage("Receiving file...");
+                downloadPregoress.setCanceledOnTouchOutside(false);
+                downloadPregoress.show();
+            } else {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                        .setAction("OK", new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                            }
+                        })
+                        .show();
+            }
         }
     }
 
@@ -190,7 +288,8 @@ public class FragmentToBeIndexed extends Fragment
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
         } else {
-            Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+            VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            dbManager.addNewRecent(record);
         }
     }
 
@@ -321,29 +420,31 @@ public class FragmentToBeIndexed extends Fragment
 
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
+
+                final int notificationId = new Random().nextInt();
+
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(File file) {
                         try {
                             if (file != null) {
-                                String fileName = FileUtils.getNewFileName(record.getRecordName(), Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) );
-                                File newFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), fileName);
-
+                                String fileName = FileUtils.getNewFileName(record.getRecordName(), getActivity().getCacheDir() );
+                                File newFile = new File(getActivity().getCacheDir(), fileName);
                                 FileUtils.copyFile(file, newFile);
                                 VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "File saved");
-                                    Snackbar.make(getActivity().findViewById(android.R.id.content), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                    Notification downloadCompleteNotification =
-                                            new Notification.Builder(getActivity())
-                                                    .setContentTitle(fileName)
-                                                    .setContentText("Download complete")
-                                                    .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                                    .setAutoCancel(true)
-                                                    .build();
+                                Snackbar.make(getActivity().findViewById(android.R.id.content), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                Notification downloadCompleteNotification =
+                                    new Notification.Builder(getActivity())
+                                            .setContentTitle(fileName)
+                                            .setContentText("Download complete")
+                                            .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                            .setAutoCancel(true)
+                                            .build();
 
-                                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                    nm.cancel(fileName, Integer.valueOf(record.getRecordId()));
-                                    nm.notify(Integer.valueOf(record.getRecordId()), downloadCompleteNotification);
-                                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_MOUNTED, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                nm.cancel(record.getRecordId(), notificationId);
+                                nm.notify(notificationId, downloadCompleteNotification);
+                                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                             }
                         } catch (Exception e) {
                             VmrDebug.printLogI(this.getClass(), "File download failed");
@@ -366,7 +467,7 @@ public class FragmentToBeIndexed extends Fragment
                         .setOngoing(true)
                         .build();
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                nm.notify(record.getRecordName(), Integer.valueOf(record.getRecordId()) ,downloadingNotification);
+                nm.notify(record.getRecordId(), notificationId ,downloadingNotification);
 
             } else {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
@@ -405,7 +506,8 @@ public class FragmentToBeIndexed extends Fragment
 
     @Override
     public void onPasteClicked(Record record) {
-
+        VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -426,12 +528,12 @@ public class FragmentToBeIndexed extends Fragment
         final HomeController trashController = new HomeController(new VmrResponseListener.OnMoveToTrashListener() {
             @Override
             public void onMoveToTrashSuccess(List<DeleteMessage> deleteMessages) {
-                VmrDebug.printLogI(this.getClass(), deleteMessages.toString() );
+                VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), deleteMessages.toString() );
                 refreshFolder();
 
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
-                    Toast.makeText(getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
                     dbManager.moveRecordToTrash(record);
                 }
             }
@@ -480,10 +582,35 @@ public class FragmentToBeIndexed extends Fragment
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                     if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
                         recordStack.pop();
-                        records = dbManager.getAllUnIndexedRecords(recordStack.peek());
-                        recordsAdapter.updateDataset(records);
-                        refreshFolder();
-                        mSwipeRefreshLayout.setRefreshing(true);
+                        if (recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+                            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
+                        } else {
+                            fragmentInteractionListener.onFragmentInteraction(dbManager.getRecord(recordStack.peek()).getRecordName());
+                        }
+
+                        VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+                        if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                            if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 60 * 1000))) {
+                                refreshFolder();
+                                mSwipeRefreshLayout.setRefreshing(true);
+                                VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "Folder refreshed.");
+                            } else {
+                                records = dbManager.getAllUnIndexedRecords(recordStack.peek());
+                                recordsAdapter.updateDataset(records);
+                                if(records.isEmpty()){
+                                    mRecyclerView.setVisibility(View.GONE);
+                                    mTextView.setVisibility(View.VISIBLE);
+                                } else {
+                                    mRecyclerView.setVisibility(View.VISIBLE);
+                                    mTextView.setVisibility(View.GONE);
+                                }
+                            }
+                        } else {
+                            refreshFolder();
+                            mSwipeRefreshLayout.setRefreshing(true);
+                            VmrDebug.printLogI(FragmentToBeIndexed.this.getClass(), "Folder refreshed.");
+                        }
                         return true;
                     } else {
                         return false;

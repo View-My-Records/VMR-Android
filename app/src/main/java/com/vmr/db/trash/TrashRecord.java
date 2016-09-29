@@ -1,5 +1,6 @@
 package com.vmr.db.trash;
 
+import com.vmr.app.Vmr;
 import com.vmr.model.VmrTrashItem;
 
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.List;
 public class TrashRecord {
 
     private int id;
+    private String masterRecordOwner;
     private String nodeRef;
     private String parentNodeRef;
     private boolean isFolder;
@@ -27,6 +29,7 @@ public class TrashRecord {
         TrashRecord trashRecord;
         for (VmrTrashItem trashItem : trashItems) {
             trashRecord =  new TrashRecord();
+            trashRecord.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
             trashRecord.setNodeRef(trashItem.getNodeRef());
             trashRecord.setParentNodeRef(parentNodeRef);
             trashRecord.setIsFolder(trashItem.isFolder());
@@ -44,6 +47,14 @@ public class TrashRecord {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getMasterRecordOwner() {
+        return masterRecordOwner;
+    }
+
+    public void setMasterRecordOwner(String masterRecordOwner) {
+        this.masterRecordOwner = masterRecordOwner;
     }
 
     public boolean isFolder() {
