@@ -1,6 +1,7 @@
 package com.vmr.home.adapters;
 
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,10 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
 
     @Override
     public void onBindViewHolder(RecentViewHolder holder, int position) {
-        Recent item = this.itemsList.get(position);
-        holder.setItemName(item.getName().replaceAll("[^A-Za-z0-9( _.)\\[\\]]", ""));
+        Recent recent = this.itemsList.get(position);
+        holder.setItemName(recent.getName().replaceAll("[^A-Za-z0-9( _.)\\[\\]]", ""));
+
+        holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(recent.getLastAccess().getTime()).toString());
 
         holder.setItemImage(R.drawable.ic_file);
         holder.bind(itemsList.get(position), itemClickListener);
@@ -75,12 +78,14 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
     public class RecentViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemImage ;
         private TextView itemName ;
+        private TextView itemTimeStamp ;
         private ImageView itemOptions;
 
         public RecentViewHolder(View itemView) {
             super(itemView);
             this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
+            this.itemName = (TextView) itemView.findViewById(R.id.tvTimeStamp);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
@@ -90,6 +95,10 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
 
         public void setItemName(String itemName) {
             this.itemName.setText(itemName);
+        }
+
+        public void setItemTimeStamp(String itemTimeStamp) {
+            this.itemTimeStamp.setText(itemTimeStamp);
         }
 
         public void setItemOptions(ImageView itemOptions) {

@@ -4,6 +4,7 @@ package com.vmr.db;
  * Created by abhijit on 9/6/16.
  */
 public class DbConstants {
+
     //Table Name
     public static final String TABLE_USER = "USER";
     public static final String TABLE_RECORD = "RECORD";
@@ -159,6 +160,5 @@ public class DbConstants {
     };
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 10;
-
+    static final int VERSION = 11;
 }

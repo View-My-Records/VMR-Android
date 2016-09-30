@@ -13,6 +13,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.request.ClassificationRequest;
 import com.vmr.home.request.CreateFolderRequest;
 import com.vmr.home.request.DownloadRequest;
+import com.vmr.home.request.MoveCopyLinkRequest;
 import com.vmr.home.request.MoveToTrashRequest;
 import com.vmr.home.request.PropertiesRequest;
 import com.vmr.home.request.RecordsRequest;
@@ -51,6 +52,9 @@ public class HomeController {
     private VmrResponseListener.OnFetchSharedByMeListener onFetchSharedByMe;
     private VmrResponseListener.OnCreateFolderListener onCreateFolderListener;
     private VmrResponseListener.OnRenameItemListener onRenameItemListener;
+    private VmrResponseListener.OnMoveItemListener onMoveItemListener;
+    private VmrResponseListener.OnLinkItemListener onLinkItemListener;
+    private VmrResponseListener.OnCopyItemListener onCopyItemListener;
     private VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener;
     private VmrResponseListener.OnDeleteFromTrashListener onDeleteFromTrashListener;
     private VmrResponseListener.OnFetchClassifications onFetchClassifications;
@@ -79,6 +83,18 @@ public class HomeController {
 
     public HomeController(VmrResponseListener.OnRenameItemListener onRenameItemListener) {
         this.onRenameItemListener = onRenameItemListener;
+    }
+
+    public HomeController(VmrResponseListener.OnMoveItemListener onMoveItemListener) {
+        this.onMoveItemListener = onMoveItemListener;
+    }
+
+    public HomeController(VmrResponseListener.OnLinkItemListener onLinkItemListener) {
+        this.onLinkItemListener = onLinkItemListener;
+    }
+
+    public HomeController(VmrResponseListener.OnCopyItemListener onCopyItemListener) {
+        this.onCopyItemListener = onCopyItemListener;
     }
 
     public HomeController(VmrResponseListener.OnMoveToTrashListener onMoveToTrashListener) {
@@ -256,6 +272,123 @@ public class HomeController {
         }
 
         VmrRequestQueue.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
+    }
+
+    public void moveItem(Record srcRecord, Record dstRecord){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.MOVE_COPY_LINK_FILE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.NODE_REF, srcRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NODE_REF, dstRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NAME, Uri.encode(dstRecord.getRecordName(), "UTF-8"));
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.OPERATION, "2"); // for move
+
+        MoveCopyLinkRequest moveRequest =
+                new MoveCopyLinkRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onMoveItemListener.onMoveItemSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onMoveItemListener.onMoveItemFailure(error);
+                            }
+                        }
+                );
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                VmrDebug.printLogI(this.getClass(), moveRequest.getHeaders().toString());
+//                VmrDebug.printLogI(this.getClass(), new String(renameItemRequest.getBody(), StandardCharsets.UTF_8));
+            }
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
+
+        VmrRequestQueue.getInstance().addToRequestQueue(moveRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
+    }
+
+    public void linkItem(Record srcRecord, Record dstRecord){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.MOVE_COPY_LINK_FILE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.NODE_REF, srcRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NODE_REF, dstRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NAME, Uri.encode(dstRecord.getRecordName(), "UTF-8"));
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.OPERATION, "1"); // for link
+
+        MoveCopyLinkRequest linkRequest =
+                new MoveCopyLinkRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onMoveItemListener.onMoveItemSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onMoveItemListener.onMoveItemFailure(error);
+                            }
+                        }
+                );
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                VmrDebug.printLogI(this.getClass(), linkRequest.getHeaders().toString());
+//                VmrDebug.printLogI(this.getClass(), new String(renameItemRequest.getBody(), StandardCharsets.UTF_8));
+            }
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
+
+        VmrRequestQueue.getInstance().addToRequestQueue(linkRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
+    }
+
+    public void copyItem(Record srcRecord, Record dstRecord){
+
+        Map<String, String> formData = Vmr.getUserMap();
+        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.MOVE_COPY_LINK_FILE);
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.NODE_REF, srcRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NODE_REF, dstRecord.getNodeRef());
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.DEST_FOLDER_NAME, Uri.encode(dstRecord.getRecordName(), "UTF-8"));
+        formData.put(Constants.Request.FolderNavigation.MoveCopyLink.OPERATION, "3"); // for copy
+
+        MoveCopyLinkRequest copyRequest =
+                new MoveCopyLinkRequest(
+                        formData,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                onMoveItemListener.onMoveItemSuccess(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                onMoveItemListener.onMoveItemFailure(error);
+                            }
+                        }
+                );
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                VmrDebug.printLogI(this.getClass(), copyRequest.getHeaders().toString());
+//                VmrDebug.printLogI(this.getClass(), new String(renameItemRequest.getBody(), StandardCharsets.UTF_8));
+            }
+        } catch (AuthFailureError authFailureError) {
+            authFailureError.printStackTrace();
+        }
+
+        VmrRequestQueue.getInstance().addToRequestQueue(copyRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
     }
 
     public void moveToTrash(Record record){

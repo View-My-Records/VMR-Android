@@ -33,7 +33,7 @@ public class SharedRecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_SHARED, // Table Name
                 DbConstants.SHARED_COLUMNS, // Select columns
-                DbConstants.TRASH_MASTER_OWNER + "=?", // where
+                DbConstants.SHARED_MASTER_OWNER + "=?", // where
                 new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // conditions
                 null, // group by
                 null, // having
@@ -58,7 +58,7 @@ public class SharedRecordDAO {
     // update all records in db for current user
     public void updateAllRecords(List<SharedRecord> records){
         for (SharedRecord record : records) {
-            if(!checkRecord(record.getNodeRef(), record.getOwnerName())){
+            if(!checkRecord(record.getNodeRef())){
                 addRecord(record);
             } else {
                 updateRecord(record);
@@ -68,12 +68,12 @@ public class SharedRecordDAO {
 
 
     // Returns record from db
-    private boolean checkRecord(String nodeRef, String owner) {
+    private boolean checkRecord(String nodeRef) {
         Cursor c = db.query(true,
                 DbConstants.TABLE_SHARED,
                 new String[]{DbConstants.SHARED_RECORD_ID},
-                DbConstants.SHARED_NODE_REF + "=? AND " +DbConstants.SHARED_OWNER_NAME + "=?",
-                new String[]{ nodeRef , owner },
+                DbConstants.SHARED_NODE_REF + "=? ",
+                new String[]{ nodeRef },
                 null, null, null, null, null);
         boolean ret = c.moveToFirst();
         c.close();
@@ -86,8 +86,8 @@ public class SharedRecordDAO {
             return false;
         } else {
             ContentValues contentValues = new ContentValues();
-            contentValues.put(DbConstants.SHARED_NODE_REF, record.getNodeRef());
             contentValues.put(DbConstants.SHARED_MASTER_OWNER, record.getMasterRecordOwner());
+            contentValues.put(DbConstants.SHARED_NODE_REF, record.getNodeRef());
             contentValues.put(DbConstants.SHARED_OWNER_NAME, record.getOwnerName());
             contentValues.put(DbConstants.SHARED_IS_FOLDER, record.isFolder());
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -109,9 +109,9 @@ public class SharedRecordDAO {
 
     private Long addRecord(SharedRecord record){
         ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.SHARED_MASTER_OWNER, record.getMasterRecordOwner());
         contentValues.put(DbConstants.SHARED_NODE_REF  , record.getNodeRef());
         contentValues.put(DbConstants.SHARED_OWNER_NAME, record.getOwnerName());
-        contentValues.put(DbConstants.SHARED_MASTER_OWNER, record.getMasterRecordOwner());
         contentValues.put(DbConstants.SHARED_IS_FOLDER, record.isFolder());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         String date = sdf.format(record.getRecordLife());

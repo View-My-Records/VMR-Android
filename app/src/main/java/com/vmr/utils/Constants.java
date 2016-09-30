@@ -108,7 +108,7 @@ public abstract class Constants {
                 public final static String DOWNLOAD_ACTIVITY         = "DOWNLOAD_ACTIVITY";
                 public final static String DOWNLOAD_FILE_STREAM      = "DOWNLOAD_FILE_STREAM";
                 public final static String LIST_UN_INDEXED_FILE      = "LIST_UN_INDEXED_FILE";
-                public final static String MOVE_OR_LINK_FILE         = "MOVE_OR_LINK_FILE";
+                public final static String MOVE_COPY_LINK_FILE = "MOVE_COPY_LINK_FILE";
                 public final static String LIST_SHARED_WITH_ME       = "LIST_ALL_FILE_FOLDER_FOR_SHARED_WITH_ME";
                 public final static String LIST_SHARED_BY_ME         = "GET_RECORDS_SHARED_BY_OWNER";
                 public final static String CREATE_FOLDER             = "FOLDER_ADD";
@@ -212,6 +212,15 @@ public abstract class Constants {
                 public static final String NEW_NAME = "newName";
                 public static final String OLD_NAME = "renameOldname";
                 public static final String TAG = "VMR_RENAME_FILE_OR_FOLDER";
+            }
+
+            public final static class MoveCopyLink {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String NODE_REF = "fileNodeRef";
+                public static final String DEST_FOLDER_NODE_REF = "folderNodeRef";
+                public static final String DEST_FOLDER_NAME = "folderName";
+                public static final String OPERATION = "fileLinkMoveCopyOperation";
+                public static final String TAG = "VMR_MOVE_OR_LINK_FILE";
             }
 
             public final static class DeleteFileFolder {

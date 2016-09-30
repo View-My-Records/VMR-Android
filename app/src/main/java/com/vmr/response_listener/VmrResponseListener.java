@@ -43,6 +43,21 @@ public abstract class VmrResponseListener {
         void onRenameItemFailure(VolleyError error);
     }
 
+    public interface OnMoveItemListener {
+        void onMoveItemSuccess(JSONObject jsonObject);
+        void onMoveItemFailure(VolleyError error);
+    }
+
+    public interface OnLinkItemListener {
+        void onLinkItemSuccess(JSONObject jsonObject);
+        void onLinkItemFailure(VolleyError error);
+    }
+
+    public interface OnCopyItemListener {
+        void onCopyItemSuccess(JSONObject jsonObject);
+        void onCopyItemFailure(VolleyError error);
+    }
+
     public interface OnMoveToTrashListener {
         void onMoveToTrashSuccess(List<DeleteMessage> jsonObject);
         void onMoveToTrashFailure(VolleyError error);

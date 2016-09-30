@@ -32,6 +32,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
+import com.vmr.data_provider.SearchHistoryProvider;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.vmr.R;
+import com.vmr.data_provider.SearchHistoryProvider;
 
 public class SearchResultActivity extends AppCompatActivity {
 

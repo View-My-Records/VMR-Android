@@ -12,9 +12,7 @@ import com.vmr.R;
 import com.vmr.db.record.Record;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 /*
  * Created by abhijit on 8/25/16.
@@ -66,7 +64,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             holder.setItemSize(value);
         }
         holder.setItemName(record.getRecordName());
-        SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
+//        SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
 //        holder.setItemTimeStamp(ft.format(record.getCreatedDate()));
         holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(record.getCreatedDate().getTime()).toString());
         holder.bind(records.get(position), itemClickListener);

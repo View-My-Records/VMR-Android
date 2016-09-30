@@ -47,4 +47,16 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textStyle="bold" />
 
+    <TextView
+        android:id="@+id/tvTimeStamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/ivOverflow"
+        android:gravity="center_horizontal|end"
+        android:text="Timestamp"
+        android:textAppearance="@android:style/TextAppearance.Small" />
+
 </RelativeLayout>

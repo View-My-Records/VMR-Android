@@ -64,13 +64,13 @@
         </activity>
 
         <provider
-            android:name=".home.SearchSuggestionProvider"
-            android:authorities="com.vmr.home.SearchSuggestionProvider"
+            android:name=".data_provider.SearchSuggestionProvider"
+            android:authorities="com.vmr.data_provider.SearchSuggestionProvider"
             android:enabled="true"
             android:exported="false" />
         <provider
-            android:name=".home.SearchHistoryProvider"
-            android:authorities="com.vmr.home.SearchHistoryProvider"
+            android:name=".data_provider.SearchHistoryProvider"
+            android:authorities="com.vmr.data_provider.SearchHistoryProvider"
             android:enabled="true"
             android:exported="false" />
 

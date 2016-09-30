@@ -1,4 +1,4 @@
-package com.vmr.home;
+package com.vmr.data_provider;
 
 import android.app.SearchManager;
 import android.content.ContentProvider;
@@ -10,7 +10,6 @@ import android.provider.BaseColumns;
 import android.support.annotation.Nullable;
 
 import com.vmr.app.Vmr;
-import com.vmr.db.DbConstants;
 import com.vmr.db.search_suggestion.SearchSuggestion;
 
 import java.util.List;

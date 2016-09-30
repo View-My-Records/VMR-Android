@@ -1,5 +1,6 @@
 package com.vmr.db.shared;
 
+import com.vmr.app.Vmr;
 import com.vmr.model.VmrSharedItem;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ public class SharedRecord {
         SharedRecord sharedRecord;
         for (VmrSharedItem sharedItem : vmrSharedItems) {
             sharedRecord = new SharedRecord();
+            sharedRecord.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
             sharedRecord.setOwnerName(sharedItem.getOwnerName());
             sharedRecord.setIsFolder(sharedItem.isFolder());
             sharedRecord.setRecordLife(sharedItem.getRecordLife());
