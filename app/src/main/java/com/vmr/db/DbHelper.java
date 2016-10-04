@@ -97,6 +97,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.INBOX_SUBJECT       + " TEXT, " +
             DbConstants.INBOX_HAS_BODY      + " NUMERIC, " +
             DbConstants.INBOX_BODY          + " TEXT, " +
+            DbConstants.INBOX_READ_FLAG     + " NUMERIC, " +
             DbConstants.INBOX_SENDER_FIRST_NAME + " TEXT, " +
             DbConstants.INBOX_SENDER_LAST_NAME + " TEXT, " +
             DbConstants.INBOX_CREATION_DATE + " DATETIME, " +

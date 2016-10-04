@@ -12,6 +12,7 @@ public class DbConstants {
     public static final String TABLE_SHARED = "SHARED";
     public static final String TABLE_RECENT = "RECENT";
     public static final String TABLE_INBOX  = "INBOX";
+
     //Column Names
     public static final String USER_SERIAL_NO         = "SERIAL_NO";
     public static final String USER_RESULT            = "RESULT";
@@ -165,10 +166,11 @@ public class DbConstants {
     public static final String INBOX_SUBJECT      = "SUBJECT";
     public static final String INBOX_HAS_BODY     = "HAS_BODY";
     public static final String INBOX_BODY         = "BODY";
-    public static final String INBOX_SENDER_FIRST_NAME = "senderFirstName";
-    public static final String INBOX_SENDER_LAST_NAME = "senderLastName";
+    public static final String INBOX_READ_FLAG    = "IS_READ";
+    public static final String INBOX_SENDER_FIRST_NAME = "SENDER_FIRST_NAME";
+    public static final String INBOX_SENDER_LAST_NAME = "SENDER_LAST_NAME";
     public static final String INBOX_CREATION_DATE = "CREATED_ON";
-    public static final String INBOX_UPDATED_DATE = "updatedOn";
+    public static final String INBOX_UPDATED_DATE = "UPDATED_ON";
     //All Columns
     public static final String[] INBOX_COLUMNS
             = {
@@ -178,12 +180,14 @@ public class DbConstants {
             INBOX_SUBJECT,
             INBOX_HAS_BODY,
             INBOX_BODY,
+            INBOX_READ_FLAG,
             INBOX_CREATION_DATE,
             INBOX_UPDATED_DATE,
             INBOX_SENDER_FIRST_NAME,
             INBOX_SENDER_LAST_NAME
     };
+
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 13;
+    static final int VERSION = 14;
 }

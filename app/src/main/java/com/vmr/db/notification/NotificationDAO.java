@@ -73,6 +73,7 @@ public class NotificationDAO {
         contentValues.put(DbConstants.INBOX_SUBJECT, notification.getSubject());
         contentValues.put(DbConstants.INBOX_HAS_BODY, notification.hasBody());
         contentValues.put(DbConstants.INBOX_BODY, notification.getBody());
+//        contentValues.put(DbConstants.INBOX_READ_FLAG, notification.isRead());
         contentValues.put(DbConstants.INBOX_SENDER_FIRST_NAME, notification.getSenderFirstName());
         contentValues.put(DbConstants.INBOX_SENDER_LAST_NAME, notification.getSenderLastName());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -100,6 +101,7 @@ public class NotificationDAO {
         contentValues.put(DbConstants.INBOX_SUBJECT, notification.getSubject());
         contentValues.put(DbConstants.INBOX_HAS_BODY, notification.hasBody());
         contentValues.put(DbConstants.INBOX_BODY, notification.getBody());
+        contentValues.put(DbConstants.INBOX_READ_FLAG, notification.isRead());
         contentValues.put(DbConstants.INBOX_SENDER_FIRST_NAME, notification.getSenderFirstName());
         contentValues.put(DbConstants.INBOX_SENDER_LAST_NAME, notification.getSenderLastName());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -137,6 +139,7 @@ public class NotificationDAO {
         if(DEBUG) VmrDebug.printLogI(this.getClass(), "Updating message body");
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.INBOX_HAS_BODY, 1);
+        contentValues.put(DbConstants.INBOX_READ_FLAG, 1);
         contentValues.put(DbConstants.INBOX_BODY, messageBody);
         return db.update(
                 DbConstants.TABLE_INBOX,
@@ -162,6 +165,7 @@ public class NotificationDAO {
             notification.setType(        c.getInt(    c.getColumnIndex(DbConstants.INBOX_TYPE)));
             notification.setSubject(  c.getString(    c.getColumnIndex(DbConstants.INBOX_SUBJECT)));
             notification.setHasBody(           c.getInt(    c.getColumnIndex(DbConstants.INBOX_HAS_BODY)) > 0);
+            notification.setRead(           c.getInt(    c.getColumnIndex(DbConstants.INBOX_READ_FLAG)) > 0);
             notification.setBody(        c.getString(    c.getColumnIndex(DbConstants.INBOX_BODY)));
             notification.setSenderFirstName(       c.getString(    c.getColumnIndex(DbConstants.INBOX_SENDER_FIRST_NAME)));
             notification.setSenderLastName(         c.getString(    c.getColumnIndex(DbConstants.INBOX_SENDER_LAST_NAME)));

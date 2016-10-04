@@ -116,6 +116,10 @@ public class InboxActivity extends AppCompatActivity
                         }
                     });
                     alert.show();
+
+                    notifications = dbManager.getAllNotifications();
+                    notificationAdapter.updateDataset(notifications);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

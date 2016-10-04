@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vmr.R;
@@ -39,6 +40,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(TrashViewHolder holder, int position) {
         Notification item = this.itemsList.get(position);
+        if(item.isRead()){
+            holder.setReadIndicator(View.INVISIBLE);
+        } else {
+            holder.setReadIndicator(View.VISIBLE);
+        }
         SimpleDateFormat localDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
         String day = DateUtils.getRelativeTimeSpanString(item.getCreatedDate().getTime()).toString();
         String time = localDateFormat.format(item.getCreatedDate().getTime());
@@ -72,6 +78,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public class TrashViewHolder extends RecyclerView.ViewHolder {
+        private LinearLayout llReadIndicator;
         private TextView tvReceiveTimeStamp ;
         private TextView tvSenderName ;
         private TextView tvMessageBody ;
@@ -79,10 +86,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         public TrashViewHolder(View itemView) {
             super(itemView);
+            this.llReadIndicator = (LinearLayout) itemView.findViewById(R.id.llReadIndicator);
             this.tvReceiveTimeStamp = (TextView) itemView.findViewById(R.id.tvReceiveTimeStamp);
             this.tvSenderName = (TextView) itemView.findViewById(R.id.tvSenderName);
             this.tvMessageBody = (TextView) itemView.findViewById(R.id.tvMessageBody);
             this.ivOverflow = (ImageView) itemView.findViewById(R.id.ivOverflow);
+        }
+
+        public void setReadIndicator(int visibility) {
+            this.llReadIndicator.setVisibility(visibility);
         }
 
         public void setReceiveTimeStamp(String itemTimeStamp) {

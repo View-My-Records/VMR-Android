@@ -19,6 +19,7 @@ public class Notification {
     private int     type;
     private String  subject;
     private boolean hasBody;
+    private boolean isRead;
     private String  body;
     private Date    createdOn;
     private Date    updatedOn;
@@ -37,6 +38,7 @@ public class Notification {
             notificationItem.setSubject(i.getMailSubject());
             notificationItem.setHasBody(false);
             notificationItem.setBody(null);
+            notificationItem.setRead(false);
             notificationItem.setCreatedOn(i.getCreatedOn());
             notificationItem.setUpdatedOn(new Date(System.currentTimeMillis()));
             notificationItem.setSenderFirstName(i.getUserdetails().getFirstName());
@@ -94,6 +96,14 @@ public class Notification {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
     }
 
     public Date getCreatedDate() {
