@@ -6,11 +6,12 @@ package com.vmr.db;
 public class DbConstants {
 
     //Table Name
-    public static final String TABLE_USER = "USER";
+    public static final String TABLE_USER   = "USER";
     public static final String TABLE_RECORD = "RECORD";
-    public static final String TABLE_TRASH = "TRASH";
+    public static final String TABLE_TRASH  = "TRASH";
     public static final String TABLE_SHARED = "SHARED";
     public static final String TABLE_RECENT = "RECENT";
+    public static final String TABLE_INBOX  = "INBOX";
     //Column Names
     public static final String USER_SERIAL_NO         = "SERIAL_NO";
     public static final String USER_RESULT            = "RESULT";
@@ -158,7 +159,31 @@ public class DbConstants {
             RECENT_LOCATION,
             RECENT_LAST_ACCESSED
     };
+    public static final String INBOX_ID           = "INBOX_ID";
+    public static final String INBOX_MASTER_OWNER = "MASTER_OWNER";
+    public static final String INBOX_TYPE         = "TYPE";
+    public static final String INBOX_SUBJECT      = "SUBJECT";
+    public static final String INBOX_HAS_BODY     = "HAS_BODY";
+    public static final String INBOX_BODY         = "BODY";
+    public static final String INBOX_SENDER_FIRST_NAME = "senderFirstName";
+    public static final String INBOX_SENDER_LAST_NAME = "senderLastName";
+    public static final String INBOX_CREATION_DATE = "CREATED_ON";
+    public static final String INBOX_UPDATE_DATE   = "updatedOn";
+    //All Columns
+    public static final String[] INBOX_COLUMNS
+            = {
+            INBOX_ID,
+            INBOX_MASTER_OWNER,
+            INBOX_TYPE,
+            INBOX_SUBJECT,
+            INBOX_HAS_BODY,
+            INBOX_BODY,
+            INBOX_CREATION_DATE,
+            INBOX_UPDATE_DATE,
+            INBOX_SENDER_FIRST_NAME,
+            INBOX_SENDER_LAST_NAME
+    };
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 11;
+    static final int VERSION = 13;
 }

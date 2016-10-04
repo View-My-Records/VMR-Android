@@ -36,6 +36,10 @@ import com.vmr.data_provider.SearchHistoryProvider;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
+import com.vmr.home.activity.InboxActivity;
+import com.vmr.home.activity.SearchResultActivity;
+import com.vmr.home.controller.HomeController;
+import com.vmr.home.controller.Notification;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -47,6 +51,7 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
+import com.vmr.model.NotificationItem;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
@@ -72,12 +77,19 @@ public class HomeActivity extends AppCompatActivity
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
         VmrResponseListener.OnFetchRecordsListener,
+        Notification.OnFetchNotificationsListener,
         SearchView.OnQueryTextListener,
         SearchView.OnCloseListener,
         SearchView.OnSuggestionListener
 {
     // Views
     MenuItem toBeIndexed;
+    TextView accountName;
+    TextView accountEmail;
+    TextView lastLogin;
+    ImageButton settingButton;
+    ImageButton notificationButton;
+
     // Variables
     boolean doubleBackToExitPressedOnce = false;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
@@ -118,7 +130,6 @@ public class HomeActivity extends AppCompatActivity
             if(userInfo!=null) {
                 Vmr.setLoggedInUserInfo(userInfo);
             }
-
         }
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
@@ -134,16 +145,26 @@ public class HomeActivity extends AppCompatActivity
         toBeIndexed = navigationView.getMenu().findItem(R.id.to_be_indexed);
         View headerView = navigationView.getHeaderView(0);
 
-        TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
-        TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
-        TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
-        ImageButton settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
-//        ImageButton notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
+        accountName = (TextView) headerView.findViewById(R.id.accountName);
+        accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
+        lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
+        settingButton = (ImageButton) headerView.findViewById(R.id.action_settings);
+        notificationButton = (ImageButton) headerView.findViewById(R.id.action_notifications);
 
         settingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+                settingsIntent.setAction(Intent.ACTION_VIEW);
+                drawer.closeDrawer(GravityCompat.START);
+                startActivity(settingsIntent);
+            }
+        });
+
+        notificationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent settingsIntent = new Intent(HomeActivity.this, InboxActivity.class);
                 settingsIntent.setAction(Intent.ACTION_VIEW);
                 drawer.closeDrawer(GravityCompat.START);
                 startActivity(settingsIntent);
@@ -163,12 +184,16 @@ public class HomeActivity extends AppCompatActivity
 
         if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
             Record newRecord = new Record();
+            newRecord.setRecordName("Root");
             newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
             dbManager.addRecord(newRecord);
         }
 
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
+
+        Notification notification = new Notification(this);
+        notification.fetchNotifications();
     }
 
     @Override
@@ -399,5 +424,19 @@ public class HomeActivity extends AppCompatActivity
         startActivity(intent);
 
         return true;
+    }
+
+    @Override
+    public void onFetchNotificationsSuccess(List<NotificationItem> notificationItemList) {
+        if(notificationItemList.size() > 0) {
+            notificationButton.setImageResource(R.drawable.ic_notifications_with_badge_black_24dp);
+        } else {
+            notificationButton.setImageResource(R.drawable.ic_notifications_black_24dp);
+        }
+    }
+
+    @Override
+    public void onFetchNotificationsFailure(VolleyError error) {
+
     }
 }

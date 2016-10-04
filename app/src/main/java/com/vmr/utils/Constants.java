@@ -19,6 +19,7 @@ public abstract class Constants {
         public final static String SHARE_RECORDS       = "/vmr/shareRecords.do";
         public final static String REPORT_DATA         = "/vmr/reportData.do";
         public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
+        public final static String NOTIFICATION        = "/vmr/indoxData.do";
     }
 
     public final static class Request {
@@ -108,11 +109,12 @@ public abstract class Constants {
                 public final static String DOWNLOAD_ACTIVITY         = "DOWNLOAD_ACTIVITY";
                 public final static String DOWNLOAD_FILE_STREAM      = "DOWNLOAD_FILE_STREAM";
                 public final static String LIST_UN_INDEXED_FILE      = "LIST_UN_INDEXED_FILE";
-                public final static String MOVE_COPY_LINK_FILE = "MOVE_COPY_LINK_FILE";
+                public final static String MOVE_COPY_LINK_FILE       = "MOVE_OR_LINK_FILE";
                 public final static String LIST_SHARED_WITH_ME       = "LIST_ALL_FILE_FOLDER_FOR_SHARED_WITH_ME";
                 public final static String LIST_SHARED_BY_ME         = "GET_RECORDS_SHARED_BY_OWNER";
                 public final static String CREATE_FOLDER             = "FOLDER_ADD";
                 public final static String REMOVE_EXPIRED_RECORDS    = "REMOVE_EXPIRED_RECORDS";
+                public final static String INBOX_MESSAGE_DISPLAY     = "INBOX_MSG_DISPLY";
             }
 
             public final static class ListAllFileFolder {
@@ -216,27 +218,36 @@ public abstract class Constants {
 
             public final static class MoveCopyLink {
                 public static final String PAGE_MODE = "pageMode";
-                public static final String NODE_REF = "fileNodeRef";
-                public static final String DEST_FOLDER_NODE_REF = "folderNodeRef";
+                public static final String NODE_REF = "fileNodRef";
+                public static final String DEST_FOLDER_NODE_REF = "folderNodRef";
                 public static final String DEST_FOLDER_NAME = "folderName";
                 public static final String OPERATION = "fileLinkMoveCopyOperation";
                 public static final String TAG = "VMR_MOVE_OR_LINK_FILE";
             }
 
             public final static class DeleteFileFolder {
-                public static final String PAGE_MODE    = "pageMode";
-                public static final String DELETE_OBJECTS = "Deleteobjects";
-                public static final String TRASH_OBJECTS = "Trashobjects";
+                public static final String PAGE_MODE            = "pageMode";
+                public static final String DELETE_OBJECTS       = "Deleteobjects";
+                public static final String TRASH_OBJECTS        = "Trashobjects";
                 public static final String DELETE_OBJECT_VALUES = "deleteobjectvalues";
-                public static final String TRASH_OBJECT_VALUES = "trashobjectvalues";
-                public static final String OBJECT_NAME  = "objectName";
-                public static final String OBJECT_NODE_REF = "objectNoderef";
-                public static final String OBJECT_TYPE  = "objectType";
-                public static final String TAG          = "VMR_DELETE_FILE_OR_FOLDER";
+                public static final String TRASH_OBJECT_VALUES  = "trashobjectvalues";
+                public static final String OBJECT_NAME          = "objectName";
+                public static final String OBJECT_NODE_REF      = "objectNoderef";
+                public static final String OBJECT_TYPE          = "objectType";
+                public static final String TAG                  = "VMR_DELETE_FILE_OR_FOLDER";
             }
 
+            public final static class Message {
+                public static final String PAGE_MODE    = "pageMode";
+                public static final String INBOX_ID     = "InboxrowId";
+                public static final String TAG          = "VMR_MESSAGE";
+            }
 
+        }
 
+        public final static class Notification {
+                public static final String DATA_TYPE = "dataType";
+                public static final String TAG       = "VMR_NOTIFICATION";
         }
 
         public final static class Alfresco {

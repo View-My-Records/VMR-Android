@@ -3,8 +3,10 @@ package com.vmr.app;
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
+import android.util.Pair;
 
 import com.vmr.db.DbManager;
+import com.vmr.db.record.Record;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 
@@ -22,6 +24,7 @@ public class Vmr extends Application {
     private static VmrFolder vmrRootFolder;
     private static VmrFolder vmrSharedWithMeRootFolder;
     private static VmrFolder vmrSharedByMeRootFolder;
+    private static Pair<Record, Integer> clipBoard;
     private static UserInfo loggedInUserInfo;
     private static DbManager dbManager;
     private static Map<String, String > userMap;
@@ -57,6 +60,19 @@ public class Vmr extends Application {
     public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
         Vmr.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
     }
+
+    public static Pair<Record, Integer>  getClipBoard() {
+        return clipBoard;
+    }
+
+    public static void setClipBoard(Pair<Record, Integer> clipBoard) {
+        Vmr.clipBoard = clipBoard;
+    }
+
+    public static void clearClipBoard() {
+        Vmr.clipBoard = null;
+    }
+
 
     public static Map<String, String> getUserMap() {
         return userMap;

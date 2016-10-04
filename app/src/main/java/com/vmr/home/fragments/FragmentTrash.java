@@ -20,9 +20,9 @@ import com.vmr.db.DbManager;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
-import com.vmr.home.HomeController;
 import com.vmr.home.adapters.TrashAdapter;
-import com.vmr.home.bottomsheet_behaviors.TrashOptionsMenuSheet;
+import com.vmr.home.context_menu.TrashOptionsMenu;
+import com.vmr.home.controller.HomeController;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrTrashItem;
 import com.vmr.network.VmrRequestQueue;
@@ -39,7 +39,7 @@ public class FragmentTrash extends Fragment
         VmrResponseListener.OnFetchTrashListener,
         TrashAdapter.OnItemClickListener,
         TrashAdapter.OnItemOptionsClickListener,
-        TrashOptionsMenuSheet.OnOptionClickListener
+        TrashOptionsMenu.OnOptionClickListener
 
 {
 
@@ -50,7 +50,7 @@ public class FragmentTrash extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private TrashOptionsMenuSheet optionsMenuSheet;
+    private TrashOptionsMenu optionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -70,7 +70,7 @@ public class FragmentTrash extends Fragment
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
-        optionsMenuSheet = new TrashOptionsMenuSheet();
+        optionsMenuSheet = new TrashOptionsMenu();
         optionsMenuSheet.setOptionClickListener(this);
 
     }

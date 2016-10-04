@@ -24,6 +24,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,12 +42,11 @@ import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
-import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.bottomsheet_behaviors.AddItemMenuSheet;
-import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
+import com.vmr.home.context_menu.AddItemMenu;
+import com.vmr.home.context_menu.RecordOptionsMenu;
+import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.dialog.FilePicker;
-import com.vmr.home.fragments.dialog.FolderPicker;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
@@ -78,8 +78,8 @@ public class FragmentMyRecords extends Fragment
         Interaction.HomeToMyRecordsInterface,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
-        AddItemMenuSheet.OnItemClickListener,
-        RecordOptionsMenuSheet.OnOptionClickListener
+        AddItemMenu.OnItemClickListener,
+        RecordOptionsMenu.OnOptionClickListener
 {
 
     // FragmentInteractionListener
@@ -90,8 +90,8 @@ public class FragmentMyRecords extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private AddItemMenuSheet addItemMenu;
-    private RecordOptionsMenuSheet recordOptionsMenuSheet;
+    private AddItemMenu addItemMenu;
+    private RecordOptionsMenu recordOptionsMenu;
 
     // Controllers
     private HomeController homeController;
@@ -113,13 +113,13 @@ public class FragmentMyRecords extends Fragment
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
 
-        addItemMenu = new AddItemMenuSheet();
+        addItemMenu = new AddItemMenu();
         addItemMenu.setItemClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
-        recordOptionsMenuSheet = new RecordOptionsMenuSheet();
-        recordOptionsMenuSheet.setOptionClickListener(this);
+        recordOptionsMenu = new RecordOptionsMenu();
+        recordOptionsMenu.setOptionClickListener(this);
 
         recordStack = new Stack<>();
         recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
@@ -181,6 +181,7 @@ public class FragmentMyRecords extends Fragment
 
         if(vmrFolder.getAll().size()>0)
             dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
+
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
 
         if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
@@ -314,9 +315,9 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onItemOptionsClick(Record record, View view) {
         VmrDebug.printLine(record.getRecordName() + " Options clicked");
-        recordOptionsMenuSheet.setRecord(record);
+        recordOptionsMenu.setRecord(record);
         mFabAddItem.hide();
-        recordOptionsMenuSheet.show(getActivity().getSupportFragmentManager(), recordOptionsMenuSheet.getTag());
+        recordOptionsMenu.show(getActivity().getSupportFragmentManager(), recordOptionsMenu.getTag());
     }
 
     @Override
@@ -781,37 +782,181 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onMoveClicked(Record vmrItem) {
+    public void onMoveClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Move button clicked" );
-        FragmentManager fm = getActivity().getFragmentManager();
-        FolderPicker folderPicker = new FolderPicker();
-        folderPicker.setOnFolderPickedListener(new FolderPicker.OnFolderPickedListener() {
+//        FragmentManager fm = getActivity().getFragmentManager();
+//        FolderPicker folderPicker = new FolderPicker();
+//        folderPicker.setOnFolderPickedListener(new FolderPicker.OnFolderPickedListener() {
+//            @Override
+//            public void onFolderPicked(Record record) {
+//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " received in fragment");
+//                Snackbar.make(getActivity().findViewById(R.id.clayout), "Move item feature is not available.", Snackbar.LENGTH_SHORT).show();
+//            }
+//        });
+
+//        folderPicker.show(fm, "file_picker");
+        Pair<Record, Integer> clip = new Pair<>(record, 2 ); // 2-Move, 3-Copy
+        Vmr.setClipBoard(clip);
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "File copied in clipboard", Snackbar.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onCopyClicked(Record record) {
+        VmrDebug.printLogI(this.getClass(), "Copy button clicked" );
+        Pair<Record, Integer> clip = new Pair<>(record, 3 ); // 2-Move, 3-Copy
+        Vmr.setClipBoard(clip);
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "File copied in clipboard", Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPasteClicked(final Record record) {
+        VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
+//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+
+        if(Vmr.getClipBoard() !=  null){
+
+            final HomeController copyController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
+                @Override
+                public void onCopyItemSuccess(JSONObject jsonObject) {
+                    VmrDebug.printLogI(this.getClass(), "Copy success" );
+                }
+
+                @Override
+                public void onCopyItemFailure(VolleyError error) {
+                    VmrDebug.printLogI(this.getClass(), "Copy failed" );
+                }
+            });
+
+            final HomeController moveController =  new HomeController(new VmrResponseListener.OnMoveItemListener() {
+                @Override
+                public void onMoveItemSuccess(JSONObject jsonObject) {
+                    VmrDebug.printLogI(this.getClass(), "Move success" );
+                }
+
+                @Override
+                public void onMoveItemFailure(VolleyError error) {
+                    VmrDebug.printLogI(this.getClass(), "Move failed" );
+                }
+            });
+
+            final Pair<Record, Integer> clipBoard = Vmr.getClipBoard();
+
+            final Snackbar moveSnackBar
+                    = Snackbar
+                    .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " moved", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Snackbar
+                                    .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
+                    })
+                    .setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            Record parent = dbManager.getRecord(record.getNodeRef());
+                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Parent record name " + parent.getRecordName());
+                            moveController.moveItem(clipBoard.first, parent);
+                        }
+                    });
+
+            final Snackbar copySnackBar
+                    = Snackbar
+                    .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " pasted", Snackbar.LENGTH_LONG)
+                    .setAction("UNDO", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            Snackbar
+                                    .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                                    .show();
+                        }
+                    })
+                    .setCallback(new Snackbar.Callback() {
+                        @Override
+                        public void onDismissed(Snackbar snackbar, int event) {
+                            super.onDismissed(snackbar, event);
+                            Record parent = dbManager.getRecord(record.getNodeRef());
+                            copyController.copyItem(clipBoard.first, parent);
+                        }
+                    });
+
+            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    switch (which){
+                        case DialogInterface.BUTTON_POSITIVE:
+                            //Yes button clicked
+
+                            switch (clipBoard.second){
+                                case 2: { // Move
+                                    moveSnackBar.show();
+                                    break;
+                                }
+                                case 3: {
+                                    copySnackBar.show();
+                                    break;
+                                }
+                            }
+                            break;
+
+                        case DialogInterface.BUTTON_NEGATIVE:
+                            //No button clicked
+                            dialog.dismiss();
+                            break;
+                    }
+                }
+            };
+
+            new AlertDialog.Builder(getActivity())
+                .setMessage("Are you sure?")
+                .setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener)
+                .show();
+
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Clipboard is empty", Snackbar.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onDuplicateClicked(final Record record) {
+        VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
+//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+
+        final HomeController duplicateController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
             @Override
-            public void onFolderPicked(Record record) {
-                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " received in fragment");
-                Snackbar.make(getActivity().findViewById(R.id.clayout), "Move item feature is not available.", Snackbar.LENGTH_SHORT).show();
+            public void onCopyItemSuccess(JSONObject jsonObject) {
+
+            }
+
+            @Override
+            public void onCopyItemFailure(VolleyError error) {
+
             }
         });
 
-        folderPicker.show(fm, "file_picker");
-    }
-
-    @Override
-    public void onCopyClicked(Record vmrItem) {
-        VmrDebug.printLogI(this.getClass(), "Copy button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onPasteClicked(Record record) {
-        VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onDuplicateClicked(Record vmrItem) {
-        VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        Snackbar
+                .make(getActivity().findViewById(R.id.clayout), "New copy of " + record.getRecordName() + " created", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar
+                                .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        Record parent = dbManager.getRecord(recordStack.peek());
+                        duplicateController.copyItem(record, parent);
+                    }
+                })
+                .show();
     }
 
     @Override

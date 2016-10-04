@@ -11,7 +11,7 @@ import com.vmr.app.Vmr;
 
 class DbHelper extends SQLiteOpenHelper {
 
-    private static final String createUserTable
+    private static final String createTableUser
             = ("CREATE TABLE " + DbConstants.TABLE_USER + " (") +
             DbConstants.USER_SERIAL_NO + " TEXT PRIMARY KEY, " +
             DbConstants.USER_RESULT + " TEXT, " +
@@ -31,7 +31,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.USER_FIRST_NAME + " TEXT, " +
             DbConstants.USER_LAST_LOGIN + " DATETIME );";
 
-    private static final String createRecordTable
+    private static final String createTableRecord
             = ("CREATE TABLE " + DbConstants.TABLE_RECORD + " (") +
             DbConstants.RECORD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             DbConstants.RECORD_MASTER_OWNER + " TEXT, " +
@@ -55,7 +55,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.RECORD_IS_AVAILABLE_OFFLINE + " NUMERIC, " +
             DbConstants.RECORD_LAST_UPDATE_TIMESTAMP + " DATETIME );";
 
-    private static final String createSharedTable
+    private static final String createTableShared
             = ("CREATE TABLE " + DbConstants.TABLE_SHARED + " (") +
             DbConstants.SHARED_RECORD_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             DbConstants.SHARED_MASTER_OWNER    + " TEXT, " +
@@ -69,7 +69,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.SHARED_OWNER_NAME      + " TEXT, " +
             DbConstants.SHARED_RECORD_LIFE     + " DATETIME );" ;
 
-    private static final String createTrashTable
+    private static final String createTableTrash
             = "CREATE TABLE "        + DbConstants.TABLE_TRASH + " (" +
             DbConstants.TRASH_RECORD_ID       + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             DbConstants.TRASH_MASTER_OWNER    + " TEXT, " +
@@ -80,7 +80,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.TRASH_NAME            + " TEXT, " +
             DbConstants.TRASH_OWNER           + " TEXT );" ;
 
-    private static final String createRecentTable
+    private static final String createTableRecent
             = "CREATE TABLE "        + DbConstants.TABLE_RECENT + " (" +
             DbConstants.RECENT_RECORD_ID        + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             DbConstants.RECENT_MASTER_OWNER     + " TEXT, " +
@@ -89,17 +89,31 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.RECENT_LOCATION         + " TEXT, " +
             DbConstants.RECENT_LAST_ACCESSED    + " DATETIME );" ;
 
+    private static final String createTableInbox
+            = "CREATE TABLE "        + DbConstants.TABLE_INBOX + " (" +
+            DbConstants.INBOX_ID            + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.INBOX_MASTER_OWNER  + " TEXT, " +
+            DbConstants.INBOX_TYPE          + " INTEGER, " +
+            DbConstants.INBOX_SUBJECT       + " TEXT, " +
+            DbConstants.INBOX_HAS_BODY      + " NUMERIC, " +
+            DbConstants.INBOX_BODY          + " TEXT, " +
+            DbConstants.INBOX_SENDER_FIRST_NAME + " TEXT, " +
+            DbConstants.INBOX_SENDER_LAST_NAME + " TEXT, " +
+            DbConstants.INBOX_CREATION_DATE + " DATETIME, " +
+            DbConstants.INBOX_UPDATE_DATE + " DATETIME );";
+
     DbHelper() {
         super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(createUserTable);
-        db.execSQL(createRecordTable);
-        db.execSQL(createSharedTable);
-        db.execSQL(createTrashTable);
-        db.execSQL(createRecentTable);
+        db.execSQL(createTableUser);
+        db.execSQL(createTableRecord);
+        db.execSQL(createTableShared);
+        db.execSQL(createTableTrash);
+        db.execSQL(createTableRecent);
+        db.execSQL(createTableInbox);
     }
 
     @Override
@@ -109,6 +123,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_SHARED);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_TRASH);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_RECENT);
+        db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_INBOX);
         this.onCreate(db);
     }
 }

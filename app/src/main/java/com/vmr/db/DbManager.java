@@ -3,6 +3,7 @@ package com.vmr.db;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.app.Vmr;
+import com.vmr.db.notification.NotificationDAO;
 import com.vmr.db.recently_accessed.Recent;
 import com.vmr.db.recently_accessed.RecentDAO;
 import com.vmr.db.record.Record;
@@ -35,6 +36,7 @@ public class DbManager {
     private TrashRecordDAO trashRecordDAO;
     private SharedRecordDAO sharedRecordDAO;
     private SearchSuggestionDAO searchSuggestionDAO;
+    private NotificationDAO notificationDAO;
 
     public DbManager() {
         DbHelper dbHelper = new DbHelper();
@@ -45,6 +47,7 @@ public class DbManager {
         trashRecordDAO = new TrashRecordDAO(database);
         sharedRecordDAO = new SharedRecordDAO(database);
         searchSuggestionDAO =  new SearchSuggestionDAO(database);
+        notificationDAO = new NotificationDAO(database);
     }
 
     // Adds new user to user table

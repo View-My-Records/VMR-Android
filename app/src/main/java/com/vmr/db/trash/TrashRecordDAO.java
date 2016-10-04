@@ -78,7 +78,7 @@ public class TrashRecordDAO {
 
     public boolean updateRecord(TrashRecord record){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.TRASH_MASTER_OWNER, record.getMasterRecordOwner());
+        contentValues.put(DbConstants.TRASH_MASTER_OWNER, record.getMasterOwner());
         contentValues.put(DbConstants.TRASH_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.TRASH_IS_FOLDER, record.isFolder());
         contentValues.put(DbConstants.TRASH_CREATED_BY, record.getCreatedBy());
@@ -95,7 +95,7 @@ public class TrashRecordDAO {
 
     public Long addRecord(TrashRecord record){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.TRASH_MASTER_OWNER, record.getMasterRecordOwner());
+        contentValues.put(DbConstants.TRASH_MASTER_OWNER, record.getMasterOwner());
         contentValues.put(DbConstants.TRASH_NODE_REF, record.getNodeRef());
         contentValues.put(DbConstants.TRASH_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.TRASH_IS_FOLDER, record.isFolder());
@@ -120,7 +120,7 @@ public class TrashRecordDAO {
         if (c != null) {
             record = new TrashRecord();
             record.setId(               c.getInt(    c.getColumnIndex(DbConstants.TRASH_RECORD_ID)));
-            record.setMasterRecordOwner(c.getString( c.getColumnIndex(DbConstants.TRASH_MASTER_OWNER)));
+            record.setMasterOwner(c.getString( c.getColumnIndex(DbConstants.TRASH_MASTER_OWNER)));
             record.setNodeRef(          c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
             record.setParentNodeRef(    c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
             record.setIsFolder(         c.getInt(    c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);

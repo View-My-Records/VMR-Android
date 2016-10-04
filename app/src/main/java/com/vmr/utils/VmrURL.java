@@ -23,4 +23,8 @@ public class VmrURL {
     public static String getFileUploadUrl(){
         return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.FILE_UPLOAD;
     }
+
+    public static String getNotificationUrl(){
+        return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.NOTIFICATION;
+    }
 }

@@ -1,4 +1,4 @@
-package com.vmr.home;
+package com.vmr.home.activity;
 
 import android.app.SearchManager;
 import android.content.Intent;

@@ -96,10 +96,8 @@ public class RecordDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
-                DbConstants.RECORD_MASTER_OWNER + "=? AND "
-                        + DbConstants.RECORD_NODE_REF + "=?" , // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
-                        nodeRef }, // noderef
+                DbConstants.RECORD_NODE_REF + "=?" , // where
+                new String[]{ nodeRef }, // noderef
                 null, // group by
                 null, // having
                 null, // order by

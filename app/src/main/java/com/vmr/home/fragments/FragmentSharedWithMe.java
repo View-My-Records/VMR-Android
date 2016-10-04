@@ -35,9 +35,9 @@ import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
-import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecordsAdapter;
-import com.vmr.home.bottomsheet_behaviors.RecordOptionsMenuSheet;
+import com.vmr.home.context_menu.RecordOptionsMenu;
+import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.dialog.FolderPicker;
 import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.model.DeleteMessage;
@@ -64,7 +64,7 @@ public class FragmentSharedWithMe extends Fragment
         VmrResponseListener.OnFetchRecordsListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
-        RecordOptionsMenuSheet.OnOptionClickListener
+        RecordOptionsMenu.OnOptionClickListener
 {
 
     // Fragment interaction listener
@@ -74,7 +74,7 @@ public class FragmentSharedWithMe extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private RecordOptionsMenuSheet recordOptionsMenuSheet;
+    private RecordOptionsMenu recordOptionsMenu;
 
     // Controllers
     private HomeController homeController;
@@ -95,8 +95,8 @@ public class FragmentSharedWithMe extends Fragment
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
 
-        recordOptionsMenuSheet = new RecordOptionsMenuSheet();
-        recordOptionsMenuSheet.setOptionClickListener(this);
+        recordOptionsMenu = new RecordOptionsMenu();
+        recordOptionsMenu.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
@@ -176,8 +176,8 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public void onItemOptionsClick(Record record, View view) {
         VmrDebug.printLine(record.getRecordName() + " Options clicked");
-        recordOptionsMenuSheet.setRecord(record);
-        recordOptionsMenuSheet.show(getActivity().getSupportFragmentManager(), recordOptionsMenuSheet.getTag());
+        recordOptionsMenu.setRecord(record);
+        recordOptionsMenu.show(getActivity().getSupportFragmentManager(), recordOptionsMenu.getTag());
     }
 
     @Override

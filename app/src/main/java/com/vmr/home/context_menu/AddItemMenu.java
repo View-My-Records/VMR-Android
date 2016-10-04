@@ -1,4 +1,4 @@
-package com.vmr.home.bottomsheet_behaviors;
+package com.vmr.home.context_menu;
 
 import android.app.Dialog;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -10,7 +10,7 @@ import com.vmr.R;
 /*
  * Created by abhijit on 8/31/16.
  */
-public class AddItemMenuSheet extends BottomSheetDialogFragment {
+public class AddItemMenu extends BottomSheetDialogFragment {
 
     private OnItemClickListener itemClickListener;
 

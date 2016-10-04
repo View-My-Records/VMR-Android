@@ -3,30 +3,29 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
-import com.vmr.debug.VmrDebug;
+import com.vmr.model.NotificationItem;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.VmrURL;
 
+import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 /*
  * Created by abhijit on 8/29/16.
  */
-public class MoveCopyLinkRequest extends PostLoginRequest<JSONObject> {
-
-    private boolean DEBUG = false;
+public class NotificationsRequest extends PostLoginRequest<List<NotificationItem>> {
 
     private Map<String, String> formData;
 
-    public MoveCopyLinkRequest(
+    public NotificationsRequest(
             Map<String, String> formData,
-            Response.Listener<JSONObject> successListener,
+            Response.Listener<List<NotificationItem>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
+        super(Method.POST, VmrURL.getNotificationUrl(), successListener, errorListener);
         this.formData = formData;
     }
 
@@ -36,20 +35,18 @@ public class MoveCopyLinkRequest extends PostLoginRequest<JSONObject> {
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+    protected Response<List<NotificationItem>> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-
-        if(DEBUG) VmrDebug.printLogI(this.getClass(), jsonString);
-
-        JSONObject jsonObject;
+        List<NotificationItem> notificationItemList;
 
         try {
-            jsonObject = new JSONObject(jsonString);
+            JSONArray jsonArray = new JSONArray(jsonString);
+            notificationItemList = NotificationItem.getInboxList(jsonArray);
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new FetchError());
         }
 
-        return Response.success(jsonObject, getCacheEntry());
+        return Response.success(notificationItemList, getCacheEntry());
     }
 }

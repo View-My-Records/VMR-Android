@@ -49,7 +49,7 @@
             android:clickable="false"
             android:contentDescription="Info"
             android:longClickable="false"
-            android:src="@drawable/ic_info_black_24dp" />
+            app:srcCompat="@drawable/ic_info_black_24dp" />
     </RelativeLayout>
     <View
         android:layout_width="fill_parent"
@@ -87,8 +87,8 @@
                     android:clickable="false"
                     android:contentDescription="Open"
                     android:longClickable="false"
-                    android:src="@drawable/ic_open_black_24dp"
-                    android:tint="@android:color/darker_gray" />
+                    android:tint="@android:color/darker_gray"
+                    app:srcCompat="@drawable/ic_open_black_24dp" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -315,8 +315,8 @@
                     android:clickable="false"
                     android:contentDescription="Copy"
                     android:longClickable="false"
-                    android:src="@drawable/ic_content_copy_black_24dp"
-                    android:tint="@android:color/darker_gray" />
+                    android:tint="@android:color/darker_gray"
+                    app:srcCompat="@drawable/ic_content_copy_black_24dp" />
 
                 <TextView
                     android:layout_width="212dp"
@@ -425,8 +425,8 @@
                     android:clickable="false"
                     android:contentDescription="Properties"
                     android:longClickable="false"
-                    android:src="@drawable/ic_info_black_24dp"
-                    android:tint="@android:color/darker_gray" />
+                    android:tint="@android:color/darker_gray"
+                    app:srcCompat="@drawable/ic_info_black_24dp" />
 
                 <TextView
                     android:layout_width="212dp"

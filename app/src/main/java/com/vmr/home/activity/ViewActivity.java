@@ -1,4 +1,4 @@
-package com.vmr.home;
+package com.vmr.home.activity;
 
 import android.content.Context;
 import android.content.Intent;

@@ -1,4 +1,4 @@
-package com.vmr.home.bottomsheet_behaviors;
+package com.vmr.home.context_menu;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -8,15 +8,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.db.shared.SharedRecord;
+import com.vmr.db.trash.TrashRecord;
 
 /*
  * Created by abhijit on 8/31/16.
  */
-public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
+public class TrashOptionsMenu extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
-    private SharedRecord record;
+    private TrashRecord record;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
-        View contentView = View.inflate(getContext(), R.layout.options_shared, null);
+        View contentView = View.inflate(getContext(), R.layout.options_trash, null);
         dialog.setContentView(contentView);
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
@@ -38,19 +38,10 @@ public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
                 dismiss();
             }
         });
-
-
-        contentView.findViewById(R.id.btnDownload).setOnClickListener(new View.OnClickListener() {
+        contentView.findViewById(R.id.btnRestore).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDownloadClicked(record);  dismiss();
-            }
-        });
-
-        contentView.findViewById(R.id.btnRevokeAccess).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onRevokeAccessClicked(record);  dismiss();
+                optionClickListener.onRestoreClicked(record);  dismiss();
             }
         });
         contentView.findViewById(R.id.btnProperties).setOnClickListener(new View.OnClickListener() {
@@ -62,7 +53,7 @@ public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
         contentView.findViewById(R.id.btnDelete).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onMoveToTrashClicked(record);  dismiss();
+                optionClickListener.onDeleteClicked(record);  dismiss();
             }
         });
     }
@@ -73,20 +64,20 @@ public class SharedOptionsMenuSheet extends BottomSheetDialogFragment {
         optionClickListener.onOptionsMenuDismiss();
     }
 
-    public void setOptionClickListener(SharedOptionsMenuSheet.OnOptionClickListener optionClickListener) {
+    public void setOptionClickListener(TrashOptionsMenu.OnOptionClickListener optionClickListener) {
         this.optionClickListener = optionClickListener;
     }
 
-    public void setRecord(SharedRecord record) {
+    public void setRecord(TrashRecord record) {
         this.record = record;
     }
 
+
     public interface OnOptionClickListener{
-        void onOpenClicked(SharedRecord record);
-        void onDownloadClicked(SharedRecord record);
-        void onRevokeAccessClicked(SharedRecord record);
-        void onPropertiesClicked(SharedRecord record);
-        void onMoveToTrashClicked(SharedRecord record);
+        void onOpenClicked(TrashRecord record);
+        void onRestoreClicked(TrashRecord record);
+        void onPropertiesClicked(TrashRecord record);
+        void onDeleteClicked(TrashRecord record);
         void onOptionsMenuDismiss();
     }
 }

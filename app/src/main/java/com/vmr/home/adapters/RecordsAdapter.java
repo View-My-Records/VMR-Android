@@ -64,8 +64,6 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
             holder.setItemSize(value);
         }
         holder.setItemName(record.getRecordName());
-//        SimpleDateFormat ft = new SimpleDateFormat("MM/dd/yy", Locale.ENGLISH);
-//        holder.setItemTimeStamp(ft.format(record.getCreatedDate()));
         holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(record.getCreatedDate().getTime()).toString());
         holder.bind(records.get(position), itemClickListener);
         holder.bind(records.get(position), optionsClickListener);

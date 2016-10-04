@@ -20,9 +20,9 @@ import com.vmr.db.DbManager;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
-import com.vmr.home.HomeController;
 import com.vmr.home.adapters.SharedByMeAdapter;
-import com.vmr.home.bottomsheet_behaviors.SharedOptionsMenuSheet;
+import com.vmr.home.context_menu.SharedOptionsMenu;
+import com.vmr.home.controller.HomeController;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
@@ -37,7 +37,7 @@ public class FragmentSharedByMe extends Fragment
         VmrResponseListener.OnFetchSharedByMeListener,
         SharedByMeAdapter.OnItemClickListener,
         SharedByMeAdapter.OnItemOptionsClickListener,
-        SharedOptionsMenuSheet.OnOptionClickListener
+        SharedOptionsMenu.OnOptionClickListener
 {
 
     // Fragment interaction listener
@@ -47,7 +47,7 @@ public class FragmentSharedByMe extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private SharedOptionsMenuSheet optionsMenuSheet;
+    private SharedOptionsMenu optionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -65,7 +65,7 @@ public class FragmentSharedByMe extends Fragment
         homeController = new HomeController(this);
         sharedByMeAdapter = new SharedByMeAdapter(sharedRecords, this, this);
 
-        optionsMenuSheet = new SharedOptionsMenuSheet();
+        optionsMenuSheet = new SharedOptionsMenu();
         optionsMenuSheet.setOptionClickListener(this);
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();

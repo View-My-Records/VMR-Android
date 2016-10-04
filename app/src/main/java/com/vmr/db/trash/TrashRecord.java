@@ -12,7 +12,7 @@ import java.util.List;
 public class TrashRecord {
 
     private int id;
-    private String masterRecordOwner;
+    private String masterOwner;
     private String nodeRef;
     private String parentNodeRef;
     private boolean isFolder;
@@ -29,7 +29,7 @@ public class TrashRecord {
         TrashRecord trashRecord;
         for (VmrTrashItem trashItem : trashItems) {
             trashRecord =  new TrashRecord();
-            trashRecord.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+            trashRecord.setMasterOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
             trashRecord.setNodeRef(trashItem.getNodeRef());
             trashRecord.setParentNodeRef(parentNodeRef);
             trashRecord.setIsFolder(trashItem.isFolder());
@@ -49,12 +49,12 @@ public class TrashRecord {
         this.id = id;
     }
 
-    public String getMasterRecordOwner() {
-        return masterRecordOwner;
+    public String getMasterOwner() {
+        return masterOwner;
     }
 
-    public void setMasterRecordOwner(String masterRecordOwner) {
-        this.masterRecordOwner = masterRecordOwner;
+    public void setMasterOwner(String masterOwner) {
+        this.masterOwner = masterOwner;
     }
 
     public boolean isFolder() {

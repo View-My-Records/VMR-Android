@@ -15,9 +15,9 @@ import com.vmr.R;
 import com.vmr.db.DbManager;
 import com.vmr.db.recently_accessed.Recent;
 import com.vmr.home.HomeActivity;
-import com.vmr.home.HomeController;
 import com.vmr.home.adapters.RecentAdapter;
-import com.vmr.home.bottomsheet_behaviors.TrashOptionsMenuSheet;
+import com.vmr.home.context_menu.TrashOptionsMenu;
+import com.vmr.home.controller.HomeController;
 import com.vmr.utils.Constants;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ public class FragmentRecentlyAccessed extends Fragment
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private TextView mTextView;
-    private TrashOptionsMenuSheet optionsMenuSheet;
+    private TrashOptionsMenu optionsMenuSheet;
 
     // Controllers
     private HomeController homeController;
@@ -55,7 +55,7 @@ public class FragmentRecentlyAccessed extends Fragment
 
         dbManager = ((HomeActivity) getActivity()).getDbManager();
 
-//        optionsMenuSheet = new TrashOptionsMenuSheet();
+//        optionsMenuSheet = new TrashOptionsMenu();
 //        optionsMenuSheet.setOptionClickListener(this);
 
     }

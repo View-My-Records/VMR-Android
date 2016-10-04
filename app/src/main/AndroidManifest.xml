@@ -44,7 +44,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".home.SearchResultActivity"
+            android:name=".home.activity.SearchResultActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -74,13 +74,6 @@
             android:enabled="true"
             android:exported="false" />
 
-        <service
-            android:name=".service.UploadService"
-            android:exported="false" />
-        <service
-            android:name=".service.DownloadService"
-            android:exported="false" />
-
         <!--
      ATTENTION: This was auto-generated to add Google Play services to your project for
      App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
@@ -89,10 +82,17 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".home.ViewActivity" />
+        <activity android:name=".home.activity.ViewActivity" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
+            android:parentActivityName=".home.HomeActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vmr.home.HomeActivity" />
+        </activity>
+        <activity android:name=".home.activity.InboxActivity"
+            android:label="@string/title_activity_inbox"
             android:parentActivityName=".home.HomeActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"

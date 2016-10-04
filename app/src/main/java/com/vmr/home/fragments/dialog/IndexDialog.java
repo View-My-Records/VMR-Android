@@ -29,7 +29,7 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.HomeController;
+import com.vmr.home.controller.HomeController;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;

@@ -1,4 +1,4 @@
-package com.vmr.home.bottomsheet_behaviors;
+package com.vmr.home.context_menu;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -10,13 +10,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.model.VmrSharedItem;
 
 /*
  * Created by abhijit on 8/31/16.
  */
-public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
+public class RecordOptionsMenu extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
     private Record record;
@@ -71,10 +72,24 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         if(record.isFolder()) {
             ivInfo.setImageResource(R.drawable.ic_folder);
             optionIndex.setVisibility(View.GONE);
+            optionShare.setVisibility(View.GONE);
+            optionMove.setVisibility(View.GONE);
+            optionCopy.setVisibility(View.GONE);
+            if(Vmr.getClipBoard() != null){
+                optionPaste.setVisibility(View.VISIBLE);
+            } else {
+                optionPaste.setVisibility(View.GONE);
+            }
+            optionDuplicate.setVisibility(View.GONE);
             optionDownload.setVisibility(View.GONE);
         } else {
             ivInfo.setImageResource(R.drawable.ic_file);
             optionIndex.setVisibility(View.VISIBLE);
+            optionShare.setVisibility(View.VISIBLE);
+            optionMove.setVisibility(View.VISIBLE);
+            optionCopy.setVisibility(View.VISIBLE);
+            optionPaste.setVisibility(View.GONE);
+            optionDuplicate.setVisibility(View.VISIBLE);
             optionDownload.setVisibility(View.VISIBLE);
         }
 
@@ -104,11 +119,11 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         optionIndex = (RelativeLayout) contentView.findViewById(R.id.btnIndex);
         optionShare = (RelativeLayout) contentView.findViewById(R.id.btnShare);
         optionRename = (RelativeLayout) contentView.findViewById(R.id.btnRename);
-        optionDownload = (RelativeLayout) contentView.findViewById(R.id.btnDownload);
         optionMove = (RelativeLayout) contentView.findViewById(R.id.btnMove);
         optionCopy = (RelativeLayout) contentView.findViewById(R.id.btnCopy);
-        optionPaste = (RelativeLayout) contentView.findViewById(R.id.btnPaste);
         optionDuplicate = (RelativeLayout) contentView.findViewById(R.id.btnDuplicate);
+        optionPaste = (RelativeLayout) contentView.findViewById(R.id.btnPaste);
+        optionDownload = (RelativeLayout) contentView.findViewById(R.id.btnDownload);
         optionProperties = (RelativeLayout) contentView.findViewById(R.id.btnProperties);
         optionDelete = (RelativeLayout) contentView.findViewById(R.id.btnDelete);
     }
@@ -139,12 +154,6 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
                 optionClickListener.onRenameClicked(record);  dismiss();
             }
         });
-        optionDownload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onDownloadClicked(record);  dismiss();
-            }
-        });
         optionMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -157,16 +166,22 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
                 optionClickListener.onCopyClicked(record);  dismiss();
             }
         });
+        optionDuplicate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                optionClickListener.onDuplicateClicked(record);  dismiss();
+            }
+        });
         optionPaste.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 optionClickListener.onPasteClicked(record);  dismiss();
             }
         });
-        optionDuplicate.setOnClickListener(new View.OnClickListener() {
+        optionDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDuplicateClicked(record);  dismiss();
+                optionClickListener.onDownloadClicked(record);  dismiss();
             }
         });
         optionProperties.setOnClickListener(new View.OnClickListener() {
@@ -188,11 +203,11 @@ public class RecordOptionsMenuSheet extends BottomSheetDialogFragment {
         void onIndexClicked(Record record);
         void onShareClicked(Record record);
         void onRenameClicked(Record record);
-        void onDownloadClicked(Record record);
         void onMoveClicked(Record record);
         void onCopyClicked(Record record);
-        void onPasteClicked(Record record);
         void onDuplicateClicked(Record record);
+        void onPasteClicked(Record record);
+        void onDownloadClicked(Record record);
         void onPropertiesClicked(Record record);
         void onMoveToTrashClicked(Record record);
         void onOptionsMenuDismiss();
