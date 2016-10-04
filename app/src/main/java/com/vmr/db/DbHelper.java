@@ -100,7 +100,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.INBOX_SENDER_FIRST_NAME + " TEXT, " +
             DbConstants.INBOX_SENDER_LAST_NAME + " TEXT, " +
             DbConstants.INBOX_CREATION_DATE + " DATETIME, " +
-            DbConstants.INBOX_UPDATE_DATE + " DATETIME );";
+            DbConstants.INBOX_UPDATED_DATE + " DATETIME );";
 
     DbHelper() {
         super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);

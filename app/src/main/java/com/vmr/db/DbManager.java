@@ -3,6 +3,7 @@ package com.vmr.db;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.vmr.app.Vmr;
+import com.vmr.db.notification.Notification;
 import com.vmr.db.notification.NotificationDAO;
 import com.vmr.db.recently_accessed.Recent;
 import com.vmr.db.recently_accessed.RecentDAO;
@@ -282,5 +283,13 @@ public class DbManager {
 
     private List<SearchSuggestion> getSuggestionsFromShared(String searchTerm){
         return this.searchSuggestionDAO.getSuggestionsFromShared(searchTerm);
+    }
+
+    public List<Notification> getAllNotifications() {
+        return this.notificationDAO.getAllNotifications();
+    }
+
+    public void updateAllNotifications(List<Notification> notifications) {
+        this.notificationDAO.updateAllNotifications(notifications);
     }
 }

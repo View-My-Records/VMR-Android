@@ -39,7 +39,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.activity.InboxActivity;
 import com.vmr.home.activity.SearchResultActivity;
 import com.vmr.home.controller.HomeController;
-import com.vmr.home.controller.Notification;
+import com.vmr.home.controller.NotificationController;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -77,7 +77,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
         VmrResponseListener.OnFetchRecordsListener,
-        Notification.OnFetchNotificationsListener,
+        NotificationController.OnFetchNotificationsListener,
         SearchView.OnQueryTextListener,
         SearchView.OnCloseListener,
         SearchView.OnSuggestionListener
@@ -192,8 +192,8 @@ public class HomeActivity extends AppCompatActivity
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
 
-        Notification notification = new Notification(this);
-        notification.fetchNotifications();
+        NotificationController notificationController = new NotificationController(this);
+        notificationController.fetchNotifications();
     }
 
     @Override
@@ -433,6 +433,7 @@ public class HomeActivity extends AppCompatActivity
         } else {
             notificationButton.setImageResource(R.drawable.ic_notifications_black_24dp);
         }
+
     }
 
     @Override

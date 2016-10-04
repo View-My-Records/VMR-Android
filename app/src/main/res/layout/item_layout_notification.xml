@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:id="@+id/llReadIndicator"
+        android:layout_width="4dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="2dp"
+        android:background="@android:color/holo_red_light"
+        android:orientation="vertical" />
+
+    <ImageView
+        android:id="@+id/ivOverflow"
+        android:layout_width="20dp"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:contentDescription="Overflow Menu"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+        android:tint="@android:color/tertiary_text_dark" />
+
+    <TextView
+        android:id="@+id/tvMessageBody"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvSenderName"
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/tvSenderName"
+        android:layout_toLeftOf="@+id/ivOverflow"
+        android:gravity="top"
+        android:maxLines="2"
+        android:text="Line1 \nLine2"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvReceiveTimeStamp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentTop="true"
+        android:layout_toEndOf="@+id/llReadIndicator"
+        android:layout_toRightOf="@+id/llReadIndicator"
+        android:gravity="center"
+        android:text="yesterday \n10:12:13"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/tvSenderName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvMessageBody"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="2dp"
+        android:layout_marginLeft="6dp"
+        android:layout_marginStart="6dp"
+        android:layout_toEndOf="@+id/tvReceiveTimeStamp"
+        android:layout_toLeftOf="@+id/ivOverflow"
+        android:layout_toRightOf="@+id/tvReceiveTimeStamp"
+        android:ellipsize="end"
+        android:gravity="center_horizontal|end"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:text="Sender Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textStyle="bold" />
+
+</RelativeLayout>

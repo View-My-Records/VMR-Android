@@ -80,7 +80,7 @@ public class Notification {
         this.subject = subject;
     }
 
-    public boolean isHasBody() {
+    public boolean hasBody() {
         return hasBody;
     }
 
@@ -96,7 +96,7 @@ public class Notification {
         this.body = body;
     }
 
-    public Date getCreatedOn() {
+    public Date getCreatedDate() {
         return createdOn;
     }
 
@@ -104,7 +104,7 @@ public class Notification {
         this.createdOn = createdOn;
     }
 
-    public Date    getUpdatedOn() {
+    public Date getUpdatedDate() {
         return updatedOn;
     }
 

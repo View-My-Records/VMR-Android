@@ -4,12 +4,29 @@
     android:id="@+id/activity_inbox"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="10dp"
     tools:context="com.vmr.home.activity.InboxActivity">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rvInbox"
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvInbox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentBottom="true"
+            android:clipToPadding="false"
+            android:scrollbars="vertical" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="No notifications"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:visibility="gone" />
 
 </RelativeLayout>

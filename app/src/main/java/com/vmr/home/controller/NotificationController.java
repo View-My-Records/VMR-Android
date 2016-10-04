@@ -3,7 +3,7 @@ package com.vmr.home.controller;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
-import com.vmr.home.request.NotificationsRequest;
+import com.vmr.home.request.InboxRequest;
 import com.vmr.model.NotificationItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.utils.Constants;
@@ -15,11 +15,11 @@ import java.util.Map;
  * Created by abhijit on 10/4/16.
  */
 
-public class Notification {
+public class NotificationController {
 
     private OnFetchNotificationsListener onFetchNotificationsListener;
 
-    public Notification(OnFetchNotificationsListener onFetchNotificationsListener) {
+    public NotificationController(OnFetchNotificationsListener onFetchNotificationsListener) {
         this.onFetchNotificationsListener = onFetchNotificationsListener;
     }
 
@@ -28,8 +28,8 @@ public class Notification {
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.Notification.DATA_TYPE, "JSON");
 
-        NotificationsRequest request =
-                new NotificationsRequest(
+        InboxRequest request =
+                new InboxRequest(
                         formData,
                         new Response.Listener<List<NotificationItem>>() {
                             @Override

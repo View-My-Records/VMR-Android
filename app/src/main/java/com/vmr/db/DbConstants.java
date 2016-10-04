@@ -168,7 +168,7 @@ public class DbConstants {
     public static final String INBOX_SENDER_FIRST_NAME = "senderFirstName";
     public static final String INBOX_SENDER_LAST_NAME = "senderLastName";
     public static final String INBOX_CREATION_DATE = "CREATED_ON";
-    public static final String INBOX_UPDATE_DATE   = "updatedOn";
+    public static final String INBOX_UPDATED_DATE = "updatedOn";
     //All Columns
     public static final String[] INBOX_COLUMNS
             = {
@@ -179,7 +179,7 @@ public class DbConstants {
             INBOX_HAS_BODY,
             INBOX_BODY,
             INBOX_CREATION_DATE,
-            INBOX_UPDATE_DATE,
+            INBOX_UPDATED_DATE,
             INBOX_SENDER_FIRST_NAME,
             INBOX_SENDER_LAST_NAME
     };

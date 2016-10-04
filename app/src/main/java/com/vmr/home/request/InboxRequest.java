@@ -17,11 +17,11 @@ import java.util.Map;
 /*
  * Created by abhijit on 8/29/16.
  */
-public class NotificationsRequest extends PostLoginRequest<List<NotificationItem>> {
+public class InboxRequest extends PostLoginRequest<List<NotificationItem>> {
 
     private Map<String, String> formData;
 
-    public NotificationsRequest(
+    public InboxRequest(
             Map<String, String> formData,
             Response.Listener<List<NotificationItem>> successListener,
             Response.ErrorListener errorListener) {
@@ -40,8 +40,12 @@ public class NotificationsRequest extends PostLoginRequest<List<NotificationItem
         List<NotificationItem> notificationItemList;
 
         try {
-            JSONArray jsonArray = new JSONArray(jsonString);
-            notificationItemList = NotificationItem.getInboxList(jsonArray);
+            if(!jsonString.equals("null")) {
+                JSONArray jsonArray = new JSONArray(jsonString);
+                notificationItemList = NotificationItem.getInboxList(jsonArray);
+            } else {
+                notificationItemList = null;
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new FetchError());

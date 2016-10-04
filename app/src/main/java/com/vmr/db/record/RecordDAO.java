@@ -223,7 +223,6 @@ public class RecordDAO {
     // Updates record in db
     private boolean updateRecord(Record record){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.RECORD_MASTER_OWNER, Vmr.getLoggedInUserInfo().getLoggedinUserId());
         contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME, record.getRecordName());
         contentValues.put(DbConstants.RECORD_DOC_TYPE, record.getRecordDocType());
