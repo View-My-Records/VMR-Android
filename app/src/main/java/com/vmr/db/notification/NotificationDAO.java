@@ -134,6 +134,7 @@ public class NotificationDAO {
     }
 
     public boolean updateMessageBody(String inboxId, String messageBody){
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Updating message body");
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.INBOX_HAS_BODY, 1);
         contentValues.put(DbConstants.INBOX_BODY, messageBody);

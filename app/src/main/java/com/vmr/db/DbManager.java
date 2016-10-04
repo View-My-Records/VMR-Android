@@ -292,4 +292,8 @@ public class DbManager {
     public void updateAllNotifications(List<Notification> notifications) {
         this.notificationDAO.updateAllNotifications(notifications);
     }
+
+    public void updateNotification(String inboxId, String messageBody){
+        this.notificationDAO.updateMessageBody(inboxId, messageBody);
+    }
 }
