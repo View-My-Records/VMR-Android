@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <android.support.v7.preference.SwitchPreferenceCompat
+        android:defaultValue="ONLINE"
+        android:key="APPLICATION_MODE"
+        android:title="Application Mode" />
+
+    <android.support.v7.preference.ListPreferenceCompat
+        android:defaultValue="STANDARD"
+        android:entries="@array/list_url_types"
+        android:entryValues="@array/list_url_types"
+        android:key="URL_MODE"
+        android:title="URL Mode" />
+
+    <android.support.v7.preference.EditTextPreference
+        android:defaultValue="http://vmrdev.cloudapp.net:8080"
+        android:key="DEFAULT_BASE_URL"
+        android:selectAllOnFocus="true"
+        android:title="Base Url" />
+
+</android.support.v7.preference.PreferenceScreen>

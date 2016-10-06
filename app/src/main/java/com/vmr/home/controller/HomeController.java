@@ -685,7 +685,9 @@ public class HomeController {
         formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_INDEX_STATUS, String.valueOf(fileIndexStatus));
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_CATEGORY_VALUE, docCategoryVal);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_TYPE, docType);
-        formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);
+        if (!(programName == null || programName.equals(""))) {
+            formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);
+        }
 
         VmrDebug.printLogI(this.getClass(), formData.toString());
 

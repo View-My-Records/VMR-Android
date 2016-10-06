@@ -261,6 +261,8 @@ public class IndexDialog extends DialogFragment
         try {
 
             JSONObject finalJson =  new JSONObject();
+            finalJson.put("Doctype", classificationsMap.get(spClassification.getSelectedItem().toString()));
+
             JSONArray propertiesArray = new JSONArray();
 
             JSONObject quickRef =  new JSONObject();
@@ -299,7 +301,6 @@ public class IndexDialog extends DialogFragment
             category.put("Value",categoryMap.get(spCategory.getSelectedItem().toString()));
             propertiesArray.put(category);
 
-            finalJson.put("Doctype", classificationsMap.get(spClassification.getSelectedItem().toString()));
             finalJson.put("Properties", propertiesArray);
 
             saveIndexController.saveIndex(finalJson.toString().replaceAll("\\\\", ""), // filePropertyJsonString

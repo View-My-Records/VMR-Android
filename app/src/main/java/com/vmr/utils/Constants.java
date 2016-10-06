@@ -9,9 +9,9 @@ public abstract class Constants {
     public static final String VMR_LOGIN_REQUEST_TAG = "VMR_LOGIN";
 
     public static class Url {
-        public final static String DEFAULT_BASE_URL = "http://vmrdev.cloudapp.net:8080";
+        public final static String DEFAULT_BASE_URL = "https://www.vmrdev.com";
 
-        public final static String ALFRESCO_TICKET     =  DEFAULT_BASE_URL + "/alfresco/service/api/login?u=admin&pw=alfresc0";
+        public final static String ALFRESCO_TICKET     =  "http://vmrdev.cloudapp.net:8080/alfresco/service/api/login?u=admin&pw=alfresc0";
         public final static String LOGIN               = "/vmr/mlogin.do";
         public final static String FOLDER_NAVIGATION   = "/vmr/folderNavigation.do";
         public final static String FILE_UPLOAD         = "/vmr/fileUpload.do";
@@ -20,6 +20,8 @@ public abstract class Constants {
         public final static String REPORT_DATA         = "/vmr/reportData.do";
         public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
         public final static String NOTIFICATION        = "/vmr/indoxData.do";
+
+
     }
 
     public final static class Request {

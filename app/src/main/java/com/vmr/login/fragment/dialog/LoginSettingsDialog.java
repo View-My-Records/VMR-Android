@@ -10,8 +10,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,54 +35,119 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class LoginSettingsDialog extends DialogFragment {
 
+    SwitchCompat swOffline;
+    SwitchCompat swCustom;
+    Spinner spUrlType;
+    TextView tvCustomUrl;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+
+        int style = DialogFragment.STYLE_NO_TITLE;
+        int theme = android.R.style.Theme_Holo_Light;
+        setStyle(style, theme);
+        setCancelable(false);
+    }
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        View v = getActivity().getLayoutInflater().inflate(R.layout.dialog_fragment_login_settings, null);
+        View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_fragment_login_settings, null);
 
-        final SwitchCompat swCustomUrl = (SwitchCompat) v.findViewById(R.id.swCustomUrl);
-        final TextView tvCustomUrl = (TextView) v.findViewById(R.id.tvCustomUrl);
-
-        if(!PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL).equals(Constants.Url.DEFAULT_BASE_URL)){
-            tvCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
-            tvCustomUrl.setVisibility(View.VISIBLE);
-            swCustomUrl.setChecked(true);
-        } else {
-            tvCustomUrl.setVisibility(View.GONE);
-        }
-
-        AlertDialog loginSettingsDialog =
-                new AlertDialog.Builder(getActivity())
-                .setView(v)
+        AlertDialog dialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Settings")
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        if(swCustomUrl.isChecked()) {
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, tvCustomUrl.getText().toString());
-                        } else {
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
-                        }
-                        VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
-                    }
-                })
+                .setView(dialogView)
+                .setCancelable(false)
                 .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+                        dialog.cancel();
                     }
                 })
-                .setCancelable(false)
                 .create();
 
-        swCustomUrl.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        setupDialogView(dialogView);
+        setupPreferences();
+
+        return dialog;
+
+    }
+
+    private void setupPreferences() {
+        if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE) == null){
+            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
+        } else if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE).equals(PrefConstants.ApplicationMode.OFFLINE)) {
+            swOffline.setChecked(true);
+        } else {
+            swOffline.setChecked(false);
+        }
+
+        if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL) == null){
+            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
+            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE, PrefConstants.URLType.STANDARD);
+        } else if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+            swCustom.setChecked(true);
+        } else {
+            swCustom.setChecked(false);
+        }
+    }
+
+    private void setupDialogView(View dialogView) {
+        swOffline = (SwitchCompat) dialogView.findViewById(R.id.swOfflineMode);
+        swCustom = (SwitchCompat) dialogView.findViewById(R.id.swCustomUrl);
+        spUrlType = (Spinner) dialogView.findViewById(R.id.spUrlType);
+        tvCustomUrl = (TextView) dialogView.findViewById(R.id.tvCustomUrl);
+
+        swOffline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    tvCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
-                    tvCustomUrl.setVisibility(View.VISIBLE);
+                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.OFFLINE);
                 } else {
+                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
+                }
+                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE));
+            }
+        });
+
+        swCustom.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked){
+                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.CUSTOM);
+                    tvCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+                    spUrlType.setVisibility(View.VISIBLE);
+                } else {
+                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
+                    spUrlType.setVisibility(View.GONE);
                     tvCustomUrl.setVisibility(View.GONE);
                     PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
                 }
                 VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+            }
+        });
+
+        if (swCustom.isChecked()) {
+            spUrlType.setVisibility(View.VISIBLE);
+            tvCustomUrl.setVisibility(View.VISIBLE);
+        } else {
+            spUrlType.setVisibility(View.GONE);
+            tvCustomUrl.setVisibility(View.GONE);
+        }
+
+        spUrlType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                if((getResources().getStringArray(R.array.list_url_types))[position].equals(PrefConstants.URLType.STANDARD)) {
+                    tvCustomUrl.setVisibility(View.GONE);
+                } else {
+                    tvCustomUrl.setVisibility(View.VISIBLE);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                tvCustomUrl.setVisibility(View.GONE);
             }
         });
 
@@ -114,6 +181,7 @@ public class LoginSettingsDialog extends DialogFragment {
                         = new AlertDialog.Builder(getActivity())
                         .setView(promptsView)
                         .setTitle("New URL")
+                        .setCancelable(false)
                         .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
                                 tvCustomUrl.setText(userInput.getText().toString());
@@ -154,8 +222,6 @@ public class LoginSettingsDialog extends DialogFragment {
                 customUrlEditDialog.show();
             }
         });
-
-        return loginSettingsDialog;
 
     }
 }

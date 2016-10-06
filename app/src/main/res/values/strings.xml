@@ -97,10 +97,10 @@
     <string name="volley_error_internet_not_available">"Internet not available"</string>
     <string name="toast_internet_unavailable">Internet service is not available</string>
 
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
+    <string-array name="list_url_types">
+        <item>"STANDARD"</item>
+        <item>"CUSTOM"</item>
+        <item>"VIEW MY RECORDS"</item>
     </string-array>
 
     <string-array name="list_preference_entry_values">

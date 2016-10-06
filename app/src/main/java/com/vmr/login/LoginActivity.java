@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+//        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
         loginController = new LoginController(this, this);
         DbManager dbManager = new DbManager();
         Vmr.setDbManager(dbManager);
@@ -156,7 +158,11 @@ public class LoginActivity extends AppCompatActivity
     // Handle clicks on fragments buttons
     @Override
     public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
-        loginController.fetchIndividualDetail(email, password, domain);
+//        if() {
+//
+//        } else {
+            loginController.fetchIndividualDetail(email, password, domain);
+//        }
         this.remember = remember;
     }
 
