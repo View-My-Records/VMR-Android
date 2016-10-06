@@ -29,9 +29,9 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
+import com.vmr.home.controller.FetchIndexController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.response_listener.VmrResponseListener;
-import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 
 import org.json.JSONArray;
@@ -52,15 +52,19 @@ import java.util.Map;
 public class IndexDialog extends DialogFragment
         implements
         VmrResponseListener.OnFetchClassifications,
+        FetchIndexController.OnFetchIndicesListener,
         AdapterView.OnItemSelectedListener,
-        DateTimePickerDialog.VmrDateTimePicker
-{
+        DateTimePickerDialog.VmrDateTimePicker {
 
+    private static final String NODE_REF = "NODE_REF";
+    private static final String PROGRAM = "PROGRAM";
+    private static final String FILE_NAME = "FILE_NAME";
+    private static final String INDEXED_STATUS = "INDEXED_STATUS";
     List<String> classificationsList = new ArrayList<>();
     List<String> lifeSpanList = new ArrayList<>();
     List<String> categoryList = new ArrayList<>();
-    Map<String, String> classificationsMap =  new HashMap<>();
-    Map<String, String> categoryMap =  new HashMap<>();
+    Map<String, String> classificationsMap = new HashMap<>();
+    Map<String, String> categoryMap = new HashMap<>();
     ArrayAdapter<String> classificationAdapter;
     ArrayAdapter<String> lifeSpanAdapter;
     ArrayAdapter<String> categoryAdapter;
@@ -69,27 +73,33 @@ public class IndexDialog extends DialogFragment
     private String recordNodeRef;
     private String recordName;
     private String recordProgramName;
+    private boolean recordIndexStatus;
     private Date nextActionDate;
     private ProgressDialog progressDialog;
     private LinearLayout indexFormLayout;
-    private Spinner  spClassification;
+    private Spinner spClassification;
     private EditText etQuickReference;
-    private Spinner  spLifeSpan;
+    private Spinner spLifeSpan;
     private EditText etGeoTag;
     private EditText etRemarks;
-    private Spinner  spCategory;
+    private Spinner spCategory;
     private TextView tvNextAction;
     private TextView btnSetNextAction;
     private EditText etActionMessage;
     private HomeController homeController;
+    private FetchIndexController fetchIndexController;
 
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
 
         Bundle arguments = new Bundle();
-        arguments.putString(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, record.getNodeRef());
-        arguments.putString(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, null);
-        arguments.putString(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME, record.getRecordName());
+        arguments.putString( NODE_REF, record.getNodeRef());
+        arguments.putString( PROGRAM, null);
+        arguments.putString( FILE_NAME, record.getRecordName());
+        if(record.getRecordDocType().equals("vmr_unindexed"))
+            arguments.putBoolean( INDEXED_STATUS, false);
+        else arguments.putBoolean( INDEXED_STATUS, true);
+
         newDialog.setArguments(arguments);
 
         return newDialog;
@@ -101,11 +111,13 @@ public class IndexDialog extends DialogFragment
         setRetainInstance(true);
         setStyle(DialogFragment.STYLE_NORMAL, android.R.style.Theme_Holo_Light);
 
-        recordNodeRef = getArguments().getString(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF);
-        recordProgramName = getArguments().getString(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME);
-        recordName = getArguments().getString(Constants.Request.FolderNavigation.SaveIndex.FILE_NAME);
+        recordNodeRef = getArguments().getString(NODE_REF);
+        recordProgramName = getArguments().getString(PROGRAM);
+        recordName = getArguments().getString(FILE_NAME);
+        recordIndexStatus = getArguments().getBoolean(INDEXED_STATUS);
 
-        homeController =  new HomeController(this);
+        homeController = new HomeController(this);
+        fetchIndexController = new FetchIndexController(this);
         classificationAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, classificationsList);
         classificationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
@@ -137,42 +149,15 @@ public class IndexDialog extends DialogFragment
 
         setHasOptionsMenu(true);
         setupFormFields(dialogView);
-
-        homeController.fetchClassifications();
-
-        lifeSpanList.add("1");
-        lifeSpanList.add("2");
-        lifeSpanList.add("3");
-        lifeSpanList.add("5");
-        lifeSpanList.add("7");
-        lifeSpanList.add("10");
-        lifeSpanAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, lifeSpanList);
-        lifeSpanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        categoryMap.put("Normal", "NORM" );
-        categoryMap.put("Confidential", "CONF" );
-        categoryMap.put("Highly Secure", "HCON" );
-        categoryList.addAll(categoryMap.keySet());
-        categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
-        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
         setupClassifications();
 
-        btnSetNextAction.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DateTimePickerDialog dateTimePicker =  new DateTimePickerDialog();
-                dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
-                dateTimePicker.show(getActivity().getFragmentManager(), "datetimepicker");
-
-            }
-        });
+        homeController.fetchClassifications();
 
         return dialogView;
     }
 
     private void setupClassifications() {
-        classificationsList.add(0,"Classification");
+        classificationsList.add(0, "Classification");
 
         spLifeSpan.setAdapter(lifeSpanAdapter);
         spCategory.setAdapter(categoryAdapter);
@@ -184,13 +169,46 @@ public class IndexDialog extends DialogFragment
         indexFormLayout = (LinearLayout) dialogView.findViewById(R.id.indexFormLayout);
         spClassification = (Spinner) dialogView.findViewById(R.id.spinnerClassification);
         etQuickReference = (EditText) dialogView.findViewById(R.id.etQuickReference);
-        spLifeSpan       = (Spinner) dialogView.findViewById(R.id.spinnerLifeSpan);
-        etGeoTag         = (EditText) dialogView.findViewById(R.id.etGeoTag);
-        etRemarks        = (EditText) dialogView.findViewById(R.id.etRemarks);
-        spCategory       = (Spinner) dialogView.findViewById(R.id.spinnerCategory);
-        tvNextAction     = (TextView) dialogView.findViewById(R.id.tvNextAction);
+        spLifeSpan = (Spinner) dialogView.findViewById(R.id.spinnerLifeSpan);
+        etGeoTag = (EditText) dialogView.findViewById(R.id.etGeoTag);
+        etRemarks = (EditText) dialogView.findViewById(R.id.etRemarks);
+        spCategory = (Spinner) dialogView.findViewById(R.id.spinnerCategory);
+        tvNextAction = (TextView) dialogView.findViewById(R.id.tvNextAction);
         btnSetNextAction = (TextView) dialogView.findViewById(R.id.btnSetDateTime);
-        etActionMessage  = (EditText) dialogView.findViewById(R.id.etActionMessage);
+        etActionMessage = (EditText) dialogView.findViewById(R.id.etActionMessage);
+
+        lifeSpanList.add("1");
+        lifeSpanList.add("2");
+        lifeSpanList.add("3");
+        lifeSpanList.add("5");
+        lifeSpanList.add("7");
+        lifeSpanList.add("10");
+        lifeSpanAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, lifeSpanList);
+        lifeSpanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        categoryMap.put("Normal", "NORM");
+        categoryMap.put("Confidential", "CONF");
+        categoryMap.put("Highly Secure", "HCON");
+        categoryList.addAll(categoryMap.keySet());
+        categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
+        categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        btnSetNextAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateTimePickerDialog dateTimePicker = new DateTimePickerDialog();
+                dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
+                dateTimePicker.show(getActivity().getFragmentManager(), "datetimepicker");
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(recordIndexStatus)
+            fetchIndexController.fetchIndices(recordNodeRef, "");
     }
 
     @Override
@@ -204,7 +222,7 @@ public class IndexDialog extends DialogFragment
         int id = item.getItemId();
 
         if (id == R.id.action_save) {
-            if(validateIndices()) {
+            if (validateIndices()) {
                 saveIndex();
             }
             return true;
@@ -224,7 +242,7 @@ public class IndexDialog extends DialogFragment
     }
 
     private boolean validateIndices() {
-        if(spClassification.getSelectedItemPosition() == 0) {
+        if (spClassification.getSelectedItemPosition() == 0) {
             new AlertDialog
                     .Builder(getActivity())
                     .setMessage("Please select document type.")
@@ -232,7 +250,7 @@ public class IndexDialog extends DialogFragment
             return false;
         }
 
-        if(nextActionDate == null || nextActionDate.before(new Date(System.currentTimeMillis()))){
+        if (nextActionDate == null || nextActionDate.before(new Date(System.currentTimeMillis()))) {
             new AlertDialog
                     .Builder(getActivity())
                     .setMessage("Please select next action date.")
@@ -260,56 +278,56 @@ public class IndexDialog extends DialogFragment
 
         try {
 
-            JSONObject finalJson =  new JSONObject();
+            JSONObject finalJson = new JSONObject();
             finalJson.put("Doctype", classificationsMap.get(spClassification.getSelectedItem().toString()));
 
             JSONArray propertiesArray = new JSONArray();
 
-            JSONObject quickRef =  new JSONObject();
-            quickRef.put("Name","vmr_quickref");
-            quickRef.put("Value",etQuickReference.getText().toString()+"");
+            JSONObject quickRef = new JSONObject();
+            quickRef.put("Name", "vmr_quickref");
+            quickRef.put("Value", etQuickReference.getText().toString() + "");
             propertiesArray.put(quickRef);
 
-            JSONObject geoTag =  new JSONObject();
-            geoTag.put("Name","vmr_geotag");
-            geoTag.put("Value",etGeoTag.getText().toString()+"");
+            JSONObject geoTag = new JSONObject();
+            geoTag.put("Name", "vmr_geotag");
+            geoTag.put("Value", etGeoTag.getText().toString() + "");
             propertiesArray.put(geoTag);
 
-            JSONObject remarks =  new JSONObject();
-            remarks.put("Name","vmr_remarks");
-            remarks.put("Value",etRemarks.getText().toString()+"");
+            JSONObject remarks = new JSONObject();
+            remarks.put("Name", "vmr_remarks");
+            remarks.put("Value", etRemarks.getText().toString() + "");
             propertiesArray.put(remarks);
 
             String dateString = df.format(nextActionDate.getTime());
-            JSONObject reminderDate =  new JSONObject();
-            reminderDate.put("Name","vmr_reminderdate");
+            JSONObject reminderDate = new JSONObject();
+            reminderDate.put("Name", "vmr_reminderdate");
             reminderDate.put("Value", dateString);
             propertiesArray.put(reminderDate);
 
-            JSONObject reminderMessage =  new JSONObject();
-            reminderMessage.put("Name","vmr_remindermessage");
-            reminderMessage.put("Value",etActionMessage.getText().toString()+"");
+            JSONObject reminderMessage = new JSONObject();
+            reminderMessage.put("Name", "vmr_remindermessage");
+            reminderMessage.put("Value", etActionMessage.getText().toString() + "");
             propertiesArray.put(reminderMessage);
 
-            JSONObject docLifeSpan =  new JSONObject();
-            docLifeSpan.put("Name","vmr_doclifespan");
-            docLifeSpan.put("Value",spLifeSpan.getSelectedItem().toString());
+            JSONObject docLifeSpan = new JSONObject();
+            docLifeSpan.put("Name", "vmr_doclifespan");
+            docLifeSpan.put("Value", spLifeSpan.getSelectedItem().toString());
             propertiesArray.put(docLifeSpan);
 
-            JSONObject category =  new JSONObject();
-            category.put("Name","vmr_category");
-            category.put("Value",categoryMap.get(spCategory.getSelectedItem().toString()));
+            JSONObject category = new JSONObject();
+            category.put("Name", "vmr_category");
+            category.put("Value", categoryMap.get(spCategory.getSelectedItem().toString()));
             propertiesArray.put(category);
 
             finalJson.put("Properties", propertiesArray);
 
             saveIndexController.saveIndex(finalJson.toString().replaceAll("\\\\", ""), // filePropertyJsonString
-                                        recordNodeRef,
-                                        recordName,
-                                        false,
-                                        categoryMap.get(spCategory.getSelectedItem().toString()),
-                                        recordDocType,
-                                        recordProgramName+"" );
+                    recordNodeRef,
+                    recordName,
+                    false,
+                    categoryMap.get(spCategory.getSelectedItem().toString()),
+                    recordDocType,
+                    recordProgramName + "");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -318,7 +336,7 @@ public class IndexDialog extends DialogFragment
     }
 
     @Override
-    public void onFetchClassificationsSuccess( Map<String, String> classifications ) {
+    public void onFetchClassificationsSuccess(Map<String, String> classifications) {
         VmrDebug.printLogI(this.getClass(), "Classifications retrieved");
         classificationsList.addAll(classifications.keySet());
         this.classificationsMap = classifications;
@@ -334,14 +352,6 @@ public class IndexDialog extends DialogFragment
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
             indexFormLayout.setVisibility(View.GONE);
-            etQuickReference.setEnabled(false);
-            spLifeSpan.setEnabled(false);
-            etGeoTag.setEnabled(false);
-            etRemarks.setEnabled(false);
-            spCategory.setEnabled(false);
-            tvNextAction.setEnabled(false);
-            btnSetNextAction.setEnabled(false);
-            etActionMessage.setEnabled(false);
 
         } else {
             recordDocType = classificationsMap.get(classificationsList.get(position));
@@ -353,27 +363,27 @@ public class IndexDialog extends DialogFragment
                     VmrDebug.printLogI(IndexDialog.this.getClass(), properties.keySet().toString());
                     indexFormLayout.setVisibility(View.VISIBLE);
 
-                    if(properties.containsKey("vmr_quickref")){
+                    if (properties.containsKey("vmr_quickref")) {
                         etQuickReference.setEnabled(true);
                     }
-                    if(properties.containsKey("vmr_doclifespan")){
+                    if (properties.containsKey("vmr_doclifespan")) {
                         spLifeSpan.setEnabled(true);
                     }
-                    if(properties.containsKey("vmr_geotag")){
+                    if (properties.containsKey("vmr_geotag")) {
                         etGeoTag.setEnabled(true);
                     }
-                    if(properties.containsKey("vmr_remarks")){
+                    if (properties.containsKey("vmr_remarks")) {
                         etRemarks.setEnabled(true);
                     }
-                    if(properties.containsKey("vmr_category")){
+                    if (properties.containsKey("vmr_category")) {
                         spCategory.setEnabled(true);
                     }
-                    if(properties.containsKey("vmr_reminderdate")){
+                    if (properties.containsKey("vmr_reminderdate")) {
                         tvNextAction.setEnabled(true);
                         btnSetNextAction.setEnabled(true);
 
                     }
-                    if(properties.containsKey("vmr_remindermessage")){
+                    if (properties.containsKey("vmr_remindermessage")) {
                         etActionMessage.setEnabled(true);
                     }
                 }
@@ -384,7 +394,7 @@ public class IndexDialog extends DialogFragment
                     Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 }
             });
-            requestController.fetchProperties(recordDocType, recordNodeRef, recordProgramName+"");
+            requestController.fetchProperties(recordDocType, recordNodeRef, recordProgramName + "");
             progressDialog = new ProgressDialog(this.getActivity());
             progressDialog.setMessage("Fetching index form...");
             progressDialog.show();
@@ -401,5 +411,48 @@ public class IndexDialog extends DialogFragment
         this.nextActionDate = nextActionDate;
         String dateString = df.format(nextActionDate.getTime());
         tvNextAction.setText(dateString);
+    }
+
+    @Override
+    public void onFetchIndexSuccess(JSONObject jsonObject) {
+        VmrDebug.printLogI(this.getClass(), "Indices fetched");
+        try {
+            if(!jsonObject.getString("DoctypeID").equals("vmr_unindexed")) {
+                Toast.makeText(getActivity(), "File is already indexed", Toast.LENGTH_SHORT).show();
+                VmrDebug.printLogI(this.getClass(), "Map->"+classificationsMap.toString());
+                VmrDebug.printLogI(this.getClass(), "List->"+classificationsList.toString());
+                spClassification.setSelection(classificationsList.indexOf(jsonObject.getString("DoctypeName")));
+                Map<String , String > propertiesMap = getPropertiesMap(jsonObject.getJSONArray("Properties"));
+
+                indexFormLayout.setVisibility(View.VISIBLE);
+                etQuickReference.setText(propertiesMap.get("vmr_quickref"));
+                spLifeSpan.setSelection(lifeSpanList.indexOf(propertiesMap.get("vmr_doclifespan")));
+                etGeoTag.setText(propertiesMap.get("vmr_geotag"));
+                etRemarks.setText(propertiesMap.get("vmr_remarks"));
+                spCategory.setSelection(categoryList.indexOf(propertiesMap.get("vmr_category")));
+                tvNextAction.setText(propertiesMap.get("vmr_reminderdate"));
+                etActionMessage.setText(propertiesMap.get("vmr_remindermessage"));
+            } else {
+                Toast.makeText(getActivity(), "File not indexed", Toast.LENGTH_SHORT).show();
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onFetchIndexFailure(VolleyError error) {
+        VmrDebug.printLogI(this.getClass(), "Failed to retrieve indices");
+    }
+
+    private Map<String , String > getPropertiesMap(JSONArray properties) throws JSONException {
+        Map<String , String > propertiesMap = new HashMap<>();
+        JSONObject jsonObject;
+        for(int i=0; i< properties.length() - 1; i++){
+            jsonObject = properties.getJSONObject(i);
+            propertiesMap.put(jsonObject.getString("propertyName"), jsonObject.getString("propertyValue"));
+        }
+
+        return propertiesMap;
     }
 }

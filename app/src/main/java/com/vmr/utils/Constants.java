@@ -178,6 +178,13 @@ public abstract class Constants {
                 public static final String TAG = "VMR_GET_PROPERTIES";
             }
 
+            public final static class GetIndex {
+                public static final String PAGE_MODE = "pageMode";
+                public static final String PROGRAM_NAME = "programName";
+                public static final String FILE_SELECTED_NODE_REF = "selectedFolderNodeRef";
+                public static final String TAG = "VMR_GET_INDEX";
+            }
+
             public final static class DownloadFile {
                 public static final String PAGE_MODE = "pageMode";
                 public static final String NODE_REF = "fileSelectedNodeRef";

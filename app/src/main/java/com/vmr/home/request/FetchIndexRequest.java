@@ -16,13 +16,13 @@ import java.util.Map;
  * Created by abhijit on 9/21/16.
  */
 
-public class FetchIndexRequest extends PostLoginRequest<String> {
+public class FetchIndexRequest extends PostLoginRequest<JSONObject> {
 
     private Map<String, String> formData;
 
     public FetchIndexRequest(
             Map<String, String> formData,
-            Response.Listener<String> successListener,
+            Response.Listener<JSONObject> successListener,
             Response.ErrorListener errorListener) {
         super(Method.POST, VmrURL.getFolderNavigationUrl(), successListener, errorListener);
         this.formData = formData;
@@ -35,7 +35,7 @@ public class FetchIndexRequest extends PostLoginRequest<String> {
     }
 
     @Override
-    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
         JSONObject jsonObject;
         try {
@@ -45,6 +45,6 @@ public class FetchIndexRequest extends PostLoginRequest<String> {
             return Response.error(new FetchError());
         }
 
-        return Response.success(jsonString, getCacheEntry());
+        return Response.success(jsonObject, getCacheEntry());
     }
 }

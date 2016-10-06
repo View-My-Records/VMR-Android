@@ -40,6 +40,8 @@ public class ClassificationRequest extends PostLoginRequest<Map<String , String 
         JSONObject jsonObject;
         try {
             jsonObject = new JSONObject(jsonString);
+//            VmrDebug.printLogI(this.getClass(), "Classification request headers:" + formData.toString());
+//            VmrDebug.printLogI(this.getClass(), jsonObject.toString());
             classifications = Classification.parseClassifications(jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
