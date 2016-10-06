@@ -17,8 +17,10 @@ import java.util.List;
 /*
  * Created by abhijit on 8/25/16.
  */
-public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecordsViewHolder>{
+public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
 
+    private static final int FOLDER = 1;
+    private static final int FILE = 2;
     private final OnItemClickListener itemClickListener;
     private final OnItemOptionsClickListener optionsClickListener;
     private List<Record> records;
@@ -32,46 +34,101 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
     }
 
     @Override
-    public MyRecordsViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_layout_records, parent, false);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
-        return new MyRecordsViewHolder(itemView);
+        RecyclerView.ViewHolder viewHolder;
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        switch (viewType) {
+            case FOLDER:
+                View v1 = inflater.inflate(R.layout.item_layout_records_folder, parent, false);
+                viewHolder = new FolderViewHolder(v1);
+                break;
+            case FILE:
+                View v2 = inflater.inflate(R.layout.item_layout_records_file, parent, false);
+                viewHolder = new FileViewHolder(v2);
+                break;
+            default:
+                View v3 = inflater.inflate(R.layout.item_layout_records_folder, parent, false);
+                viewHolder = new FolderViewHolder(v3);
+                break;
+        }
+        return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(MyRecordsViewHolder holder, int position) {
-        Record record = this.records.get(position);
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
 
-        if (record.isFolder()) {
-            holder.setItemImage(R.drawable.ic_folder);
-            holder.itemSize.setVisibility(View.GONE);
-        } else {
-            holder.setItemImage(R.drawable.ic_file);
-
-            DecimalFormat df = new DecimalFormat();
-            df.setMaximumFractionDigits(2);
-
-            String value;
-            float size = record.getFileSize();
-            if (size >= (1000*1000))
-                value = df.format(size / (1000*1000)) + " Mb";
-            else if(size >= 1000)
-                value = df.format(size / 1000) + " Kb";
-            else
-                value = df.format(size) + " Bytes";
-
-            holder.setItemSize(value);
+        switch (holder.getItemViewType()) {
+            case FOLDER:
+                FolderViewHolder folderViewHolder = (FolderViewHolder) holder;
+                configureFolderViewHolder(folderViewHolder, position);
+                break;
+            case FILE:
+                FileViewHolder fileViewHolder = (FileViewHolder) holder;
+                configureFileViewHolder(fileViewHolder, position);
+                break;
+            default:
+                FolderViewHolder defaultViewHolder = (FolderViewHolder) holder;
+                configureDefaultViewHolder(defaultViewHolder, position);
+                break;
         }
-        holder.setItemName(record.getRecordName());
-        holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(record.getCreatedDate().getTime()).toString());
-        holder.bind(records.get(position), itemClickListener);
-        holder.bind(records.get(position), optionsClickListener);
+
+    }
+
+    private void configureDefaultViewHolder(FolderViewHolder folderViewHolder, int position) {
+        folderViewHolder.setItemName(records.get(position).getRecordName());
+        folderViewHolder.bind(records.get(position), itemClickListener);
+        folderViewHolder.bind(records.get(position), optionsClickListener);
+    }
+
+    private void configureFolderViewHolder(FolderViewHolder folderViewHolder, int position) {
+        folderViewHolder.setItemName(records.get(position).getRecordName());
+        folderViewHolder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(records.get(position).getCreatedDate().getTime()).toString());
+        folderViewHolder.bind(records.get(position), itemClickListener);
+        folderViewHolder.bind(records.get(position), optionsClickListener);
+    }
+
+    private void configureFileViewHolder(FileViewHolder fileViewHolder, int position) {
+        fileViewHolder.setItemName(records.get(position).getRecordName());
+
+        if (!records.get(position).getRecordDocType().equals("vmr:unindexed")) {
+            fileViewHolder.setItemIndexed(View.VISIBLE);
+        } else { // indexed
+            fileViewHolder.setItemIndexed(View.GONE);
+        }
+
+        DecimalFormat df = new DecimalFormat();
+        df.setMaximumFractionDigits(2);
+
+        String value;
+        float size = records.get(position).getFileSize();
+        if (size >= (1000*1000))
+            value = df.format(size / (1000*1000)) + " Mb";
+        else if(size >= 1000)
+            value = df.format(size / 1000) + " Kb";
+        else
+            value = df.format(size) + " Bytes";
+
+        fileViewHolder.setItemSize(value);
+
+        fileViewHolder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(records.get(position).getCreatedDate().getTime()).toString());
+        fileViewHolder.bind(records.get(position), itemClickListener);
+        fileViewHolder.bind(records.get(position), optionsClickListener);
     }
 
     @Override
     public int getItemCount() {
         return this.records.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (records.get(position).isFolder() ) {
+            return FOLDER;
+        } else {
+            return FILE;
+        }
     }
 
     public void updateDataset(List<Record> newList) {
@@ -88,24 +145,30 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
         void onItemOptionsClick(Record record, View view);
     }
 
-    public class MyRecordsViewHolder extends RecyclerView.ViewHolder {
-        private ImageView itemImage ;
+    public class FileViewHolder extends RecyclerView.ViewHolder {
+        private ImageView itemIcon;
+        private ImageView itemIndexed;
         private TextView itemName ;
         private TextView itemSize ;
         private TextView itemTimeStamp;
         private ImageView itemOptions;
 
-        public MyRecordsViewHolder(View itemView) {
+        public FileViewHolder(View itemView) {
             super(itemView);
-            this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemIndexed = (ImageView) itemView.findViewById(R.id.ivIndexed);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemSize = (TextView) itemView.findViewById(R.id.tvFileSize);
             this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
-        public void setItemImage(int itemImage) {
-            this.itemImage.setImageResource(itemImage);
+        public void setItemIcon(int itemIcon) {
+            this.itemIcon.setImageResource(itemIcon);
+        }
+
+        public void setItemIndexed(int visibility) {
+            this.itemIndexed.setVisibility(visibility);
         }
 
         public void setItemName(String itemName) {
@@ -125,7 +188,68 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecordsAdapter.MyRecord
         }
 
         public void setItemImage(ImageView itemImage) {
-            this.itemImage = itemImage;
+            this.itemIcon = itemImage;
+        }
+
+        public void bind(final Record record, final OnItemClickListener listener) {
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemClick(record);
+                }
+            });
+        }
+
+        public void bind(final Record record, final OnItemOptionsClickListener listener) {
+            itemOptions.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+                    listener.onItemOptionsClick(record, v);
+                }
+            });
+        }
+    }
+
+    public class FolderViewHolder extends RecyclerView.ViewHolder {
+        private ImageView itemIcon;
+        private ImageView itemIndexed;
+        private TextView itemName ;
+        private TextView itemSize ;
+        private TextView itemTimeStamp;
+        private ImageView itemOptions;
+
+        public FolderViewHolder(View itemView) {
+            super(itemView);
+            this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
+            this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
+        }
+
+        public void setItemIcon(int itemIcon) {
+            this.itemIcon.setImageResource(itemIcon);
+        }
+
+        public void setItemIndexed(int visibility) {
+            this.itemIndexed.setVisibility(visibility);
+        }
+
+        public void setItemName(String itemName) {
+            this.itemName.setText(itemName);
+        }
+
+        public void setItemSize(Long itemSize) {
+            this.itemSize.setText(String.valueOf(itemSize));
+        }
+
+        public void setItemSize(String itemSize) {
+            this.itemSize.setText(itemSize);
+        }
+
+        public void setItemTimeStamp(String itemTimeStamp) {
+            this.itemTimeStamp.setText(itemTimeStamp);
+        }
+
+        public void setItemImage(ImageView itemImage) {
+            this.itemIcon = itemImage;
         }
 
         public void bind(final Record record, final OnItemClickListener listener) {
