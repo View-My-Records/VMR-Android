@@ -1,40 +1,16 @@
-sudo: false
-
 language: android
-jdk: oraclejdk8
-
+jdk:
+  - oraclejdk8
+sudo: required
 android:
   components:
-  - platform-tools
-  - tools
-  - build-tools-24.2.1
-  - android-24
-  - extra
-  - extra-google-m2repository
-  - extra-android-m2repository
-  - extra-android-support
-
-  licenses:
-      - 'android-sdk-preview-license-52d11cd2'
-      - 'android-sdk-license-.+'
-      - 'google-gdk-license-.+'
-      - ".+"
-
-before_install:
-  - chmod +x gradlew
+    - tools # to get the new `repository-11.xml`
+    - tools # see https://github.com/travis-ci/travis-ci/issues/6040#issuecomment-219367943)
+    - platform-tools
+    - build-tools-25.2.2
+    - android-24
+    - extra-android-m2repository
+    - extra-google-m2repository
 
 script:
-  - "./gradlew clean build connectedAndroidTest -PdisablePreDex --stacktrace"
-
-notifications:
-  email: true
-
-before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-
-cache:
-  directories:
-    - "$HOME/.m2"
-    - "$HOME/.gradle"
-    - "$HOME/.gradle/caches/"
-    - "$HOME/.gradle/wrapper/"
+   - ./gradlew build connectedCheck

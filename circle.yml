@@ -2,21 +2,38 @@
 # Build configuration for Circle CI
 #
 
-general:
-    artifacts:
-        - /home/ubuntu/VMR-Android/app/build/outputs/apk/
-
-machine:
-    environment:
-        ANDROID_HOME: /usr/local/android-sdk-linux
-
+#Install android build tools, platforms
+#Supported versions here https://circleci.com/docs/android
 dependencies:
-    pre:
-        - ( sleep 5 && while [ 1 ]; do sleep 1; echo y; done ) | android update sdk --no-ui --all --filter "tools,platform-tools,android-24,extra-google-m2repository,extra-android-m2repository,extra-android-support"
-        - echo y | android update sdk --no-ui --all --filter "build-tools-24.2.1"
+    override:
+        - echo y | android update sdk --no-ui --all --filter tools,platform-tools,build-tools-24.0.3,android-24,extra-google-m2repository,extra-google-google_play_services,extra-android-support
         - ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew dependencies
 
+#Pull any submodules
+checkout:
+  post:
+    - git submodule init
+    - git submodule update
+
+#-PdisablePreDex is a must else gradle just dies due to memory limit
+#Replace
 test:
     override:
-        - (./gradlew assemble):
+        - (./gradlew assemble -PdisablePreDex):
             timeout: 360
+        - cp -r ${HOME}/${CIRCLE_PROJECT_REPONAME}/app/build/outputs/apk/ $CIRCLE_ARTIFACTS
+        - emulator -avd circleci-android22 -no-audio -no-window:
+            background: true
+            parallel: true
+        # wait for it to have booted
+        - circle-android wait-for-boot
+        # run tests  against the emulator.
+        - ./gradlew connectedAndroidTest
+
+#Deploy when tests pass
+deployment:
+    master:
+        branch: master
+        commands:
+            - (./gradlew crashlyticsUploadDistributionProduction -PdisablePreFex):
+                timeout: 720
