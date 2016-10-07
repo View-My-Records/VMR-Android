@@ -80,8 +80,7 @@ public class HomeActivity extends AppCompatActivity
         NotificationController.OnFetchNotificationsListener,
         SearchView.OnQueryTextListener,
         SearchView.OnCloseListener,
-        SearchView.OnSuggestionListener
-{
+        SearchView.OnSuggestionListener {
     // Views
     MenuItem toBeIndexed;
     TextView accountName;
@@ -92,7 +91,10 @@ public class HomeActivity extends AppCompatActivity
 
     // Variables
     boolean doubleBackToExitPressedOnce = false;
+    DrawerLayout drawerLayout;
+    ActionBarDrawerToggle drawerToggle;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
+    private Interaction.OnHomeClickListener homeClickListener;
     // Models
     private UserInfo userInfo;
     private DbManager dbManager;
@@ -132,11 +134,52 @@ public class HomeActivity extends AppCompatActivity
             }
         }
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        assert drawer != null;
-        toggle.syncState();
+        setupNavigationDrawer(toolbar);
+
+        if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
+            Record newRecord = new Record();
+            newRecord.setRecordName("Root");
+            newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
+            dbManager.addRecord(newRecord);
+        }
+
+        HomeController homeController = new HomeController(this);
+        homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
+
+        NotificationController notificationController = new NotificationController(this);
+        notificationController.fetchNotifications();
+    }
+
+    private void setupNavigationDrawer(Toolbar toolbar) {
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_home);
+
+        drawerToggle =
+                new ActionBarDrawerToggle(
+                        this,
+                        drawerLayout,
+                        toolbar,
+                        R.string.navigation_drawer_open,
+                        R.string.navigation_drawer_close){
+                    public void onDrawerClosed(View view) {
+                        super.onDrawerClosed(view);
+                        // Do whatever you want here
+                    }
+                    public void onDrawerOpened(View drawerView) {
+                        super.onDrawerOpened(drawerView);
+                        // Do whatever you want here
+                    }
+                };
+
+        drawerLayout.setDrawerListener(drawerToggle);
+
+        drawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                homeClickListener.onHomeClick();
+            }
+        });
+
+        drawerToggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         assert navigationView != null;
@@ -156,7 +199,7 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
                 settingsIntent.setAction(Intent.ACTION_VIEW);
-                drawer.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 startActivity(settingsIntent);
             }
         });
@@ -166,7 +209,7 @@ public class HomeActivity extends AppCompatActivity
             public void onClick(View v) {
                 Intent settingsIntent = new Intent(HomeActivity.this, InboxActivity.class);
                 settingsIntent.setAction(Intent.ACTION_VIEW);
-                drawer.closeDrawer(GravityCompat.START);
+                drawerLayout.closeDrawer(GravityCompat.START);
                 startActivity(settingsIntent);
             }
         });
@@ -181,28 +224,18 @@ public class HomeActivity extends AppCompatActivity
 
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.ENGLISH);
         lastLogin.setText("Last Login: " + df.format(Vmr.getLoggedInUserInfo().getLastLoginTime()));
-
-        if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
-            Record newRecord = new Record();
-            newRecord.setRecordName("Root");
-            newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
-            dbManager.addRecord(newRecord);
-        }
-
-        HomeController homeController = new HomeController(this);
-        homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
-
-        NotificationController notificationController = new NotificationController(this);
-        notificationController.fetchNotifications();
     }
 
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
+
         assert drawer != null;
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
             return;
+        } else if(!searchView.isIconified()){
+            searchView.setIconified(true);
         } else if (doubleBackToExitPressedOnce) {
             super.onBackPressed();
             Vmr.resetApp();
@@ -323,6 +356,21 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    public void setBackButton(boolean isEnabled) {
+        if(isEnabled){
+            drawerToggle.setDrawerIndicatorEnabled(false);
+            drawerToggle.syncState();
+            if(getSupportActionBar() != null)
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        } else {
+            if(getSupportActionBar() != null)
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+            drawerToggle.setDrawerIndicatorEnabled(true);
+            drawerToggle.syncState();
+        }
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
     }
@@ -366,6 +414,10 @@ public class HomeActivity extends AppCompatActivity
 
     public void setSendToMyRecords(Interaction.HomeToMyRecordsInterface sendToMyRecords) {
         this.sendToMyRecords = sendToMyRecords;
+    }
+
+    public void setHomeClickListener(Interaction.OnHomeClickListener homeClickListener) {
+        this.homeClickListener = homeClickListener;
     }
 
     @Override

@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -202,6 +205,13 @@ public class IndexDialog extends DialogFragment
 
             }
         });
+
+        getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialog) {
+
+            }
+        });
     }
 
     @Override
@@ -352,7 +362,6 @@ public class IndexDialog extends DialogFragment
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         if (position == 0) {
             indexFormLayout.setVisibility(View.GONE);
-
         } else {
             recordDocType = classificationsMap.get(classificationsList.get(position));
             HomeController requestController = new HomeController(new VmrResponseListener.OnFetchProperties() {
@@ -386,6 +395,10 @@ public class IndexDialog extends DialogFragment
                     if (properties.containsKey("vmr_remindermessage")) {
                         etActionMessage.setEnabled(true);
                     }
+
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
                 }
 
                 @Override

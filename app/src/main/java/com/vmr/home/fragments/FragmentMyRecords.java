@@ -6,6 +6,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -27,10 +28,13 @@ import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,6 +80,7 @@ public class FragmentMyRecords extends Fragment
         implements
         VmrResponseListener.OnFetchRecordsListener,
         Interaction.HomeToMyRecordsInterface,
+        Interaction.OnHomeClickListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
         AddItemMenu.OnItemClickListener,
@@ -109,6 +114,7 @@ public class FragmentMyRecords extends Fragment
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
+        ((HomeActivity) getActivity()).setHomeClickListener(this);
 
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
@@ -222,15 +228,23 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == android.R.id.home)
+            VmrDebug.printLogI(this.getClass(), "Home pressed");
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
     public void onItemClick(final Record record) {
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
 
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
-            fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
 
             recordStack.push(record.getNodeRef());
+            fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
+            fragmentInteractionListener.setBackButton(true);
 
             VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
 
@@ -321,7 +335,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onCameraClick() {
+    public void onScanClick() {
         VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
         Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
@@ -401,12 +415,11 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onFolderClick() {
+    public void onNewFolderClick() {
         VmrDebug.printLogI(this.getClass(), "create folder button clicked" );
-        View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_create_folder, null);
+        final View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_create_folder, null);
 
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setView(promptsView);
+
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewFolderName);
 
@@ -448,31 +461,65 @@ public class FragmentMyRecords extends Fragment
             });
 
         // set dialog message
-        alertDialogBuilder
-            .setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        if(userInput.length() == 0) {
-                            userInput.setError("Only alphabets, numbers and spaces are allowed");
-                        } else {
-                            snackbar.show();
-                        }
-                    }
-                })
-            .setNegativeButton("Cancel",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,int id) {
-                            dialog.cancel();
-                        }
-                    })
-            .setTitle("Create New Folder");
-        // create alert dialog
-        final AlertDialog alertDialog = alertDialogBuilder.create();
+        final AlertDialog alertDialog
+                = new AlertDialog.Builder(getActivity())
+                .setView(promptsView)
+                .setCancelable(false)
+                .setTitle("Create New Folder")
+                .setPositiveButton("OK", null)
+                .setNegativeButton("Cancel", null)
+                .create();
 
         alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
-            public void onShow(DialogInterface dialogInterface) {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            public void onShow(final DialogInterface dialogInterface) {
+
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.SHOW_FORCED,0);
+
+                Button buttonPositive = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
+                buttonPositive.setEnabled(false);
+                buttonPositive.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View v) {
+                        if(userInput.length() == 0) {
+                            userInput.setError("Only alphabets, numbers and spaces are allowed");
+                        } else if(checkRecordWithNameAlreadyExist(userInput.getText().toString())) {
+                            userInput.setError("Folder with same name already exists");
+                        } else {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(v.getWindowToken(),0);
+                            dialogInterface.dismiss();
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    snackbar.show();
+                                }
+                            }, 1000);
+                        }
+                    }
+
+                    private boolean checkRecordWithNameAlreadyExist(String s) {
+                        for (Record r : dbManager.getFolders(recordStack.peek())) {
+                            if(r.getRecordName().equals(s)){
+                                return true;
+                            }
+                        }
+                        return false;
+                    }
+                });
+
+                Button buttonNegative = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_NEGATIVE);
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+
+                    @Override
+                    public void onClick(View view) {
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+                        dialogInterface.dismiss();
+                    }
+                });
             }
         });
 
@@ -495,7 +542,7 @@ public class FragmentMyRecords extends Fragment
 
         // show it
         alertDialog.show();
-            }
+    }
 
     @Override
     public void onAddItemsMenuDismiss() {
@@ -1033,48 +1080,49 @@ public class FragmentMyRecords extends Fragment
         view.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                    if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
-                        recordStack.pop();
-                        if (recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
-                            fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
-                        } else {
-                            fragmentInteractionListener.onFragmentInteraction(dbManager.getRecord(recordStack.peek()).getRecordName());
-                        }
-
-                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
-
-                        if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
-                            if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 60 * 1000))) {
-                                refreshFolder();
-                                mSwipeRefreshLayout.setRefreshing(true);
-                                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
-                            } else {
-                                records = dbManager.getAllRecords(recordStack.peek());
-                                recordsAdapter.updateDataset(records);
-                                if(records.isEmpty()){
-                                    mRecyclerView.setVisibility(View.GONE);
-                                    mTextView.setVisibility(View.VISIBLE);
-                                } else {
-                                    mRecyclerView.setVisibility(View.VISIBLE);
-                                    mTextView.setVisibility(View.GONE);
-                                }
-                            }
-                        } else {
-                            refreshFolder();
-                            mSwipeRefreshLayout.setRefreshing(true);
-                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
-                        }
-                        return true;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+                return i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP && switchToParent();
             }
         });
+    }
+
+    private boolean switchToParent() {
+        VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+        if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+            recordStack.pop();
+            if (recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+                fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
+                fragmentInteractionListener.setBackButton(false);
+            } else {
+                fragmentInteractionListener.onFragmentInteraction(dbManager.getRecord(recordStack.peek()).getRecordName());
+            }
+
+            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+
+            if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
+                if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 60 * 1000))) {
+                    refreshFolder();
+                    mSwipeRefreshLayout.setRefreshing(true);
+                    VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+                } else {
+                    records = dbManager.getAllRecords(recordStack.peek());
+                    recordsAdapter.updateDataset(records);
+                    if(records.isEmpty()){
+                        mRecyclerView.setVisibility(View.GONE);
+                        mTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        mRecyclerView.setVisibility(View.VISIBLE);
+                        mTextView.setVisibility(View.GONE);
+                    }
+                }
+            } else {
+                refreshFolder();
+                mSwipeRefreshLayout.setRefreshing(true);
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void setupRecyclerView(View view) {
@@ -1113,7 +1161,14 @@ public class FragmentMyRecords extends Fragment
         homeController.fetchAllFilesAndFolders(recordStack.peek());
     }
 
+    @Override
+    public void onHomeClick() {
+        VmrDebug.printLogI(this.getClass(), "Home button clicked.");
+        switchToParent();
+    }
+
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String title);
+        void setBackButton(boolean value);
     }
 }

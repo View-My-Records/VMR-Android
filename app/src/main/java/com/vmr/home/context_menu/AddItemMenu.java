@@ -35,7 +35,7 @@ public class AddItemMenu extends BottomSheetDialogFragment {
         cameraImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onCameraClick();
+                itemClickListener.onScanClick();
                 dismiss();
             }
         });
@@ -51,7 +51,7 @@ public class AddItemMenu extends BottomSheetDialogFragment {
         createFolder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onFolderClick();
+                itemClickListener.onNewFolderClick();
                 dismiss();
             }
         });
@@ -64,9 +64,9 @@ public class AddItemMenu extends BottomSheetDialogFragment {
     }
 
     public interface OnItemClickListener{
-        void onCameraClick();
+        void onScanClick();
         void onFileClick();
-        void onFolderClick();
+        void onNewFolderClick();
         void onAddItemsMenuDismiss();
     }
 }
