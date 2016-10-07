@@ -1,9 +1,11 @@
 package com.vmr.login;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.BuildConfig;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -79,6 +81,11 @@ public class LoginActivity extends AppCompatActivity
             LoginSettingsDialog settingsDialog = new  LoginSettingsDialog();
             settingsDialog.show(fm, "Settings");
             return true;
+        } else if (id == R.id.action_about) {
+            new AlertDialog.Builder(this)
+                    .setTitle("About")
+                    .setMessage("Version Code: " + BuildConfig.VERSION_CODE + "\n" + "Version Name: " + BuildConfig.VERSION_NAME)
+                    .show();
         }
 
         return super.onOptionsItemSelected(item);
