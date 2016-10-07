@@ -289,6 +289,10 @@ public class DbManager {
         return this.notificationDAO.getAllNotifications();
     }
 
+    public List<Notification> getAllUnreadNotifications() {
+        return this.notificationDAO.getAllUnreadNotifications();
+    }
+
     public void updateAllNotifications(List<Notification> notifications) {
         this.notificationDAO.updateAllNotifications(notifications);
     }

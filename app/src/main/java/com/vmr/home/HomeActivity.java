@@ -34,6 +34,7 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.data_provider.SearchHistoryProvider;
 import com.vmr.db.DbManager;
+import com.vmr.db.notification.Notification;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.activity.InboxActivity;
@@ -480,12 +481,15 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchNotificationsSuccess(List<NotificationItem> notificationItemList) {
-        if(notificationItemList.size() > 0) {
+        if( notificationItemList != null && notificationItemList.size() > 0)
+            dbManager.updateAllNotifications(Notification.getNotificationList(notificationItemList));
+
+        List<Notification> notifications = dbManager.getAllUnreadNotifications();
+        if(notifications.size() > 0) {
             notificationButton.setImageResource(R.drawable.ic_notifications_with_badge_black_24dp);
         } else {
             notificationButton.setImageResource(R.drawable.ic_notifications_black_24dp);
         }
-
     }
 
     @Override

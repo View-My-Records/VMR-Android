@@ -142,7 +142,7 @@ public class InboxActivity extends AppCompatActivity
         if(notificationItemList != null)
             dbManager.updateAllNotifications(Notification.getNotificationList(notificationItemList));
 
-        notifications =dbManager.getAllNotifications();
+        notifications = dbManager.getAllNotifications();
         notificationAdapter.updateDataset(notifications);
 
         mSwipeRefreshLayout.setRefreshing(false);

@@ -55,6 +55,31 @@ public class NotificationDAO {
         return notifications;
     }
 
+    public List<Notification> getAllUnreadNotifications(){
+        List<Notification> notifications = new ArrayList<>();
+        Cursor c = db.query(
+                DbConstants.TABLE_INBOX, // Table Name
+                DbConstants.INBOX_COLUMNS, // Select columns
+                DbConstants.INBOX_MASTER_OWNER + "=? AND " + DbConstants.INBOX_READ_FLAG + "=?", // where
+                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), String.valueOf(0) }, // user id
+                null, // group by
+                null, // having
+                DbConstants.INBOX_CREATION_DATE + " DESC ", // order by
+                null );
+
+        if (c != null && c.moveToFirst()) {
+            do {
+                Notification notification = buildFromCursor(c);
+                if (notification != null) {
+                    notifications.add(notification);
+                }
+            } while (c.moveToNext());
+        }
+
+        VmrDebug.printLogI(this.getClass(), notifications.size() + " Notifications retrieved");
+        return notifications;
+    }
+
     public void updateAllNotifications(List<Notification> notifications){
         for (Notification notification : notifications) {
             if(!checkNotification(notification.getId())){
