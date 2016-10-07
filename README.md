@@ -2,4 +2,4 @@
 
 Repository for VMR Android App
 
-![Travis-ci](https://api.travis-ci.org/AbhijitParate/VMR-Android.svg)
+[![Build Status](https://travis-ci.com/AbhijitParate/VMR-Android.svg?token=ixkb6BDi9qHrv9ARLkRX&branch=master)](https://travis-ci.com/AbhijitParate/VMR-Android)
