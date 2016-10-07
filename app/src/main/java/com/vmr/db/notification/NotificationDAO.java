@@ -93,7 +93,6 @@ public class NotificationDAO {
     public boolean updateNotifications(Notification notification){
         ContentValues contentValues = new ContentValues();
 //        contentValues.put(DbConstants.INBOX_MASTER_OWNER  , notification.getMasterOwner());
-//        contentValues.put(DbConstants.INBOX_ID  , notification.getId());
         contentValues.put(DbConstants.INBOX_TYPE, notification.getType());
         contentValues.put(DbConstants.INBOX_SUBJECT, notification.getSubject());
         contentValues.put(DbConstants.INBOX_HAS_BODY, notification.hasBody());
