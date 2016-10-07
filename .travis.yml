@@ -14,7 +14,11 @@ android:
   - extra-android-m2repository
   - extra-android-support
 
-licenses: - '.+'
+  licenses:
+      - 'android-sdk-preview-license-52d11cd2'
+      - 'android-sdk-license-.+'
+      - 'google-gdk-license-.+'
+      - ".+"
 
 before_install:
   - chmod +x gradlew
