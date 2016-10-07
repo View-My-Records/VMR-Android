@@ -9,11 +9,12 @@ android:
   - tools
   - build-tools-24.2.1
   - android-24
-licenses:
-  - 'android-sdk-preview-license-.+'
-  - 'android-sdk-license-.+'
-  - 'google-gdk-license-.+'
-  - 'build-tools-.+'
+  - extra
+  - extra-google-m2repository
+  - extra-android-m2repository
+  - extra-android-support
+
+licenses: - '.+'
 
 before_install:
   - chmod +x gradlew
