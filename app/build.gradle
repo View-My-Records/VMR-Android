@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 
 def getVersionCode = { ->
     try {
-        def code = new ByteArrayOutputStream()
+        def stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'tag', '--list'
-            standardOutput = code
+            commandLine 'git', 'rev-list', '--first-parent', '--count', 'master'
+            standardOutput = stdout
         }
-        return code.toString().split("\n").size()
+        return Integer.parseInt(stdout.toString().trim())
     }
     catch (ignored) {
         return -1;
@@ -38,6 +38,8 @@ android {
         targetSdkVersion 24
         versionCode getVersionCode()
         versionName getVersionName()
+//        versionName gitVersionCode
+//        versionCode gitVersionName
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
