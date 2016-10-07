@@ -30,13 +30,11 @@ def getVersionName = { ->
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.3"
-
+    buildToolsVersion '24.0.1'
     defaultConfig {
         applicationId "com.vmr"
         minSdkVersion 16
-        targetSdkVersion 24
-        versionCode getVersionCode()
+        targetSdkVersion 23
         versionName getVersionName()
 //        versionName gitVersionCode
 //        versionCode gitVersionName
@@ -52,11 +50,13 @@ android {
         exclude 'META-INF/LICENSE'
     }
     useLibrary 'org.apache.http.legacy'
+    productFlavors {
+    }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile group: 'org.apache.httpcomponents', name: 'httpclient-android', version: '4.3.5.1'
+    compile 'org.apache.httpcomponents:httpclient-android:4.3.5.1'
     compile('org.apache.httpcomponents:httpmime:4.3') {
         exclude module: "httpclient"
     }
