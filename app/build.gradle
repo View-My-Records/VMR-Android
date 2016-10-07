@@ -18,7 +18,8 @@ def getVersionName = { ->
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
-            commandLine 'git', 'describe', '--tags', '--dirty'
+//            commandLine 'git', 'describe', '--tags', '--dirty'
+            commandLine 'git', 'log', '-1', '--pretty=format:%cd'
             standardOutput = stdout
         }
         return stdout.toString().trim()
@@ -34,10 +35,9 @@ android {
     defaultConfig {
         applicationId "com.vmr"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionName getVersionName()
-//        versionName gitVersionCode
-//        versionCode gitVersionName
+        versionCode getVersionCode()
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

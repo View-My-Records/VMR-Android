@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity
         } else if (id == R.id.action_about) {
             new AlertDialog.Builder(this)
                     .setTitle("About")
-                    .setMessage("Version Code: " + BuildConfig.VERSION_CODE + "\n\n" + "Version Name: " + BuildConfig.VERSION_NAME)
+                    .setMessage("Version Code: " + BuildConfig.VERSION_CODE + "\n\n" + "Version TimeStamp: " + BuildConfig.VERSION_NAME)
                     .show();
         }
 
