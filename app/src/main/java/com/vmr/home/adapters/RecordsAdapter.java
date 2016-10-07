@@ -245,6 +245,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
 
         public void setItemTimeStamp(String itemTimeStamp) {
+            this.itemTimeStamp.setVisibility(View.GONE);
             this.itemTimeStamp.setText(itemTimeStamp);
         }
 
