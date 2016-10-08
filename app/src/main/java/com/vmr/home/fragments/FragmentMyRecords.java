@@ -194,13 +194,16 @@ public class FragmentMyRecords extends Fragment
 
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
 
-        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
-            VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
+//        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+//            VmrDebug.printLogI(this.getClass(), "Before->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
+
         dbManager.updateTimestamp(recordStack.peek());
-        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
-            VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString()+"");
+
+//        if(dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null)
+//            VmrDebug.printLogI(this.getClass(), "After->" + dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().toString());
 
         records = dbManager.getAllRecords(recordStack.peek());
+
         recordsAdapter.updateDataset(records);
 
         mSwipeRefreshLayout.setRefreshing(false);
@@ -1230,7 +1233,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "newState->"+newState);
+//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "newState->"+newState);
                 if (newState == 0){
                     mFabAddItem.animate().translationY(0).setInterpolator(new DecelerateInterpolator(2)).start();
                 } else {

@@ -310,11 +310,10 @@ public class RecordDAO {
     }
 
     public void removeAllRecords(String parentNodeRef){
-        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Records deleted");
-        db.rawQuery("DELETE FROM " + DbConstants.TABLE_RECORD
-                + " WHERE "
-                + DbConstants.RECORD_PARENT_NODE_REF + "=?" ,
-                new String[]{ parentNodeRef});
+        int result = db.delete( DbConstants.TABLE_RECORD ,
+                DbConstants.RECORD_PARENT_NODE_REF + "=?" ,
+                new String[]{ parentNodeRef });
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), result + " Records deleted");
     }
 
     public void removeAllRecords(String parentNodeRef, VmrFolder vmrFolder){
@@ -324,14 +323,13 @@ public class RecordDAO {
             notInClause.add(vmrItem.getNodeRef());
         }
 
-        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Records deleted");
-        String notInClauseString = notInClause.toString().replace("[", "'").replace("]", "'").replace( ",", "\",\"");
-        db.rawQuery("DELETE FROM " + DbConstants.TABLE_RECORD
-                + " WHERE "
-                + DbConstants.RECORD_PARENT_NODE_REF + "=?"
+        String notInClauseString = notInClause.toString().replace("[", "\"").replace("]", "\"").replace( ",", "\",\"");
+        int result = db.delete(DbConstants.TABLE_RECORD,
+                DbConstants.RECORD_PARENT_NODE_REF + "=?"
                 + " AND "
                 + DbConstants.RECORD_NODE_REF + " NOT IN ( ? )" ,
                 new String[]{ parentNodeRef , notInClauseString});
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), result + " Records deleted");
     }
 
     private Record buildFromCursor(Cursor c) {
