@@ -91,8 +91,9 @@ class DbHelper extends SQLiteOpenHelper {
 
     private static final String createTableInbox
             = "CREATE TABLE "        + DbConstants.TABLE_INBOX + " (" +
-            DbConstants.INBOX_ID            + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.INBOX_MASTER_ID     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
             DbConstants.INBOX_MASTER_OWNER  + " TEXT, " +
+            DbConstants.INBOX_ID            + " INTEGER, " +
             DbConstants.INBOX_TYPE          + " INTEGER, " +
             DbConstants.INBOX_SUBJECT       + " TEXT, " +
             DbConstants.INBOX_HAS_BODY      + " NUMERIC, " +

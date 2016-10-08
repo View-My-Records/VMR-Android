@@ -160,8 +160,9 @@ public class DbConstants {
             RECENT_LOCATION,
             RECENT_LAST_ACCESSED
     };
-    public static final String INBOX_ID           = "INBOX_ID";
+    public static final String INBOX_MASTER_ID    = "INBOX_MASTER_ID";
     public static final String INBOX_MASTER_OWNER = "MASTER_OWNER";
+    public static final String INBOX_ID           = "INBOX_ID";
     public static final String INBOX_TYPE         = "TYPE";
     public static final String INBOX_SUBJECT      = "SUBJECT";
     public static final String INBOX_HAS_BODY     = "HAS_BODY";
@@ -174,8 +175,9 @@ public class DbConstants {
     //All Columns
     public static final String[] INBOX_COLUMNS
             = {
-            INBOX_ID,
+            INBOX_MASTER_ID,
             INBOX_MASTER_OWNER,
+            INBOX_ID,
             INBOX_TYPE,
             INBOX_SUBJECT,
             INBOX_HAS_BODY,
@@ -189,5 +191,5 @@ public class DbConstants {
 
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 14;
+    static final int VERSION = 15;
 }

@@ -145,7 +145,10 @@ public class NotificationDAO {
         Cursor c = db.query(true,
                 DbConstants.TABLE_INBOX,
                 new String[]{DbConstants.INBOX_ID},
-                DbConstants.INBOX_ID + "=?", new String[]{inboxId},
+                DbConstants.INBOX_MASTER_OWNER + "=? AND "
+                        + DbConstants.INBOX_ID + "=?",
+                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                        inboxId},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
             c.close();
@@ -156,7 +159,11 @@ public class NotificationDAO {
 
     public boolean removeNotification(String inboxId){
         if(DEBUG) VmrDebug.printLogI(this.getClass(), inboxId + " deleted");
-        return db.delete(DbConstants.TABLE_INBOX, DbConstants.INBOX_ID + "=?", new String[]{inboxId + ""}) > 0;
+        return db.delete(DbConstants.TABLE_INBOX,
+                DbConstants.INBOX_MASTER_OWNER + "=? AND "
+                        + DbConstants.INBOX_ID + "=?",
+                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                        inboxId}) > 0;
     }
 
     public boolean updateMessageBody(String inboxId, String messageBody){
@@ -168,8 +175,10 @@ public class NotificationDAO {
         return db.update(
                 DbConstants.TABLE_INBOX,
                 contentValues,
-                DbConstants.INBOX_ID + "=?",
-                new String[]{inboxId + "" }) > 0;
+                DbConstants.INBOX_MASTER_OWNER + "=? AND "
+                        + DbConstants.INBOX_ID + "=?",
+                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                        inboxId}) > 0;
     }
 
     public void removeAllNotifications(String owner){

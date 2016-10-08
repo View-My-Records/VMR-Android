@@ -13,6 +13,7 @@ import java.util.List;
 
 public class Notification {
 
+    private long masterId;
     private String masterOwner;
 
     private String    id;
@@ -32,6 +33,7 @@ public class Notification {
 
         for (NotificationItem i : notificationItemList) {
             notificationItem = new Notification();
+            notificationItem.setMasterId(0);
             notificationItem.setMasterOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
             notificationItem.setId(i.getInboxId());
             notificationItem.setType(i.getMailType());
@@ -48,6 +50,14 @@ public class Notification {
 
 
         return dbNotificationList;
+    }
+
+    public long getMasterId() {
+        return masterId;
+    }
+
+    public void setMasterId(long masterId) {
+        this.masterId = masterId;
     }
 
     public String getMasterOwner() {
