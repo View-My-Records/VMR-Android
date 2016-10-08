@@ -31,7 +31,8 @@ public class NotificationItem {
         try {
             this.setInboxId(inboxJson.getString("inboxId"));
             this.setMailSubject(inboxJson.getString("mailSubject"));
-            this.setMailBody(inboxJson.getString("mailBody"));
+//            this.setMailBody(inboxJson.getString("mailBody"));
+            this.setMailBody("");
             this.setMailType(inboxJson.getInt("mailType"));
             this.setUserdetails(new UserDetails(inboxJson.getJSONObject("userdetails")));
             result = df.parse(inboxJson.getString("createdOn"));
