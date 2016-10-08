@@ -1,20 +1,19 @@
 package com.vmr.login.fragment.dialog;
 
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SwitchCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -35,10 +34,18 @@ import static org.apache.http.HttpStatus.SC_OK;
 
 public class LoginSettingsDialog extends DialogFragment {
 
+    AlertDialog dialog;
+
     SwitchCompat swOffline;
     SwitchCompat swCustom;
     Spinner spUrlType;
-    TextView tvCustomUrl;
+    EditText etCustomUrl;
+
+    Button buttonPositive;
+    Button buttonNegative;
+    Button buttonCheck;
+
+    boolean urlValidFlag = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,22 +62,96 @@ public class LoginSettingsDialog extends DialogFragment {
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         View dialogView = getActivity().getLayoutInflater().inflate(R.layout.dialog_fragment_login_settings, null);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        dialog = new AlertDialog.Builder(getActivity())
                 .setTitle("Settings")
                 .setView(dialogView)
                 .setCancelable(false)
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                })
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setNeutralButton("Check", null)
                 .create();
 
         setupDialogView(dialogView);
-        setupPreferences();
+        setupDialogButtons();
 
         return dialog;
 
+    }
+
+    private void setupDialogButtons() {
+        dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+
+                buttonPositive = ((android.support.v7.app.AlertDialog) dialog).getButton(DialogInterface.BUTTON_POSITIVE);
+                buttonNegative = ((android.support.v7.app.AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEGATIVE);
+                buttonCheck    = ((android.support.v7.app.AlertDialog) dialog).getButton(DialogInterface.BUTTON_NEUTRAL);
+
+                final LoginController checkUrlController = new LoginController(new VmrResponseListener.OnCheckUrlResponse() {
+                    @Override
+                    public void onCheckUrlResponseSuccess(Integer responseCode) {
+                        if(responseCode == SC_OK ) {
+                            Toast.makeText(getActivity(), "Connection successful", Toast.LENGTH_SHORT).show();
+                            urlValidFlag = true;
+                            buttonPositive.setEnabled(true);
+                        } else {
+                            etCustomUrl.setError("Invalid URL");
+                            urlValidFlag = false;
+                            buttonPositive.setEnabled(false);
+                        }
+                    }
+
+                    @Override
+                    public void onCheckUrlResponseFailure(VolleyError error) {
+                        etCustomUrl.setError("Invalid URL");
+                        urlValidFlag = false;
+                        buttonPositive.setEnabled(false);
+                    }
+                });
+
+                buttonPositive.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(swOffline.isChecked()) {
+                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.OFFLINE);
+                        } else {
+                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
+                        }
+
+                        if(swCustom.isChecked()) {
+                            if (urlValidFlag) {
+                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.CUSTOM);
+                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE, spUrlType.getSelectedItem().toString());
+                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, etCustomUrl.getText().toString());
+                                dialog.dismiss();
+                            } else {
+                                checkUrlController.checkUrl(etCustomUrl.getText().toString());
+                            }
+                        } else {
+                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
+                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
+                            dialog.dismiss();
+                        }
+                    }
+                });
+
+                buttonNegative.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                buttonCheck.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        checkUrlController.checkUrl(etCustomUrl.getText().toString());
+                    }
+                });
+
+                setupPreferences();
+            }
+        });
     }
 
     private void setupPreferences() {
@@ -85,27 +166,47 @@ public class LoginSettingsDialog extends DialogFragment {
         if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL) == null){
             PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
             PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE, PrefConstants.URLType.STANDARD);
+            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
         } else if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             swCustom.setChecked(true);
+            buttonCheck.setEnabled(true);
         } else {
             swCustom.setChecked(false);
+            buttonCheck.setEnabled(false);
         }
+
+        buttonPositive.setEnabled(false);
     }
 
     private void setupDialogView(View dialogView) {
+
         swOffline = (SwitchCompat) dialogView.findViewById(R.id.swOfflineMode);
         swCustom = (SwitchCompat) dialogView.findViewById(R.id.swCustomUrl);
         spUrlType = (Spinner) dialogView.findViewById(R.id.spUrlType);
-        tvCustomUrl = (TextView) dialogView.findViewById(R.id.tvCustomUrl);
+        etCustomUrl = (EditText) dialogView.findViewById(R.id.tvCustomUrl);
+
+        etCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+        etCustomUrl.setSelection(etCustomUrl.getText().length());
 
         swOffline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked){
-                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.OFFLINE);
-                } else {
-                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
-                }
+//                if(isChecked) {
+//                    if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE)
+//                            .equals(PrefConstants.ApplicationMode.OFFLINE)) {
+//                        buttonPositive.setEnabled(false);
+//                    } else {
+//                        buttonPositive.setEnabled(true);
+//                    }
+//                } else {
+//                    if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE)
+//                            .equals(PrefConstants.ApplicationMode.ONLINE)) {
+//                        buttonPositive.setEnabled(false);
+//                    } else {
+//                        buttonPositive.setEnabled(true);
+//                    }
+//                }
+                buttonPositive.setEnabled(true);
                 VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE));
             }
         });
@@ -114,114 +215,66 @@ public class LoginSettingsDialog extends DialogFragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if(isChecked){
-                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.CUSTOM);
-                    tvCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
-                    spUrlType.setVisibility(View.VISIBLE);
+//                    spUrlType.setVisibility(View.VISIBLE);
+//                    etCustomUrl.setVisibility(View.VISIBLE);
+                    spUrlType.setEnabled(true);
+                    etCustomUrl.setEnabled(true);
+                    buttonCheck.setEnabled(true);
+                    buttonPositive.setEnabled(false);
                 } else {
-                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
-                    spUrlType.setVisibility(View.GONE);
-                    tvCustomUrl.setVisibility(View.GONE);
-                    PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
+//                    spUrlType.setVisibility(View.GONE);
+//                    etCustomUrl.setVisibility(View.GONE);
+                    spUrlType.setEnabled(false);
+                    etCustomUrl.setEnabled(false);
+                    buttonCheck.setEnabled(false);
+                    buttonPositive.setEnabled(true);
                 }
+
                 VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
             }
         });
 
         if (swCustom.isChecked()) {
-            spUrlType.setVisibility(View.VISIBLE);
-            tvCustomUrl.setVisibility(View.VISIBLE);
+            spUrlType.setEnabled(true);
+            etCustomUrl.setEnabled(true);
         } else {
-            spUrlType.setVisibility(View.GONE);
-            tvCustomUrl.setVisibility(View.GONE);
+            spUrlType.setEnabled(false);
+            etCustomUrl.setEnabled(false);
         }
 
-        spUrlType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//        spUrlType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE)
+//                                        .equals((getResources().getStringArray(R.array.list_url_types))[position])) {
+//                    buttonPositive.setEnabled(false);
+//                } else {
+//                    buttonPositive.setEnabled(true);
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+////                tvCustomUrl.setVisibility(View.GONE);
+//            }
+//        });
+
+        etCustomUrl.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if((getResources().getStringArray(R.array.list_url_types))[position].equals(PrefConstants.URLType.STANDARD)) {
-                    tvCustomUrl.setVisibility(View.GONE);
+            public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if(!Patterns.WEB_URL.matcher(editable).matches()){
+                    buttonCheck.setEnabled(false);
                 } else {
-                    tvCustomUrl.setVisibility(View.VISIBLE);
+                    buttonCheck.setEnabled(true);
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                tvCustomUrl.setVisibility(View.GONE);
+                urlValidFlag = false;
             }
         });
-
-        tvCustomUrl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                View promptsView = View.inflate(getActivity(), R.layout.dialog_fragment_custom_url, null);
-
-
-                final EditText userInput = (EditText) promptsView.findViewById(R.id.etCustomUrl);
-                userInput.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
-                userInput.setSelection(userInput.getText().length());
-
-                final LoginController checkUrlController = new LoginController(new VmrResponseListener.OnCheckUrlResponse() {
-                    @Override
-                    public void onCheckUrlResponseSuccess(Integer responseCode) {
-                        if(responseCode == SC_OK ) {
-                            Toast.makeText(getActivity(), "Connection successful", Toast.LENGTH_SHORT).show();
-                        } else {
-                            userInput.setError("Invalid URL");
-                        }
-                    }
-
-                    @Override
-                    public void onCheckUrlResponseFailure(VolleyError error) {
-                        userInput.setError("Invalid URL");
-                    }
-                });
-
-                final AlertDialog customUrlEditDialog
-                        = new AlertDialog.Builder(getActivity())
-                        .setView(promptsView)
-                        .setTitle("New URL")
-                        .setCancelable(false)
-                        .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                tvCustomUrl.setText(userInput.getText().toString());
-                            }
-                        })
-                        .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .setNeutralButton("Check", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                checkUrlController.checkUrl(userInput.getText().toString());
-                            }
-                        })
-                        .create();
-
-                userInput.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence charSequence, int start, int count, int after) { }
-
-                    @Override
-                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-                    @Override
-                    public void afterTextChanged(Editable editable) {
-                        if(!Patterns.WEB_URL.matcher(editable).matches()){
-                            customUrlEditDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-                            customUrlEditDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(false);
-                        } else {
-                            customUrlEditDialog.getButton(android.support.v7.app.AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                            customUrlEditDialog.getButton(DialogInterface.BUTTON_NEUTRAL).setEnabled(true);
-                        }
-                    }
-                });
-
-                customUrlEditDialog.show();
-            }
-        });
-
     }
 }

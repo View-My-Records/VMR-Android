@@ -32,16 +32,18 @@
         android:entries="@array/list_url_types">
     </Spinner>
 
-    <TextView
+    <EditText
         android:id="@+id/tvCustomUrl"
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/spUrlType"
+        android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_/:."
         android:gravity="center_vertical"
+        android:inputType="textUri"
+        android:maxLines="1"
         android:scrollHorizontally="true"
-        android:text="http://www.customurl.com"
         android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
         android:textStyle="normal|italic" />
 
