@@ -39,20 +39,28 @@ public class VmrFolder extends VmrItem {
 
     public VmrFolder(JSONObject folderJson) {
         try {
-            this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
-            this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
-            this.setWriteFlag(folderJson.has("write") && folderJson.getBoolean("write"));
-            this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
             if(folderJson.has("folders")){
                 Object json = folderJson.get("folders");
                 if(json instanceof JSONArray) {
+                    this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
+                    this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
+                    this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
                     this.setFoldersFromJSON((JSONArray) json);
+                    this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
+                    this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
+                    this.setUnIndexedFilesFromJSON(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);
+                } else if (json instanceof JSONObject) {
+//                    this.setWriteFlag(folderJson.has("write") && folderJson.getBoolean("write"));
+//                    this.setDeleteFlag(folderJson.has("delete") && folderJson.getBoolean("delete"));
+                    this.setIndexedFilesFromJSON(null);
+                    this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
+                    this.setSharedFolder(null);
+                    this.setFoldersFromJSON(null);
+                    this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
+                    this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
+                    this.setUnIndexedFilesFromJSON(null);
                 }
             }
-            this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
-            this.setDeleteFlag(folderJson.has("delete") && folderJson.getBoolean("delete"));
-            this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
-            this.setUnIndexedFilesFromJSON(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);
         } catch (JSONException e) {
             e.printStackTrace();
         }

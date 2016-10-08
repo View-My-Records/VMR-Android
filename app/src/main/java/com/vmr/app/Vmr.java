@@ -107,7 +107,7 @@ public class Vmr extends Application {
     }
 
     public static void resetApp(){
-        Vmr.setAlfrescoTicket(null);
+//        Vmr.setAlfrescoTicket(null);
         Vmr.setLoggedInUserInfo(null);
         Vmr.setDbManager(null);
         Vmr.setUserMap(null);

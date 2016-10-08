@@ -3,6 +3,7 @@ package com.vmr.login;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -37,6 +38,7 @@ public class LoginActivity extends AppCompatActivity
         VmrResponseListener.OnFetchTicketListener,
         OnLoginClickListener {
 
+    ProgressDialog loginProgress;
     // Controller for queuing requests
     private LoginController loginController;
     private boolean remember = false;
@@ -64,6 +66,10 @@ public class LoginActivity extends AppCompatActivity
         final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
         assert viewPager != null;
         viewPager.setAdapter(adapter);
+
+        loginProgress = new ProgressDialog(this);
+        loginProgress.setMessage("Logging in...");
+        loginProgress.setCanceledOnTouchOutside(false);
     }
 
     @Override
@@ -96,10 +102,10 @@ public class LoginActivity extends AppCompatActivity
         super.onStart();
         if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
             if (!ConnectionDetector.isOnline()) {
-                Vmr.setAlfrescoTicket(null);
+//                Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
             } else {
-                loginController.fetchAlfrescoTicket();
+//                loginController.fetchAlfrescoTicket();
             }
         }
     }
@@ -109,21 +115,23 @@ public class LoginActivity extends AppCompatActivity
         super.onResume();
         if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
             if (!ConnectionDetector.isOnline()) {
-                Vmr.setAlfrescoTicket(null);
+//                Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
             } else {
-                loginController.fetchAlfrescoTicket();
+//                loginController.fetchAlfrescoTicket();
             }
         }
     }
 
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
+        loginProgress.dismiss();
         onLoginComplete(userInfo);
     }
 
     @Override
     public void onLoginFailure(VolleyError error) {
+        loginProgress.dismiss();
         Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
@@ -134,7 +142,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onFetchTicketSuccess(String ticket) {
-        Vmr.setAlfrescoTicket(ticket);
+//        Vmr.setAlfrescoTicket(ticket);
         if( Vmr.getLoggedInUserInfo() !=  null ) {
             startHomeActivity();
         }
@@ -149,11 +157,11 @@ public class LoginActivity extends AppCompatActivity
 
         Vmr.setLoggedInUserInfo(userInfo);
 
-        if(Vmr.getAlfrescoTicket() == null) {
-            loginController.fetchAlfrescoTicket();
-        } else {
+//        if(Vmr.getAlfrescoTicket() == null) {
+//            loginController.fetchAlfrescoTicket();
+//        } else {
             startHomeActivity();
-        }
+//        }
     }
 
     private void startHomeActivity(){
@@ -171,24 +179,29 @@ public class LoginActivity extends AppCompatActivity
             loginController.fetchIndividualDetail(email, password, domain);
 //        }
         this.remember = remember;
+
+        loginProgress.show();
     }
 
     @Override
     public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
         loginController.fetchFamilyDetail(username, password, accountId, domain);
         this.remember = remember;
+        loginProgress.show();
     }
 
     @Override
     public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
         loginController.fetchProfessionalDetail(username, password, accountId, domain);
         this.remember = remember;
+        loginProgress.show();
     }
 
     @Override
     public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
         loginController.fetchCorporateDetail(username, password, accountId, domain);
         this.remember = remember;
+        loginProgress.show();
     }
 
 }

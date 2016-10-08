@@ -189,8 +189,8 @@ public class FragmentMyRecords extends Fragment
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
         VmrDebug.printLogI(this.getClass(), "Records retrieved.");
 
-        if(vmrFolder.getAll().size()>0)
-            dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
+
+        dbManager.removeAllRecords(recordStack.peek(), vmrFolder);
 
         dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), recordStack.peek()));
 
@@ -672,12 +672,12 @@ public class FragmentMyRecords extends Fragment
             dbManager.addNewRecent(record);
 //            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
+                final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(File file) {
                         VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
-                        downloadPregoress.dismiss();
+                        downloadProgress.dismiss();
                         try {
                             if (file != null) {
                                 final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
@@ -708,9 +708,9 @@ public class FragmentMyRecords extends Fragment
                 });
                 dlController.downloadFile(record);
                 VmrDebug.printLogI(this.getClass(), "Downloading...");
-                downloadPregoress.setMessage("Receiving file...");
-                downloadPregoress.setCanceledOnTouchOutside(false);
-                downloadPregoress.show();
+                downloadProgress.setMessage("Receiving file...");
+                downloadProgress.setCanceledOnTouchOutside(false);
+                downloadProgress.show();
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {

@@ -9,7 +9,8 @@
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:visibility="visible">
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvInbox"
@@ -22,11 +23,12 @@
 
     <TextView
         android:id="@+id/tvEmpty"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
         android:text="No notifications"
         android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textStyle="bold"
         android:visibility="gone" />
 
 </RelativeLayout>

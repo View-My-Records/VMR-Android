@@ -128,7 +128,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
+//        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -153,7 +153,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
+//        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         RecordsRequest recordsRequest =
                 new RecordsRequest(
@@ -178,7 +178,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
 //        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListTrashBin.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_TRASH_BIN);
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
+//        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         TrashRequest trashRequest =
                 new TrashRequest(
@@ -502,7 +502,7 @@ public class HomeController {
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_SHARED_BY_ME);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, Vmr.getLoggedInUserInfo().getLoggedinUserId());
-        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
+//        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         SharedByMeRequest sharedByMeRequest =
                 new SharedByMeRequest(

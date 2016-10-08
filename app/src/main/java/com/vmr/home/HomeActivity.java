@@ -94,6 +94,7 @@ public class HomeActivity extends AppCompatActivity
     boolean doubleBackToExitPressedOnce = false;
     DrawerLayout drawerLayout;
     ActionBarDrawerToggle drawerToggle;
+    NotificationController notificationController;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     private Interaction.OnHomeClickListener homeClickListener;
     // Models
@@ -147,7 +148,11 @@ public class HomeActivity extends AppCompatActivity
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
 
-        NotificationController notificationController = new NotificationController(this);
+        notificationController = new NotificationController(this);
+        updateNotifications();
+    }
+
+    public void updateNotifications(){
         notificationController.fetchNotifications();
     }
 
@@ -379,6 +384,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+        updateNotifications();
     }
 
     @Override
@@ -494,6 +500,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchNotificationsFailure(VolleyError error) {
-
+        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
     }
 }

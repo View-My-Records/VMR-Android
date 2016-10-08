@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class RecordsRequest extends PostLoginRequest<VmrFolder> {
 
-    private boolean DEBUG = false;
+    private boolean DEBUG = true;
 
     private Map<String, String> formData;
 
