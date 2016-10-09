@@ -34,7 +34,6 @@ import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.HomeActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.context_menu.RecordOptionsMenu;
 import com.vmr.home.controller.HomeController;
@@ -98,7 +97,7 @@ public class FragmentSharedWithMe extends Fragment
         recordOptionsMenu = new RecordOptionsMenu();
         recordOptionsMenu.setOptionClickListener(this);
 
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
+        dbManager = Vmr.getDbManager();
 
         recordStack = new Stack<>();
         recordStack.push(Vmr.getVmrRootFolder().getSharedFolder());

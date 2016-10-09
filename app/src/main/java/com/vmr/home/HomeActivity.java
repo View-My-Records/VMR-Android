@@ -83,25 +83,27 @@ public class HomeActivity extends AppCompatActivity
         SearchView.OnCloseListener,
         SearchView.OnSuggestionListener {
     // Views
-    MenuItem toBeIndexed;
-    TextView accountName;
-    TextView accountEmail;
-    TextView lastLogin;
-    ImageButton settingButton;
-    ImageButton notificationButton;
+    private MenuItem toBeIndexed;
+    private TextView accountName;
+    private TextView accountEmail;
+    private TextView lastLogin;
+    private ImageButton settingButton;
+    private ImageButton notificationButton;
+    private SearchView searchView;
 
     // Variables
-    boolean doubleBackToExitPressedOnce = false;
-    DrawerLayout drawerLayout;
-    ActionBarDrawerToggle drawerToggle;
-    NotificationController notificationController;
+    private boolean backPressedOnce = false;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
+    private NotificationController notificationController;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     private Interaction.OnHomeClickListener homeClickListener;
+    private Interaction.OnPasteClickListener pasteClickListener;
+
     // Models
     private UserInfo userInfo;
     private DbManager dbManager;
 //    private SearchSuggestionAdapter mSearchViewAdapter;
-    private SearchView searchView;
 
     public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
         Intent intent = new Intent(context, HomeActivity.class);
@@ -242,26 +244,32 @@ public class HomeActivity extends AppCompatActivity
             return;
         } else if(!searchView.isIconified()){
             searchView.setIconified(true);
-        } else if (doubleBackToExitPressedOnce) {
+        } else if (backPressedOnce) {
             super.onBackPressed();
             Vmr.resetApp();
             finish();
             return;
         }
 
-        this.doubleBackToExitPressedOnce = true;
+        this.backPressedOnce = true;
         Toast.makeText(this, "Please press BACK again to exit", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                doubleBackToExitPressedOnce=false;
+                backPressedOnce =false;
             }
         }, 2000);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
+        super.onPrepareOptionsMenu(menu);
+        if(Vmr.getClipBoard() == null){
+            menu.findItem(R.id.action_paste).setEnabled(false);
+        } else {
+            menu.findItem(R.id.action_paste).setEnabled(true);
+        }
+        return true;
     }
 
     @Override
@@ -271,12 +279,14 @@ public class HomeActivity extends AppCompatActivity
         searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         if(null!=searchManager ) {
-            searchView.setSearchableInfo(searchManager
-                    .getSearchableInfo(new ComponentName(this, SearchResultActivity.class)));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(
+                            new ComponentName(this, SearchResultActivity.class))
+                    );
         }
         searchView.setOnQueryTextListener(this);
         searchView.setOnCloseListener(this);
         searchView.setIconifiedByDefault(true);
+
         return true;
     }
 
@@ -289,6 +299,9 @@ public class HomeActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
+            return true;
+        } else if (id == R.id.action_paste) {
+            pasteClickListener.onPasteClick();
             return true;
         } else if (id == R.id.action_layout) {
             return true;
@@ -390,15 +403,6 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public void onStop() {
         super.onStop();
-
-    }
-
-    public UserInfo getUserInfo() {
-        return userInfo;
-    }
-
-    public DbManager getDbManager() {
-        return dbManager;
     }
 
     @Override
@@ -425,6 +429,10 @@ public class HomeActivity extends AppCompatActivity
 
     public void setHomeClickListener(Interaction.OnHomeClickListener homeClickListener) {
         this.homeClickListener = homeClickListener;
+    }
+
+    public void setPasteClickListener(Interaction.OnPasteClickListener pasteClickListener) {
+        this.pasteClickListener = pasteClickListener;
     }
 
     @Override

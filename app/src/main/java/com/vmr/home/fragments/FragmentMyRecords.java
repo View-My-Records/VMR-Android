@@ -13,12 +13,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -67,9 +69,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Stack;
 
@@ -82,18 +86,18 @@ public class FragmentMyRecords extends Fragment
         VmrResponseListener.OnFetchRecordsListener,
         Interaction.HomeToMyRecordsInterface,
         Interaction.OnHomeClickListener,
+        Interaction.OnPasteClickListener,
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
         AddItemMenu.OnItemClickListener,
         RecordOptionsMenu.OnOptionClickListener
 {
-
-
     private static int FILE_PICKER_INTENT = 100;
-
+    private static int REQUEST_IMAGE_CAPTURE = 101;
+    File photoFile;
+    private boolean DEBUG = true;
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
-
     // Views
     private FloatingActionButton mFabAddItem;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -101,15 +105,12 @@ public class FragmentMyRecords extends Fragment
     private TextView mTextView;
     private AddItemMenu addItemMenu;
     private RecordOptionsMenu recordOptionsMenu;
-
     // Controllers
     private HomeController homeController;
     private DbManager dbManager;
-
     // Variables
     private List<Record> records = new ArrayList<>();
     private RecordsAdapter recordsAdapter;
-
     // Stack
     private Stack<String> recordStack;
 
@@ -119,6 +120,7 @@ public class FragmentMyRecords extends Fragment
         setRetainInstance(true);
         ((HomeActivity) getActivity()).setSendToMyRecords(this);
         ((HomeActivity) getActivity()).setHomeClickListener(this);
+        ((HomeActivity) getActivity()).setPasteClickListener(this);
 
         homeController = new HomeController(this);
         recordsAdapter = new RecordsAdapter(records, this, this);
@@ -126,7 +128,7 @@ public class FragmentMyRecords extends Fragment
         addItemMenu = new AddItemMenu();
         addItemMenu.setItemClickListener(this);
 
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
+        dbManager = Vmr.getDbManager();
 
         recordOptionsMenu = new RecordOptionsMenu();
         recordOptionsMenu.setOptionClickListener(this);
@@ -134,8 +136,8 @@ public class FragmentMyRecords extends Fragment
         recordStack = new Stack<>();
         recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
 
-        VmrDebug.printLogI(this.getClass(), recordStack.peek());
-        VmrDebug.printLogI(this.getClass(), Vmr.getLoggedInUserInfo().getRootNodref());
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), recordStack.peek());
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), Vmr.getLoggedInUserInfo().getRootNodref());
     }
 
     @Override
@@ -248,12 +250,12 @@ public class FragmentMyRecords extends Fragment
 
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
-
             recordStack.push(record.getNodeRef());
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
             fragmentInteractionListener.setBackButton(true);
 
-            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
+//            if (DEBUG)
+//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp()+"");
 
             if ( dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp() != null) {
                 if (dbManager.getRecord(recordStack.peek()).getLastUpdateTimestamp().before(new Date(System.currentTimeMillis() - 5* 60 * 1000))) {
@@ -277,16 +279,16 @@ public class FragmentMyRecords extends Fragment
                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
             }
         } else {
-            VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            if(DEBUG) VmrDebug.printLogI(record.getRecordName() + " File clicked");
             dbManager.addNewRecent(record);
 //            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                final ProgressDialog downloadPregoress = new ProgressDialog(getActivity());
+                final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
                 HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(File file) {
                         VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
-                        downloadPregoress.dismiss();
+                        downloadProgress.dismiss();
                         try {
                             if (file != null) {
                                 final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
@@ -317,9 +319,9 @@ public class FragmentMyRecords extends Fragment
                 });
                 dlController.downloadFile(record);
                 VmrDebug.printLogI(this.getClass(), "Downloading...");
-                downloadPregoress.setMessage("Receiving file...");
-                downloadPregoress.setCanceledOnTouchOutside(false);
-                downloadPregoress.show();
+                downloadProgress.setMessage("Receiving file...");
+                downloadProgress.setCanceledOnTouchOutside(false);
+                downloadProgress.show();
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {
@@ -335,7 +337,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onItemOptionsClick(Record record, View view) {
-        VmrDebug.printLine(record.getRecordName() + " Options clicked");
+        if(DEBUG) VmrDebug.printLine(record.getRecordName() + " Options clicked");
         recordOptionsMenu.setRecord(record);
         mFabAddItem.hide();
         recordOptionsMenu.show(getActivity().getSupportFragmentManager(), recordOptionsMenu.getTag());
@@ -343,73 +345,57 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onScanClick() {
-        VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
+//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        if(PermissionHandler.checkPermission(Manifest.permission.CAMERA)) {
+            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                    photoFile = createImageFile();
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                } else {
+                    Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                }
+                            })
+                            .show();
+                }
+            }
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to use Camera", Snackbar.LENGTH_LONG)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.CAMERA);
+                        }
+                    })
+                    .show();
+        }
+    }
+
+    private File createImageFile() {
+        // Create an image file name
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), "VMR");
+
+        if (!mediaStorageDir.exists()){
+            if (!mediaStorageDir.mkdirs()){
+                return null;
+            }
+        }
+
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        return new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
     }
 
     @Override
     public void onFileClick() {
-        VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
         if(PermissionHandler.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
-//            FragmentManager fm = getActivity().getFragmentManager();
-//            FilePicker filePicker = new FilePicker();
-//            filePicker.setOnFilePickedListener(new FilePicker.OnFilePickedListener() {
-//                @Override
-//                public void onFilePicked(final File file) {
-//                    VmrDebug.printLogI(FragmentMyRecords.this.getClass(), file.getAbsolutePath() + " received in fragment");
-//
-//                    Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-//
-//                    final int notificationId = new Random().nextInt();
-//
-//                    HomeController uploadController = new HomeController(new VmrResponseListener.OnFileUpload() {
-//                        @Override
-//                        public void onFileUploadSuccess(JSONObject jsonObject) {
-//
-//                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
-//                            Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-//                            if (jsonObject.has("files")) {
-//                                Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-//                                Notification downloadCompleteNotification =
-//                                        new Notification.Builder(getActivity())
-//                                                .setContentTitle(file.getName())
-//                                                .setContentText("Upload complete")
-//                                                .setSmallIcon(android.R.drawable.stat_sys_download_done)
-//                                                .setAutoCancel(true)
-//                                                .build();
-//
-//                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-//                                nm.cancel(file.getName(), notificationId);
-//                                nm.notify(notificationId, downloadCompleteNotification);
-//                            }
-//                            refreshFolder();
-//                        }
-//
-//                        @Override
-//                        public void onFileUploadFailure(VolleyError error) {
-//                            Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-//                        }
-//                    });
-//
-//                    uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
-//
-//                    Notification downloadingNotification =
-//                            new Notification.Builder(getActivity())
-//                                    .setContentTitle(file.getName())
-//                                    .setContentText("Uploading...")
-//                                    .setSmallIcon(android.R.drawable.stat_sys_download)
-//                                    .setProgress(0,0,true)
-//                                    .setOngoing(true)
-//                                    .build();
-//                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-//                    nm.notify(file.getName(), notificationId ,downloadingNotification);
-//
-//                }
-//            });
-//
-//            filePicker.show(fm, "file_picker");
-
             Intent intent = new Intent();
             intent.setType("*/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -430,21 +416,25 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if(resultCode == RESULT_OK){
             if(requestCode == FILE_PICKER_INTENT){
                 Uri uri = data.getData();
-                String filePath = DocumentUtils.getPath(getActivity(), uri);
-                assert filePath != null;
-                File file = new File(filePath);
-                onFilePicked(file);
+                onFilePicked(uri);
+            } else if(requestCode == REQUEST_IMAGE_CAPTURE){
+                Uri uri = data.getData();
+                onFilePicked(uri);
             }
         } else {
-            Toast.makeText(getActivity(), "Action canceled", Toast.LENGTH_SHORT).show();
+            if(DEBUG) VmrDebug.printLogI(this.getClass(), "File choose action canceled");
         }
     }
 
-    private void onFilePicked(final File file){
+    private void onFilePicked(Uri uri){
+
+        String filePath = DocumentUtils.getPath(getActivity(), uri);
+        assert filePath != null;
+        final File file = new File(filePath);
+
         final int notificationId = new Random().nextInt();
 
         HomeController uploadController = new HomeController(new VmrResponseListener.OnFileUpload() {
@@ -456,7 +446,7 @@ public class FragmentMyRecords extends Fragment
                 if (jsonObject.has("files")) {
                     Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                     Notification uploadCompleteNotification =
-                            new Notification.Builder(getActivity())
+                            new NotificationCompat.Builder(getActivity())
                                     .setContentTitle(file.getName())
                                     .setContentText("Upload complete")
                                     .setSmallIcon(android.R.drawable.stat_sys_upload_done)
@@ -489,13 +479,14 @@ public class FragmentMyRecords extends Fragment
         });
         uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
         Notification downloadingNotification =
-                new Notification.Builder(getActivity())
-                        .setContentTitle(file.getName())
-                        .setContentText("Uploading...")
-                        .setSmallIcon(android.R.drawable.stat_sys_upload)
-                        .setProgress(0,0,true)
-                        .setOngoing(true)
-                        .build();
+                new NotificationCompat.Builder(getActivity())
+                    .setContentTitle(file.getName())
+                    .setContentText("Uploading...")
+                    .setSmallIcon(android.R.drawable.stat_sys_upload)
+                    .setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG)
+                    .setProgress(0,0,true)
+                    .setOngoing(true)
+                    .build();
         NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
         nm.notify(file.getName(), notificationId ,downloadingNotification);
     }
@@ -891,13 +882,13 @@ public class FragmentMyRecords extends Fragment
                 });
                 dlController.downloadFile(record);
                 Notification downloadingNotification =
-                        new Notification.Builder(getActivity())
-                        .setContentTitle(record.getRecordName())
-                        .setContentText("Download in progress")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setProgress(0,0,true)
-                        .setOngoing(true)
-                        .build();
+                        new NotificationCompat.Builder(getActivity())
+                            .setContentTitle(record.getRecordName())
+                            .setContentText("Download in progress")
+                            .setSmallIcon(android.R.drawable.stat_sys_download)
+                            .setProgress(0,0,true)
+                            .setOngoing(true)
+                            .build();
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
                 nm.notify(record.getRecordId(), notificationId ,downloadingNotification);
 
@@ -917,21 +908,9 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onMoveClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Move button clicked" );
-//        FragmentManager fm = getActivity().getFragmentManager();
-//        FolderPicker folderPicker = new FolderPicker();
-//        folderPicker.setOnFolderPickedListener(new FolderPicker.OnFolderPickedListener() {
-//            @Override
-//            public void onFolderPicked(Record record) {
-//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), record.getRecordName() + " received in fragment");
-//                Snackbar.make(getActivity().findViewById(R.id.clayout), "Move item feature is not available.", Snackbar.LENGTH_SHORT).show();
-//            }
-//        });
-
-//        folderPicker.show(fm, "file_picker");
         Pair<Record, Integer> clip = new Pair<>(record, 2 ); // 2-Move, 3-Copy
         Vmr.setClipBoard(clip);
         Snackbar.make(getActivity().findViewById(R.id.clayout), "File copied in clipboard", Snackbar.LENGTH_SHORT).show();
-
     }
 
     @Override
@@ -943,115 +922,116 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onPasteClicked(final Record record) {
-        VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
-//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+    public void onPasteClicked(Record record) {
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Paste button clicked" );
 
         if(Vmr.getClipBoard() !=  null){
+            pasteRecord(recordStack.peek());
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout), "Clipboard is empty", Snackbar.LENGTH_SHORT).show();
+        }
+    }
 
-            final HomeController copyController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
-                @Override
-                public void onCopyItemSuccess(JSONObject jsonObject) {
-                    VmrDebug.printLogI(this.getClass(), "Copy success" );
-                }
+    private void pasteRecord(final String parentNode){
+        final HomeController copyController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
+            @Override
+            public void onCopyItemSuccess(JSONObject jsonObject) {
+                VmrDebug.printLogI(this.getClass(), "Copy success" );
+            }
 
-                @Override
-                public void onCopyItemFailure(VolleyError error) {
-                    VmrDebug.printLogI(this.getClass(), "Copy failed" );
-                }
-            });
+            @Override
+            public void onCopyItemFailure(VolleyError error) {
+                VmrDebug.printLogI(this.getClass(), "Copy failed" );
+            }
+        });
 
-            final HomeController moveController =  new HomeController(new VmrResponseListener.OnMoveItemListener() {
-                @Override
-                public void onMoveItemSuccess(JSONObject jsonObject) {
-                    VmrDebug.printLogI(this.getClass(), "Move success" );
-                }
+        final HomeController moveController =  new HomeController(new VmrResponseListener.OnMoveItemListener() {
+            @Override
+            public void onMoveItemSuccess(JSONObject jsonObject) {
+                VmrDebug.printLogI(this.getClass(), "Move success" );
+            }
 
-                @Override
-                public void onMoveItemFailure(VolleyError error) {
-                    VmrDebug.printLogI(this.getClass(), "Move failed" );
-                }
-            });
+            @Override
+            public void onMoveItemFailure(VolleyError error) {
+                VmrDebug.printLogI(this.getClass(), "Move failed" );
+            }
+        });
 
-            final Pair<Record, Integer> clipBoard = Vmr.getClipBoard();
+        final Pair<Record, Integer> clipBoard = Vmr.getClipBoard();
 
-            final Snackbar moveSnackBar
-                    = Snackbar
-                    .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " moved", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Snackbar
-                                    .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
-                                    .show();
-                        }
-                    })
-                    .setCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            super.onDismissed(snackbar, event);
-                            Record parent = dbManager.getRecord(record.getNodeRef());
-                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Parent record name " + parent.getRecordName());
-                            moveController.moveItem(clipBoard.first, parent);
-                        }
-                    });
-
-            final Snackbar copySnackBar
-                    = Snackbar
-                    .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " pasted", Snackbar.LENGTH_LONG)
-                    .setAction("UNDO", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Snackbar
-                                    .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
-                                    .show();
-                        }
-                    })
-                    .setCallback(new Snackbar.Callback() {
-                        @Override
-                        public void onDismissed(Snackbar snackbar, int event) {
-                            super.onDismissed(snackbar, event);
-                            Record parent = dbManager.getRecord(record.getNodeRef());
-                            copyController.copyItem(clipBoard.first, parent);
-                        }
-                    });
-
-            DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    switch (which){
-                        case DialogInterface.BUTTON_POSITIVE:
-                            //Yes button clicked
-
-                            switch (clipBoard.second){
-                                case 2: { // Move
-                                    moveSnackBar.show();
-                                    break;
-                                }
-                                case 3: {
-                                    copySnackBar.show();
-                                    break;
-                                }
-                            }
-                            break;
-
-                        case DialogInterface.BUTTON_NEGATIVE:
-                            //No button clicked
-                            dialog.dismiss();
-                            break;
+        final Snackbar moveSnackBar
+                = Snackbar
+                .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " moved", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar
+                                .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                                .show();
                     }
-                }
-            };
+                })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        Record parent = dbManager.getRecord(parentNode);
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Parent record name " + parent.getRecordName());
+                        moveController.moveItem(clipBoard.first, parent);
+                    }
+                });
 
-            new AlertDialog.Builder(getActivity())
+        final Snackbar copySnackBar
+                = Snackbar
+                .make(getActivity().findViewById(R.id.clayout), clipBoard.first.getRecordName() + " pasted", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar
+                                .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                })
+                .setCallback(new Snackbar.Callback() {
+                    @Override
+                    public void onDismissed(Snackbar snackbar, int event) {
+                        super.onDismissed(snackbar, event);
+                        Record parent = dbManager.getRecord(parentNode);
+                        copyController.copyItem(clipBoard.first, parent);
+                    }
+                });
+
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which){
+                    case DialogInterface.BUTTON_POSITIVE:
+                        //Yes button clicked
+
+                        switch (clipBoard.second){
+                            case 2: { // Move
+                                moveSnackBar.show();
+                                break;
+                            }
+                            case 3: {
+                                copySnackBar.show();
+                                break;
+                            }
+                        }
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+                        //No button clicked
+                        dialog.dismiss();
+                        break;
+                }
+            }
+        };
+
+        new AlertDialog.Builder(getActivity())
                 .setMessage("Are you sure?")
                 .setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener)
                 .show();
-
-        } else {
-            Snackbar.make(getActivity().findViewById(R.id.clayout), "Clipboard is empty", Snackbar.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -1251,6 +1231,12 @@ public class FragmentMyRecords extends Fragment
     public void onHomeClick() {
         VmrDebug.printLogI(this.getClass(), "Home button clicked.");
         switchToParent();
+    }
+
+    @Override
+    public void onPasteClick() {
+        if (DEBUG) VmrDebug.printLogI(this.getClass(), "Paste clicked" );
+        pasteRecord(recordStack.peek());
     }
 
     public interface OnFragmentInteractionListener {

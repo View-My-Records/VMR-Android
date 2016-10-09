@@ -390,7 +390,6 @@ public class IndexDialog extends DialogFragment
                     if (properties.containsKey("vmr_reminderdate")) {
                         tvNextAction.setEnabled(true);
                         btnSetNextAction.setEnabled(true);
-
                     }
                     if (properties.containsKey("vmr_remindermessage")) {
                         etActionMessage.setEnabled(true);
@@ -398,7 +397,6 @@ public class IndexDialog extends DialogFragment
 
                     InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
-
                 }
 
                 @Override

@@ -19,7 +19,6 @@ import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.HomeActivity;
 import com.vmr.home.adapters.TrashAdapter;
 import com.vmr.home.context_menu.TrashOptionsMenu;
 import com.vmr.home.controller.HomeController;
@@ -68,7 +67,7 @@ public class FragmentTrash extends Fragment
         homeController = new HomeController(this);
         trashAdapter = new TrashAdapter(trashRecords, this, this);
 
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
+        dbManager = Vmr.getDbManager();
 
         optionsMenuSheet = new TrashOptionsMenu();
         optionsMenuSheet.setOptionClickListener(this);

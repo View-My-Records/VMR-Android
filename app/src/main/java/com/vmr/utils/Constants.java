@@ -7,6 +7,8 @@ package com.vmr.utils;
 public abstract class Constants {
 
     public static final String VMR_LOGIN_REQUEST_TAG = "VMR_LOGIN";
+    public static final String VMR_UPLOAD_NOTIFICATION_TAG = "VMR_UPLOAD_NOTIFICATION";
+    public static final String VMR_DOWNLOAD_NOTIFICATION_TAG = "VMR_DOWNLOAD_NOTIFICATION";
 
     public static class Url {
         public final static String DEFAULT_BASE_URL = "https://www.vmrdev.com";
@@ -296,6 +298,7 @@ public abstract class Constants {
 
     public final static class Key {
         public static final String USER_DETAILS = "USER_DETAILS";
+        public static final String USER_MAP = "USER_DETAILS";
         public static final String RECORD = "RECORD";
     }
 

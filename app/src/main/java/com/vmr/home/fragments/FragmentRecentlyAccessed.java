@@ -12,9 +12,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.recently_accessed.Recent;
-import com.vmr.home.HomeActivity;
 import com.vmr.home.adapters.RecentAdapter;
 import com.vmr.home.context_menu.TrashOptionsMenu;
 import com.vmr.home.controller.HomeController;
@@ -53,7 +53,7 @@ public class FragmentRecentlyAccessed extends Fragment
 
         recentAdapter = new RecentAdapter(recentRecords, this, this);
 
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
+        dbManager = Vmr.getDbManager();
 
 //        optionsMenuSheet = new TrashOptionsMenu();
 //        optionsMenuSheet.setOptionClickListener(this);

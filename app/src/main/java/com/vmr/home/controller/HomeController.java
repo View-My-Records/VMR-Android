@@ -577,7 +577,9 @@ public class HomeController {
         formData.put(Constants.Request.FolderNavigation.Properties.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_DETAILS);
         formData.put(Constants.Request.FolderNavigation.Properties.DOC_TYPE, docType);
         formData.put(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, nodeRef);
-//        formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName+"" );
+        if (!(programName == null || programName.equals(""))) {
+            formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName+"" );
+        }
 
         PropertiesRequest propertiesRequest =
                 new PropertiesRequest(

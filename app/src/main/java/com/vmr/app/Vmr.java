@@ -18,7 +18,6 @@ import java.util.Map;
 
 public class Vmr extends Application {
 
-    private static Vmr appInstance;
     private static Context appContext;
     private static String AlfrescoTicket;
     private static VmrFolder vmrRootFolder;
@@ -80,10 +79,6 @@ public class Vmr extends Application {
 
     public static void setUserMap( Map<String , String > map) {
         userMap = map;
-    }
-
-    public static Vmr getInstance() {
-        return appInstance;
     }
 
     public static Context getVMRContext(){

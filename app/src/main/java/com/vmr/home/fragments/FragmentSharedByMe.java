@@ -19,7 +19,6 @@ import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.HomeActivity;
 import com.vmr.home.adapters.SharedByMeAdapter;
 import com.vmr.home.context_menu.SharedOptionsMenu;
 import com.vmr.home.controller.HomeController;
@@ -68,7 +67,7 @@ public class FragmentSharedByMe extends Fragment
         optionsMenuSheet = new SharedOptionsMenu();
         optionsMenuSheet.setOptionClickListener(this);
 
-        dbManager = ((HomeActivity) getActivity()).getDbManager();
+        dbManager = Vmr.getDbManager();
     }
 
     @Override

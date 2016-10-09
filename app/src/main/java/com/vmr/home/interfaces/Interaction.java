@@ -18,4 +18,8 @@ public class Interaction {
     public interface OnHomeClickListener {
         void onHomeClick();
     }
+
+    public interface OnPasteClickListener {
+        void onPasteClick();
+    }
 }
