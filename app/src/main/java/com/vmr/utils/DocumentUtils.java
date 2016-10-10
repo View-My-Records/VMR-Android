@@ -10,7 +10,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
-/**
+/*
  * Created by abhijit on 10/6/16.
  */
 

@@ -151,7 +151,7 @@ public class NotificationDAO {
                         inboxId},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
-            c.close();
+//            c.close();
             return true;
         }
         return false;

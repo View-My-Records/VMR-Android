@@ -352,7 +352,11 @@ public class FragmentMyRecords extends Fragment
             if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                     photoFile = createImageFile();
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
+//                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
+//                            "com.vmr.android.files",
+//                            photoFile);
+                    assert photoFile != null;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 } else {
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)

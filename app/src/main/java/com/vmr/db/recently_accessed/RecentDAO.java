@@ -64,7 +64,7 @@ public class RecentDAO {
                 new String[]{nodeRef + ""},
                 null, null, null, null, null);
         boolean ret = c.moveToFirst();
-        c.close();
+//        c.close();
         return ret;
     }
 

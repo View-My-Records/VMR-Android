@@ -249,7 +249,7 @@ public class RecordDAO {
                 DbConstants.TABLE_RECORD,
                 contentValues,
                 DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_NODE_REF + "=?",
-                new String[]{record.getMasterRecordOwner()+"", record.getNodeRef() + "" }) > 0;
+                new String[]{record.getMasterRecordOwner(), record.getNodeRef() }) > 0;
     }
 
     public boolean updateTimestamp(String nodeRef){
@@ -261,7 +261,7 @@ public class RecordDAO {
                 DbConstants.TABLE_RECORD,
                 contentValues,
                 DbConstants.RECORD_NODE_REF + "=?",
-                new String[]{nodeRef + "" }) > 0;
+                new String[]{nodeRef}) > 0;
     }
 
     // Returns record from db
@@ -269,10 +269,11 @@ public class RecordDAO {
         Cursor c = db.query(true,
                 DbConstants.TABLE_RECORD,
                 new String[]{DbConstants.RECORD_NODE_REF},
-                DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef},
+                DbConstants.RECORD_NODE_REF + "=?",
+                new String[]{nodeRef},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
-            c.close();
+//            c.close();
             return true;
         }
         return false;
@@ -286,7 +287,7 @@ public class RecordDAO {
                 DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef, "1"},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
-            c.close();
+//            c.close();
             return true;
         }
         return false;
@@ -306,7 +307,7 @@ public class RecordDAO {
     // Delete record
     public boolean deleteRecord(Record record){
         if(DEBUG) VmrDebug.printLogI(this.getClass(), record.getRecordName() + " deleted");
-        return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getNodeRef() + ""}) > 0;
+        return db.delete(DbConstants.TABLE_RECORD, DbConstants.RECORD_NODE_REF + "=?", new String[]{record.getNodeRef()}) > 0;
     }
 
     public void removeAllRecords(String parentNodeRef){
@@ -317,18 +318,33 @@ public class RecordDAO {
     }
 
     public void removeAllRecords(String parentNodeRef, VmrFolder vmrFolder){
-        ArrayList<String > notInClause = new ArrayList<>();
+        ArrayList<String> notInClause = new ArrayList<>();
 
         for (VmrItem vmrItem : vmrFolder.getAll()){
             notInClause.add(vmrItem.getNodeRef());
         }
 
-        String notInClauseString = notInClause.toString().replace("[", "\"").replace("]", "\"").replace( ",", "\",\"");
+        StringBuilder inQuery = new StringBuilder();
+
+        inQuery.append("(");
+        boolean first = true;
+        for (VmrItem item : vmrFolder.getAll()) {
+            if (first) {
+                first = false;
+                inQuery.append("'").append(item.getNodeRef()).append("'");
+            } else {
+                inQuery.append(", '").append(item.getNodeRef()).append("'");
+            }
+        }
+        inQuery.append(")");
+
+//        String notInClauseString = notInClause.toString().replace("[", "\"").replace("]", "\"").replace( ",", "\", \"");
         int result = db.delete(DbConstants.TABLE_RECORD,
                 DbConstants.RECORD_PARENT_NODE_REF + "=?"
                 + " AND "
-                + DbConstants.RECORD_NODE_REF + " NOT IN ( ? )" ,
-                new String[]{ parentNodeRef , notInClauseString});
+                + DbConstants.RECORD_NODE_REF + " NOT IN " + inQuery,
+                new String[]{ parentNodeRef});
+//                null);
         if(DEBUG) VmrDebug.printLogI(this.getClass(), result + " Records deleted");
     }
 

@@ -76,7 +76,7 @@ public class SharedRecordDAO {
                 new String[]{ nodeRef },
                 null, null, null, null, null);
         boolean ret = c.moveToFirst();
-        c.close();
+//        c.close();
         return ret;
     }
 

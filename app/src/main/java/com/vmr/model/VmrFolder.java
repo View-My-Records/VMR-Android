@@ -45,7 +45,7 @@ public class VmrFolder extends VmrItem {
                     this.setIndexedFilesFromJSON(folderJson.has("indexedFiles")? folderJson.getJSONArray("indexedFiles") : null);
                     this.setWriteFlag(folderJson.has("writeFlag") && folderJson.getBoolean("writeFlag"));
                     this.setSharedFolder(folderJson.has("sharedFolder")? folderJson.getString("sharedFolder") : "");
-                    this.setFoldersFromJSON((JSONArray) json);
+                    this.setFoldersFromJSON(folderJson.getJSONArray("folders"));
                     this.setDeleteFlag(folderJson.has("deleteFlag") && folderJson.getBoolean("deleteFlag"));
                     this.setTotalUnIndexed(folderJson.has("totalUnindexed")? folderJson.getInt("totalUnindexed") : 0);
                     this.setUnIndexedFilesFromJSON(folderJson.has("unindexedFiles") ? folderJson.getJSONArray("unindexedFiles") : null);

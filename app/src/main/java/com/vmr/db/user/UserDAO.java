@@ -95,7 +95,7 @@ public class UserDAO {
     private boolean checkUser(String serialNo){
         Cursor c = db.query(true, DbConstants.TABLE_USER, DbConstants.USER_COLUMNS, DbConstants.USER_SERIAL_NO + "=?", new String[]{ serialNo + ""}, null, null, null, null, null);
         boolean ret = c.moveToFirst();
-        c.close();
+//        c.close();
         VmrDebug.printLogI(this.getClass(), "User Info retrieved");
         return ret;
     }
@@ -111,7 +111,7 @@ public class UserDAO {
         if (c != null && c.moveToFirst()) {
             user = buildFromCursor(c);
             if (!c.isClosed()) {
-                c.close();
+//                c.close();
             }
         }
         VmrDebug.printLogI(this.getClass(), "User Info retrieved");
