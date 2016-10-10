@@ -1,8 +1,10 @@
 package com.vmr.network;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.vmr.app.Vmr;
 
 import java.util.HashMap;
@@ -39,5 +41,14 @@ public abstract class PostLoginRequest<T> extends Request<T> {
         headers.put("X-Requested-With", "XMLHttpRequest" );
 //        VmrDebug.printLogI(this.getClass().getSimpleName() + ": " + headers.toString());
         return headers;
+    }
+
+    @Override
+    public Request<?> setRetryPolicy(RetryPolicy retryPolicy) {
+        return super.setRetryPolicy(
+                new DefaultRetryPolicy(
+                        DefaultRetryPolicy.DEFAULT_TIMEOUT_MS * 2,
+                        DefaultRetryPolicy.DEFAULT_MAX_RETRIES * 2,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT * 2));
     }
 }

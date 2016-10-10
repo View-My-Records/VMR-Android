@@ -103,6 +103,14 @@
         <item>"VIEW MY RECORDS"</item>
     </string-array>
 
+    <string-array name="list_permission_types">
+        <item>"Select permission"</item>
+        <item>"View"</item>
+        <item>"Print"</item>
+        <item>"Download"</item>
+        <item>"Share Further"</item>
+    </string-array>
+
     <string-array name="list_preference_entry_values">
         <item>1</item>
         <item>2</item>

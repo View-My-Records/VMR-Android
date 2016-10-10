@@ -5,15 +5,10 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +52,7 @@ public class IndexDialog extends DialogFragment
         VmrResponseListener.OnFetchClassifications,
         FetchIndexController.OnFetchIndicesListener,
         AdapterView.OnItemSelectedListener,
+        Toolbar.OnMenuItemClickListener,
         DateTimePickerDialog.VmrDateTimePicker {
 
     private static final String NODE_REF = "NODE_REF";
@@ -141,14 +137,8 @@ public class IndexDialog extends DialogFragment
         Toolbar toolbar = (Toolbar) dialogView.findViewById(R.id.toolbar_index_dialog);
         toolbar.setTitle("Indexing...");
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setHomeButtonEnabled(true);
-            actionBar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
-        }
+        toolbar.inflateMenu(R.menu.index_menu);
+        toolbar.setOnMenuItemClickListener(this);
 
         setHasOptionsMenu(true);
         setupFormFields(dialogView);
@@ -201,15 +191,7 @@ public class IndexDialog extends DialogFragment
             public void onClick(View v) {
                 DateTimePickerDialog dateTimePicker = new DateTimePickerDialog();
                 dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
-                dateTimePicker.show(getActivity().getFragmentManager(), "datetimepicker");
-
-            }
-        });
-
-        getDialog().setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(DialogInterface dialog) {
-
+                dateTimePicker.show(getActivity().getFragmentManager(), "DateTimePicker");
             }
         });
     }
@@ -219,36 +201,6 @@ public class IndexDialog extends DialogFragment
         super.onStart();
         if(recordIndexStatus)
             fetchIndexController.fetchIndices(recordNodeRef, "");
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        menu.clear();
-        getActivity().getMenuInflater().inflate(R.menu.index_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_save) {
-            if (validateIndices()) {
-                saveIndex();
-            }
-            return true;
-        } else if (id == R.id.action_refresh) {
-
-            return true;
-        } else if (id == R.id.action_reset) {
-
-            return true;
-        } else if (id == android.R.id.home) {
-
-            dismiss();
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     private boolean validateIndices() {
@@ -465,5 +417,29 @@ public class IndexDialog extends DialogFragment
         }
 
         return propertiesMap;
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_save) {
+            if (validateIndices()) {
+                saveIndex();
+            }
+            return true;
+        } else if (id == R.id.action_refresh) {
+
+            return true;
+        } else if (id == R.id.action_reset) {
+
+            return true;
+        } else if (id == android.R.id.home) {
+
+            dismiss();
+            return true;
+        }
+        return false;
     }
 }

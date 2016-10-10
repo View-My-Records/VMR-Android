@@ -18,7 +18,7 @@
 
     <ImageView
         android:id="@+id/ivOverflow"
-        android:layout_width="20dp"
+        android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"

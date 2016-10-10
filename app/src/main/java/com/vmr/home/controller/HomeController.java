@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -124,7 +125,7 @@ public class HomeController {
     }
 
     public void fetchAllFilesAndFolders(String nodeRef){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListAllFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
@@ -149,7 +150,7 @@ public class HomeController {
     }
 
     public void fetchUnIndexed(String nodeRef){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.ALFRESCO_NODE_REFERENCE, nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListUnIndexed.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_ALL_FILE_FOLDER);
@@ -174,7 +175,7 @@ public class HomeController {
     }
 
     public void fetchTrash(){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
 //        formData.put(Constants.Request.FolderNavigation.ListTrashBin.ALFRESCO_NODE_REFERENCE,nodeRef);
         formData.put(Constants.Request.FolderNavigation.ListTrashBin.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_TRASH_BIN);
@@ -199,7 +200,7 @@ public class HomeController {
     }
 
     public void createFolder(String folderName, String parentNodeRef){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.CreateFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.CREATE_FOLDER);
@@ -234,7 +235,7 @@ public class HomeController {
     }
 
     public void renameItem(Record record, String newName){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.RenameFileFolder.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.RENAME_FILE_OR_FOLDER);
@@ -546,9 +547,8 @@ public class HomeController {
     }
 
     public void fetchClassifications(){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.Classification.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_CONTENT_TYPES);
 
         ClassificationRequest classificationRequest =
@@ -571,15 +571,14 @@ public class HomeController {
     }
 
     public void fetchProperties( String docType, String nodeRef,  String programName){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.Properties.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOCUMENT_DETAILS);
         formData.put(Constants.Request.FolderNavigation.Properties.DOC_TYPE, docType);
         formData.put(Constants.Request.FolderNavigation.Properties.FILE_NODE_REF, nodeRef);
-        if (!(programName == null || programName.equals(""))) {
-            formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName+"" );
-        }
+//        if (!(programName.isEmpty())) {
+//            formData.put(Constants.Request.FolderNavigation.Properties.PROGRAM_NAME, programName);
+//        }
 
         PropertiesRequest propertiesRequest =
                 new PropertiesRequest(
@@ -674,9 +673,8 @@ public class HomeController {
                           String docCategoryVal,
                           String docType,
                           String programName){
-
+        removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
-
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.remove(Constants.Request.FolderNavigation.Properties.DOC_TYPE);
 
@@ -687,9 +685,9 @@ public class HomeController {
         formData.put(Constants.Request.FolderNavigation.SaveIndex.FILE_INDEX_STATUS, String.valueOf(fileIndexStatus));
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_CATEGORY_VALUE, docCategoryVal);
         formData.put(Constants.Request.FolderNavigation.SaveIndex.DOCUMENT_TYPE, docType);
-        if (!(programName == null || programName.equals(""))) {
-            formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);
-        }
+//        if (!(programName == null || programName.equals(""))) {
+//            formData.put(Constants.Request.FolderNavigation.SaveIndex.PROGRAM_NAME, programName);
+//        }
 
         VmrDebug.printLogI(this.getClass(), formData.toString());
 
@@ -711,6 +709,24 @@ public class HomeController {
                 );
 
         VmrRequestQueue.getInstance().addToRequestQueue(saveIndexRequest, Constants.Request.FolderNavigation.SaveIndex.TAG);
+    }
+
+    public void removeUnwantedParams(){
+        List<String> list = new ArrayList<>();
+        list.add(Constants.Request.Login.DOMAIN);
+        list.add(Constants.Request.Login.Individual.EMAIL_ID);
+        list.add(Constants.Request.Login.Individual.PASSWORD);
+        list.add(Constants.Request.Login.Family.EMAIL_ID);
+        list.add(Constants.Request.Login.Family.PASSWORD);
+        list.add(Constants.Request.Login.Family.NAME);
+        list.add(Constants.Request.Login.Professional.EMAIL_ID);
+        list.add(Constants.Request.Login.Professional.PASSWORD);
+        list.add(Constants.Request.Login.Professional.NAME);
+        list.add(Constants.Request.Login.Corporate.EMAIL_ID);
+        list.add(Constants.Request.Login.Corporate.PASSWORD);
+        list.add(Constants.Request.Login.Corporate.NAME);
+
+        Vmr.getUserMap().keySet().retainAll(list);
     }
 
 }

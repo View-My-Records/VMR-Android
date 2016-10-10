@@ -53,6 +53,7 @@ import com.vmr.home.context_menu.AddItemMenu;
 import com.vmr.home.context_menu.RecordOptionsMenu;
 import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.dialog.IndexDialog;
+import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.UploadPacket;
@@ -731,9 +732,11 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onShareClicked(Record vmrItem) {
+    public void onShareClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Share button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        FragmentManager fm = getActivity().getFragmentManager();
+        ShareDialog shareDialog = ShareDialog.newInstance(record);
+        shareDialog.show(fm, "Share");
     }
 
     @Override

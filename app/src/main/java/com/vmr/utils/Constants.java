@@ -261,6 +261,31 @@ public abstract class Constants {
                 public static final String TAG       = "VMR_NOTIFICATION";
         }
 
+        public final static class Share {
+
+            public static final String TAG       = "VMR_SHARE";
+
+            public final static class PageMode {
+                public static final String SHARE_RECORDS_LIFESPAN_CHECK = "SHARE_RECORDS_LIFESPAN_CHECK";
+                public static final String SHARE_RECORDS = "SHARE_RECORDS";
+            }
+
+            public final static class RecordLifespanCheck {
+                public static final String PAGE_MODE        = "pageMode";
+                public static final String RECORD_NODE_REF  = "fileSelectedNodeRef";
+                public static final String SHARE_EMAILS = "shareEmail";
+                public static final String RECORD_ID        = "selectedRecordId";
+            }
+
+            public final static class ShareRecord {
+                public static final String PAGE_MODE                    = "pageMode";
+                public static final String SHARE_JSON = "shareReJsonString";
+                public static final String TOTAL_RECORD_COUNT           = "TotalshareRecordCount";
+                public static final String CURRENT_RECORD_COUNT         = "CurrentRecordCount";
+                public static final String SHARED_FOLDEROR_FILESNAMES   = "SharedFolderorFilesnames";
+            }
+        }
+
         public final static class Alfresco {
             public static final String ALFRESCO_NODE_REFERENCE = "alfNoderef";
             public static final String ALFRESCO_TICKET = "alf_ticket";
