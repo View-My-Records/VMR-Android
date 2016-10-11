@@ -2,6 +2,9 @@
 
 Repository for VMR Android App
 
+## BitRise
+[![Build Status](https://www.bitrise.io/app/86f2df10a7f5fee1.svg?token=TnbzIihH93ICrKAomexbZw&branch=master)](https://www.bitrise.io/app/86f2df10a7f5fee1)
+
 ## Travis CI
 [![Build Status](https://travis-ci.com/AbhijitParate/VMR-Android.svg?token=ixkb6BDi9qHrv9ARLkRX&branch=master)](https://travis-ci.com/AbhijitParate/VMR-Android)
 
