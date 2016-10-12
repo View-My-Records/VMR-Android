@@ -48,7 +48,6 @@ public class Notification {
             dbNotificationList.add(notificationItem);
         }
 
-
         return dbNotificationList;
     }
 

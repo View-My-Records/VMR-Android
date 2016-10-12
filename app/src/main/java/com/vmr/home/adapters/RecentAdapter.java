@@ -85,7 +85,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
             super(itemView);
             this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
-            this.itemName = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+            this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 

@@ -15,12 +15,15 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.shared.SharedRecordDAO;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.db.trash.TrashRecordDAO;
+import com.vmr.db.upload_queue.UploadQueue;
+import com.vmr.db.upload_queue.UploadQueueDAO;
 import com.vmr.db.user.DbUser;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.utils.Constants;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +41,7 @@ public class DbManager {
     private SharedRecordDAO sharedRecordDAO;
     private SearchSuggestionDAO searchSuggestionDAO;
     private NotificationDAO notificationDAO;
+    private UploadQueueDAO uploadQueueDAO;
 
     public DbManager() {
         DbHelper dbHelper = new DbHelper();
@@ -49,6 +53,7 @@ public class DbManager {
         sharedRecordDAO = new SharedRecordDAO(database);
         searchSuggestionDAO =  new SearchSuggestionDAO(database);
         notificationDAO = new NotificationDAO(database);
+        uploadQueueDAO = new UploadQueueDAO(database);
     }
 
     // Adds new user to user table
@@ -299,5 +304,25 @@ public class DbManager {
 
     public void updateNotification(String inboxId, String messageBody){
         this.notificationDAO.updateMessageBody(inboxId, messageBody);
+    }
+
+    public List<UploadQueue> getUploadQueue() {
+        return this.uploadQueueDAO.fetchAllPendingUploads();
+    }
+
+    public void queueUpload(File file, String parentNodeRef) {
+        this.uploadQueueDAO.addUpload(new UploadQueue(file, parentNodeRef));
+    }
+
+    public void updateUploadSuccess(int uploadId) {
+        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_SUCCESS);
+    }
+
+    public void updateUploadFailure(int uploadId) {
+        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_FAILED);
+    }
+
+    public void updateUploadStatusUploading(int uploadId) {
+        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_UPLOADING);
     }
 }

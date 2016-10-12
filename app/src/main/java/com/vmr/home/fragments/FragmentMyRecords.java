@@ -56,10 +56,10 @@ import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
-import com.vmr.model.UploadPacket;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
+import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
 import com.vmr.utils.DocumentUtils;
 import com.vmr.utils.ErrorMessage;
@@ -440,60 +440,64 @@ public class FragmentMyRecords extends Fragment
         assert filePath != null;
         final File file = new File(filePath);
 
-        final int notificationId = new Random().nextInt();
+        dbManager.queueUpload(file, recordStack.peek());
+        Intent uploadIntent = new Intent(getActivity(), UploadService.class);
+        getActivity().startService(uploadIntent);
 
-        HomeController uploadController = new HomeController(new VmrResponseListener.OnFileUpload() {
-            @Override
-            public void onFileUploadSuccess(JSONObject jsonObject) {
+//        final int notificationId = new Random().nextInt();
 
-                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
-                Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-                if (jsonObject.has("files")) {
-                    Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-                    Notification uploadCompleteNotification =
-                            new NotificationCompat.Builder(getActivity())
-                                    .setContentTitle(file.getName())
-                                    .setContentText("Upload complete")
-                                    .setSmallIcon(android.R.drawable.stat_sys_upload_done)
-                                    .setAutoCancel(true)
-                                    .build();
-
-                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                    nm.cancel(file.getName(), notificationId);
-                    nm.notify(notificationId, uploadCompleteNotification);
-                }
-                refreshFolder();
-            }
-
-            @Override
-            public void onFileUploadFailure(VolleyError error) {
-//                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                Toast.makeText(Vmr.getVMRContext(), "File upload failed", Toast.LENGTH_SHORT).show();
-                Notification uploadFailedNotification =
-                        new Notification.Builder(getActivity())
-                                .setContentTitle(file.getName())
-                                .setContentText("Upload failed")
-                                .setSmallIcon(android.R.drawable.stat_notify_error)
-                                .setAutoCancel(true)
-                                .build();
-
-                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                nm.cancel(file.getName(), notificationId);
-                nm.notify(notificationId, uploadFailedNotification);
-            }
-        });
-        uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
-        Notification downloadingNotification =
-                new NotificationCompat.Builder(getActivity())
-                    .setContentTitle(file.getName())
-                    .setContentText("Uploading...")
-                    .setSmallIcon(android.R.drawable.stat_sys_upload)
-                    .setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG)
-                    .setProgress(0,0,true)
-                    .setOngoing(true)
-                    .build();
-        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-        nm.notify(file.getName(), notificationId ,downloadingNotification);
+//        UploadController uploadController = new UploadController(new UploadController.OnFileUpload() {
+//            @Override
+//            public void onFileUploadSuccess(JSONObject jsonObject) {
+//
+//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
+//                Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+//                if (jsonObject.has("files")) {
+//                    Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+//                    Notification uploadCompleteNotification =
+//                            new NotificationCompat.Builder(getActivity())
+//                                    .setContentTitle(file.getName())
+//                                    .setContentText("Upload complete")
+//                                    .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+//                                    .setAutoCancel(true)
+//                                    .build();
+//
+//                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+//                    nm.cancel(file.getName(), notificationId);
+//                    nm.notify(notificationId, uploadCompleteNotification);
+//                }
+//                refreshFolder();
+//            }
+//
+//            @Override
+//            public void onFileUploadFailure(VolleyError error) {
+////                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Vmr.getVMRContext(), "File upload failed", Toast.LENGTH_SHORT).show();
+//                Notification uploadFailedNotification =
+//                        new Notification.Builder(getActivity())
+//                                .setContentTitle(file.getName())
+//                                .setContentText("Upload failed")
+//                                .setSmallIcon(android.R.drawable.stat_notify_error)
+//                                .setAutoCancel(true)
+//                                .build();
+//
+//                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+//                nm.cancel(file.getName(), notificationId);
+//                nm.notify(notificationId, uploadFailedNotification);
+//            }
+//        });
+//        uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
+//        Notification downloadingNotification =
+//                new NotificationCompat.Builder(getActivity())
+//                    .setContentTitle(file.getName())
+//                    .setContentText("Uploading...")
+//                    .setSmallIcon(android.R.drawable.stat_sys_upload)
+//                    .setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG)
+//                    .setProgress(0,0,true)
+//                    .setOngoing(true)
+//                    .build();
+//        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+//        nm.notify(file.getName(), notificationId ,downloadingNotification);
     }
 
     @Override

@@ -12,6 +12,7 @@ public class DbConstants {
     public static final String TABLE_SHARED = "SHARED";
     public static final String TABLE_RECENT = "RECENT";
     public static final String TABLE_INBOX  = "INBOX";
+    public static final String TABLE_UPLOAD_QUEUE  = "UPLOAD_QUEUE";
 
     //Column Names
     public static final String USER_SERIAL_NO         = "SERIAL_NO";
@@ -189,7 +190,28 @@ public class DbConstants {
             INBOX_SENDER_LAST_NAME
     };
 
+    public static final String UPLOAD_ID            = "UPLOAD_ID";
+    public static final String UPLOAD_OWNER         = "UPLOAD_OWNER";
+    public static final String UPLOAD_FILE_PATH = "UPLOAD_FILE_PATH";
+    public static final String UPLOAD_FILE_NAME = "UPLOAD_FILE_NAME";
+    public static final String UPLOAD_PARENT_NODE   = "UPLOAD_PARENT_NODE";
+    public static final String UPLOAD_CONTENT_TYPE  = "UPLOAD_CONTENT_TYPE";
+    public static final String UPLOAD_STATUS        = "UPLOAD_STATUS";
+    public static final String UPLOAD_DATE        = "UPLOAD_DATE";
+
+    public static final String[] UPLOAD_COLUMNS
+            = {
+            UPLOAD_ID,
+            UPLOAD_OWNER,
+            UPLOAD_FILE_PATH,
+            UPLOAD_FILE_NAME,
+            UPLOAD_PARENT_NODE,
+            UPLOAD_CONTENT_TYPE,
+            UPLOAD_STATUS,
+            UPLOAD_DATE
+    };
+
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 15;
+    static final int VERSION = 16;
 }

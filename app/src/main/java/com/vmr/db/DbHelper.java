@@ -104,6 +104,17 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.INBOX_CREATION_DATE + " DATETIME, " +
             DbConstants.INBOX_UPDATED_DATE + " DATETIME );";
 
+    private static final String createTableUpload
+            = "CREATE TABLE "        + DbConstants.TABLE_UPLOAD_QUEUE + " (" +
+            DbConstants.UPLOAD_ID     + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            DbConstants.UPLOAD_OWNER            + " TEXT, " +
+            DbConstants.UPLOAD_FILE_PATH + " TEXT, " +
+            DbConstants.UPLOAD_FILE_NAME + " TEXT, " +
+            DbConstants.UPLOAD_PARENT_NODE      + " TEXT, " +
+            DbConstants.UPLOAD_CONTENT_TYPE     + " TEXT, " +
+            DbConstants.UPLOAD_STATUS           + " INTEGER, " +
+            DbConstants.UPLOAD_DATE             + " DATETIME );";
+
     DbHelper() {
         super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
     }
@@ -116,6 +127,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL(createTableTrash);
         db.execSQL(createTableRecent);
         db.execSQL(createTableInbox);
+        db.execSQL(createTableUpload);
     }
 
     @Override
@@ -126,6 +138,7 @@ class DbHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_TRASH);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_RECENT);
         db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_INBOX);
+        db.execSQL("DROP TABLE IF EXISTS " + DbConstants.TABLE_UPLOAD_QUEUE);
         this.onCreate(db);
     }
 }
