@@ -103,10 +103,10 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         String value;
         float size = records.get(position).getFileSize();
-        if (size >= (1000*1000))
-            value = df.format(size / (1000*1000)) + " Mb";
-        else if(size >= 1000)
-            value = df.format(size / 1000) + " Kb";
+        if (size >= (1024*1024))
+            value = df.format(size / (1024*1024)) + " Mb";
+        else if(size >= 1024)
+            value = df.format(size / 1024) + " Kb";
         else
             value = df.format(size) + " Bytes";
 

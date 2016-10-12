@@ -200,7 +200,7 @@ public abstract class Constants {
                 public static final String FILE_NAMES = "uploadFileName";
                 public static final String CONTENT_TYPE = "uploadContentType";
                 public static final String PARENT_NODE_REF = "selectedFolderNodeRef";
-                public static final String TAG = "VMR_UPLOAD_FILE";
+                public static final String TAG = "VMR_UPLOAD";
             }
 
             public final static class DocumentDetails {

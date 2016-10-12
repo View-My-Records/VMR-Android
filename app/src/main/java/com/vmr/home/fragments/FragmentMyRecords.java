@@ -356,8 +356,8 @@ public class FragmentMyRecords extends Fragment
 //                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
 //                            "com.vmr.android.files",
 //                            photoFile);
-                    assert photoFile != null;
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+//                    assert photoFile != null;
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 } else {
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
@@ -369,6 +369,8 @@ public class FragmentMyRecords extends Fragment
                             })
                             .show();
                 }
+            } else {
+                Snackbar.make(getActivity().findViewById(R.id.clayout), "No camera application found", Snackbar.LENGTH_LONG).show();
             }
         } else {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to use Camera", Snackbar.LENGTH_LONG)
@@ -441,63 +443,11 @@ public class FragmentMyRecords extends Fragment
         final File file = new File(filePath);
 
         dbManager.queueUpload(file, recordStack.peek());
+
+        // TODO: 10/12/16 Receive Id from dbManager and send to service
+
         Intent uploadIntent = new Intent(getActivity(), UploadService.class);
         getActivity().startService(uploadIntent);
-
-//        final int notificationId = new Random().nextInt();
-
-//        UploadController uploadController = new UploadController(new UploadController.OnFileUpload() {
-//            @Override
-//            public void onFileUploadSuccess(JSONObject jsonObject) {
-//
-//                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), jsonObject.toString());
-//                Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-//                if (jsonObject.has("files")) {
-//                    Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
-//                    Notification uploadCompleteNotification =
-//                            new NotificationCompat.Builder(getActivity())
-//                                    .setContentTitle(file.getName())
-//                                    .setContentText("Upload complete")
-//                                    .setSmallIcon(android.R.drawable.stat_sys_upload_done)
-//                                    .setAutoCancel(true)
-//                                    .build();
-//
-//                    NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-//                    nm.cancel(file.getName(), notificationId);
-//                    nm.notify(notificationId, uploadCompleteNotification);
-//                }
-//                refreshFolder();
-//            }
-//
-//            @Override
-//            public void onFileUploadFailure(VolleyError error) {
-////                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-//                Toast.makeText(Vmr.getVMRContext(), "File upload failed", Toast.LENGTH_SHORT).show();
-//                Notification uploadFailedNotification =
-//                        new Notification.Builder(getActivity())
-//                                .setContentTitle(file.getName())
-//                                .setContentText("Upload failed")
-//                                .setSmallIcon(android.R.drawable.stat_notify_error)
-//                                .setAutoCancel(true)
-//                                .build();
-//
-//                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-//                nm.cancel(file.getName(), notificationId);
-//                nm.notify(notificationId, uploadFailedNotification);
-//            }
-//        });
-//        uploadController.uploadFile(new UploadPacket(file.getPath(), recordStack.peek()));
-//        Notification downloadingNotification =
-//                new NotificationCompat.Builder(getActivity())
-//                    .setContentTitle(file.getName())
-//                    .setContentText("Uploading...")
-//                    .setSmallIcon(android.R.drawable.stat_sys_upload)
-//                    .setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG)
-//                    .setProgress(0,0,true)
-//                    .setOngoing(true)
-//                    .build();
-//        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-//        nm.notify(file.getName(), notificationId ,downloadingNotification);
     }
 
     @Override
@@ -1115,19 +1065,23 @@ public class FragmentMyRecords extends Fragment
         if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Can not delete system folders", Snackbar.LENGTH_SHORT).show();
         } else {
+            final boolean[] isCanceled = {false};
                 Snackbar snackbar = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " moved to Trash", Snackbar.LENGTH_LONG)
                         .setAction("UNDO", new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 Snackbar snackbar1 = Snackbar.make(getActivity().findViewById(R.id.clayout), record.getRecordName() + " restored!", Snackbar.LENGTH_SHORT);
                                 snackbar1.show();
+                                isCanceled[0] = true;
                             }
                         })
                         .setCallback(new Snackbar.Callback() {
                             @Override
                             public void onDismissed(Snackbar snackbar, int event) {
                                 super.onDismissed(snackbar, event);
-                                trashController.moveToTrash(record);
+                                if(!isCanceled[0]) {
+                                    trashController.moveToTrash(record);
+                                }
                             }
                         });
                 snackbar.show();

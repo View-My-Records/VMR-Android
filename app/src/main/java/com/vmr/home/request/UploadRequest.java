@@ -48,23 +48,16 @@ public class UploadRequest extends PostLoginRequest<JSONObject> {
         buildMultipartEntity();
     }
 
-    private void buildMultipartEntity() {
-        for (Map.Entry<String, String> entry : formData.entrySet()) {
-            entity.addTextBody(entry.getKey(), entry.getValue());
-        }
-        entity.addPart(Constants.Request.FolderNavigation.UploadFile.FILE, new FileBody(uploadPacket.getFile()));
-    }
-
-    @Override
-    public String getBodyContentType() {
-        return httpentity.getContentType().getValue();
-    }
-
     @Override
     public Map<String, String> getHeaders() throws AuthFailureError {
         Map<String, String> headerMap = super.getHeaders();
         headerMap.put("Content-Type", "multipart/form-data; " + " boundary=" + boundary );
         return headerMap;
+    }
+
+    @Override
+    public String getBodyContentType() {
+        return httpentity.getContentType().getValue();
     }
 
     @Override
@@ -96,5 +89,12 @@ public class UploadRequest extends PostLoginRequest<JSONObject> {
         }
 
         return Response.success(jsonObject, getCacheEntry());
+    }
+
+    private void buildMultipartEntity() {
+        for (Map.Entry<String, String> entry : formData.entrySet()) {
+            entity.addTextBody(entry.getKey(), entry.getValue());
+        }
+        entity.addPart(Constants.Request.FolderNavigation.UploadFile.FILE, new FileBody(uploadPacket.getFile()));
     }
 }

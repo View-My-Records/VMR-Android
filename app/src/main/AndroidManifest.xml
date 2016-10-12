@@ -88,8 +88,10 @@
         </provider>
 
         <service android:name=".service.UploadService" android:enabled="true" />
+        <receiver android:name=".broadcast_receivers.CancelUploadReceiver"/>
 
         <service android:name=".service.DownloadService" android:enabled="true" />
+        <receiver android:name=".broadcast_receivers.CancelDownloadReceiver"/>
 
         <!--
      ATTENTION: This was auto-generated to add Google Play services to your project for
