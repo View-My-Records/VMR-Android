@@ -14,6 +14,10 @@ import java.util.List;
 
 public class SearchSuggestion {
 
+    public static final String RECORD_NAME = "RECORD_NAME";
+    public static final String RECORD_NODE = "RECORD_NODE";
+
+
     private String recordName;
     private boolean isFolder;
     private String recordNodeRef;

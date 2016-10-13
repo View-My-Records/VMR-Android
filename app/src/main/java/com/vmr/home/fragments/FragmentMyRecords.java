@@ -356,7 +356,8 @@ public class FragmentMyRecords extends Fragment
 //                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
 //                            "com.vmr.android.files",
 //                            photoFile);
-//                    assert photoFile != null;
+                    assert photoFile != null;
+//                    Uri photoUri = Uri.fromFile(photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 } else {

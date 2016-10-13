@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -32,7 +31,6 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
-import com.vmr.data_provider.SearchHistoryProvider;
 import com.vmr.db.DbManager;
 import com.vmr.db.notification.Notification;
 import com.vmr.db.record.Record;
@@ -291,6 +289,19 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            Toast.makeText(this, "Searching by: "+ query, Toast.LENGTH_SHORT).show();
+
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String uri = intent.getDataString();
+            Toast.makeText(this, "Suggestion: "+ uri, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -438,11 +449,11 @@ public class HomeActivity extends AppCompatActivity
     @Override
     public boolean onQueryTextSubmit(String query) {
         VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit->" + query);
-        SearchRecentSuggestions suggestions =
-                new SearchRecentSuggestions(this,
-                        SearchHistoryProvider.AUTHORITY,
-                        SearchHistoryProvider.MODE);
-        suggestions.saveRecentQuery(query, null);
+//        SearchSuggestionProvider suggestions =
+//                new SearchSuggestionProvider(this,
+//                        SearchSuggestionProvider.AUTHORITY,
+//                        SearchSuggestionProvider.MODE);
+//        suggestions.saveRecentQuery(query, null);
         return false;
     }
 

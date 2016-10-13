@@ -3,12 +3,10 @@ package com.vmr.home.activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.SearchRecentSuggestions;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.vmr.R;
-import com.vmr.data_provider.SearchHistoryProvider;
 
 public class SearchResultActivity extends AppCompatActivity {
 
@@ -21,13 +19,15 @@ public class SearchResultActivity extends AppCompatActivity {
 
         Intent intent  = getIntent();
 
-        if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            getSupportActionBar().setTitle(query);
-            Toast.makeText(this, query, Toast.LENGTH_SHORT).show();
-            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this,
-                    SearchHistoryProvider.AUTHORITY, SearchHistoryProvider.MODE);
-            suggestions.saveRecentQuery(query, null);
+            String uri = intent.getDataString();
+            String location = intent.getStringExtra("intent_extra_data_key");
+            Toast.makeText(this, "Action Search: "+ uri + "Location: " + location, Toast.LENGTH_LONG).show();
+        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+            String uri = intent.getDataString();
+            String location = intent.getStringExtra("intent_extra_data_key");
+            Toast.makeText(this, "Action View: "+ uri + "Location: " + location, Toast.LENGTH_LONG).show();
         }
     }
 }
