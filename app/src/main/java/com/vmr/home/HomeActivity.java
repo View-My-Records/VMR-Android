@@ -80,6 +80,7 @@ public class HomeActivity extends AppCompatActivity
         SearchView.OnQueryTextListener,
         SearchView.OnCloseListener,
         SearchView.OnSuggestionListener {
+    MenuItem searchItem;
     // Views
     private MenuItem toBeIndexed;
     private TextView accountName;
@@ -274,6 +275,7 @@ public class HomeActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_actionbar_menu, menu);
+        searchItem = menu.findItem(R.id.action_search);
         searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         if(null!=searchManager ) {
@@ -286,19 +288,6 @@ public class HomeActivity extends AppCompatActivity
         searchView.setIconifiedByDefault(true);
 
         return true;
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            Toast.makeText(this, "Searching by: "+ query, Toast.LENGTH_SHORT).show();
-
-        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            String uri = intent.getDataString();
-            Toast.makeText(this, "Suggestion: "+ uri, Toast.LENGTH_SHORT).show();
-        }
     }
 
     @Override
@@ -408,7 +397,13 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-//        updateNotifications();
+        if(searchView!= null) {
+            if(searchView.isIconified())
+            searchView.setQuery("", false);
+            searchView.clearFocus();
+            searchView.setIconified(true);
+            searchItem.collapseActionView();
+        }
     }
 
     @Override

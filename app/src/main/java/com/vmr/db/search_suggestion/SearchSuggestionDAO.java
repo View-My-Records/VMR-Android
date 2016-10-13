@@ -39,6 +39,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Records");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
+                searchSuggestion.setRecordLocation("Records");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.RECORD_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.RECORD_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.RECORD_PARENT_NODE_REF)));
@@ -70,6 +71,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Trash");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
+                searchSuggestion.setRecordLocation("Trash");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.TRASH_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
@@ -101,6 +103,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Shared");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
+                searchSuggestion.setRecordLocation("Shared");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.SHARED_FILE_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.SHARED_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.SHARED_PARENT_NODE_REF)));

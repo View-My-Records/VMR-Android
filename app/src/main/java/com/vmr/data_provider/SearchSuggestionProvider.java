@@ -23,6 +23,8 @@ import java.util.List;
 
 public class SearchSuggestionProvider extends ContentProvider {
 
+    int NUMBER_OF_SEARCH_SUGGESTIONS = 5;
+
     List<SearchSuggestion> searchResults;
 
     @Override
@@ -44,66 +46,62 @@ public class SearchSuggestionProvider extends ContentProvider {
                             SearchManager.SUGGEST_COLUMN_ICON_2,
                             SearchManager.SUGGEST_COLUMN_TEXT_2,        // location of file/folder
                             SearchManager.SUGGEST_COLUMN_INTENT_ACTION, // Action Search for folder / view for file
-                            SearchManager.SUGGEST_COLUMN_INTENT_DATA,   // node ref of file/folder
-                            SearchManager.SUGGEST_COLUMN_INTENT_EXTRA_DATA, // location of file/ folder
-                            SearchManager.EXTRA_DATA_KEY                // key to get extra data
+                            SearchManager.SUGGEST_COLUMN_INTENT_DATA    // node ref of file/folder
                     }
             );
             if (searchResults != null) {
                 String query = uri.getLastPathSegment();
-            int limit = Integer.parseInt(uri.getQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT));
+            int limit = NUMBER_OF_SEARCH_SUGGESTIONS;
 
-                int length = searchResults.size();
+            int length = searchResults.size();
 
-                for (int id = 0; id < length && matrixCursor.getCount() < limit; id++) {
-                    SearchSuggestion s = searchResults.get(id);
-                    String recordName = s.getRecordName();
-                    if (recordName.toLowerCase().contains(query.toLowerCase())) {
-                        if (s.isFolder()) {
-                            matrixCursor.addRow(
-                                    new Object[]{
-                                            id,                     // id
-                                            R.drawable.ic_folder,   // icon
-                                            s.getRecordName(),      // record name to be shown
-                                            null,
-                                            s.getRecordLocation(),  // location of file/folder
-                                            Intent.ACTION_SEARCH,
-                                            s.getRecordNodeRef(),   // node ref of file/folder
-                                            s.getRecordLocation(),  // location ref of file/folder
-                                            "intent_extra_data_key"
-                                    }); // node ref of file/folder
-                        } else {
-                            matrixCursor.addRow(
-                                    new Object[]{
-                                            id,                     // id
-                                            R.drawable.ic_file,     // icon
-                                            s.getRecordName(),      // record name to be shown
-                                            null,
-                                            s.getRecordLocation(),  // location of file/folder
-                                            Intent.ACTION_VIEW,
-                                            s.getRecordNodeRef(),   // node ref of file/folder
-                                            s.getRecordLocation(),  // location ref of file/folder
-                                            "intent_extra_data_key"
-                                    });
-                        }
+            for (int id = 0; id < length && matrixCursor.getCount() < limit; id++) {
+                SearchSuggestion s = searchResults.get(id);
+                String recordName = s.getRecordName();
+
+                String intentDate = s.getRecordLocation() + "#" + s.getRecordNodeRef() + "#" + s.getRecordName() + "#" + s.isFolder();
+
+                if (recordName.toLowerCase().contains(query.toLowerCase())) {
+                    if (s.isFolder()) {
+                        matrixCursor.addRow(
+                            new Object[]{
+                                    id,                     // id
+                                    R.drawable.ic_folder,   // icon
+                                    s.getRecordName(),      // record name to be shown
+                                    null,
+                                    s.getRecordLocation(),  // location of file/folder
+                                    Intent.ACTION_SEARCH,
+                                    intentDate    // node ref of file/folder
+                            });
+                    } else {
+                        matrixCursor.addRow(
+                            new Object[]{
+                                    id,                     // id
+                                    R.drawable.ic_file,     // icon
+                                    s.getRecordName(),      // record name to be shown
+                                    null,
+                                    s.getRecordLocation(),  // location of file/folder
+                                    Intent.ACTION_VIEW,
+                                    intentDate              // intentData
+                            });
                     }
                 }
             }
+        }
 
-            if (matrixCursor.getCount() == 0) {
-                matrixCursor.addRow(
-                        new Object[]{
-                                null,
-                                android.R.drawable.stat_notify_error,
-                                "No records found",
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                null
-                        });
-            }
+        if (matrixCursor.getCount() == 0) {
+            matrixCursor.addRow(
+                    new Object[]{
+                            null,
+                            android.R.drawable.stat_notify_error,
+                            "No records found",
+                            0,
+                            null,
+                            null,
+                            null
+                    });
+        }
+
         return matrixCursor;
     }
 
