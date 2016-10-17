@@ -90,7 +90,9 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     private void configureFileViewHolder(FileViewHolder fileViewHolder, int position) {
-        fileViewHolder.setItemName(records.get(position).getRecordName());
+        String recordName = records.get(position).getRecordName();
+
+        fileViewHolder.setItemName(recordName.substring(0, recordName.lastIndexOf('.')));
 
         if (!records.get(position).getRecordDocType().equals("vmr:unindexed")) {
             fileViewHolder.setItemIndexed(View.VISIBLE);

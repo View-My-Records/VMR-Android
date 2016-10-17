@@ -703,7 +703,11 @@ public class FragmentMyRecords extends Fragment
         alertDialogBuilder.setView(promptsView);
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewItemName);
-        userInput.setText(record.getRecordName());
+
+        String recordName = record.getRecordName().substring(0, record.getRecordName().lastIndexOf('.'));
+        final String recordExt  = record.getRecordName().substring(1, record.getRecordName().lastIndexOf('.'));
+
+        userInput.setText(recordName);
         userInput.setSelection(userInput.getText().length());
 
         final HomeController renameController = new HomeController(new VmrResponseListener.OnRenameItemListener() {
@@ -741,7 +745,8 @@ public class FragmentMyRecords extends Fragment
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
-                        renameController.renameItem(record, userInput.getText().toString());
+                        String completeName = userInput.getText().toString() + '.' + recordExt;
+                        renameController.renameItem(record, completeName);
                     }
                 });
 
