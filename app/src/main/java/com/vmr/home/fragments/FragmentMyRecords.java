@@ -1102,13 +1102,19 @@ public class FragmentMyRecords extends Fragment
 
     private void setupFab(View view){
         mFabAddItem = (FloatingActionButton) view.findViewById(fab);
-        mFabAddItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mFabAddItem.hide();
-                addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
-            }
-        });
+
+        if(!Vmr.getLoggedInUserInfo().getUserId().equals("admin")) {
+            mFabAddItem.setVisibility(View.VISIBLE);
+            mFabAddItem.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mFabAddItem.hide();
+                    addItemMenu.show(getActivity().getSupportFragmentManager(), addItemMenu.getTag());
+                }
+            });
+        } else {
+            mFabAddItem.setVisibility(View.GONE);
+        }
     }
 
     private void setOnBackPress(View view){
