@@ -41,7 +41,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="15"
-                android:hint="Password"
+                android:hint="@string/login_hint_password"
                 android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
                 android:text="Qwer!234" />

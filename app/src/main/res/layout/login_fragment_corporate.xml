@@ -43,7 +43,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:ems="15"
-                android:hint="Password"
+                android:hint="@string/login_hint_password"
                 android:imeOptions="actionNext"
                 android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
@@ -63,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:ems="15"
-                android:hint="Corporate-ID"
+                android:hint="@string/login_hint_corporate_id"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
