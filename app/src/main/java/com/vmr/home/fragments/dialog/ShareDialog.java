@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.text.util.Rfc822Tokenizer;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.ex.chips.BaseRecipientAdapter;
+import com.android.ex.chips.RecipientEditTextView;
+import com.android.ex.chips.recipientchip.DrawableRecipientChip;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
@@ -25,6 +29,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.controller.RecordExpiryController;
 import com.vmr.home.controller.ShareRecordController;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.Validator;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -51,7 +56,8 @@ public class ShareDialog extends DialogFragment
     private Date shareExpiryDate;
     private Spinner spPermissions;
     private EditText etSubject;
-    private EditText etShareWith;
+//    private EditText etShareWith;
+    private RecipientEditTextView chipInputShareWith;
     private TextView tvRecordExpiry;
     private TextView btnSetRecordExpiry;
 
@@ -101,7 +107,7 @@ public class ShareDialog extends DialogFragment
 
     private void setupFormFields(View dialogView) {
         etSubject = (EditText) dialogView.findViewById(R.id.etSubject);
-        etShareWith = (EditText) dialogView.findViewById(R.id.etShareWith);
+        chipInputShareWith = (RecipientEditTextView) dialogView.findViewById(R.id.chipInputShareWith);
         spPermissions = (Spinner) dialogView.findViewById(R.id.spinnerPermission);
         tvRecordExpiry = (TextView) dialogView.findViewById(R.id.tvRecordExpiry);
         btnSetRecordExpiry = (TextView) dialogView.findViewById(R.id.btnSetDateTime);
@@ -114,6 +120,12 @@ public class ShareDialog extends DialogFragment
                 dateTimePicker.show(getActivity().getFragmentManager(), "datetimepicker");
             }
         });
+
+        chipInputShareWith.setTokenizer(new Rfc822Tokenizer());
+        BaseRecipientAdapter adapter = new BaseRecipientAdapter(BaseRecipientAdapter.QUERY_TYPE_EMAIL, getActivity());
+        adapter.setShowMobileOnly(true);
+        chipInputShareWith.setAdapter(adapter);
+        chipInputShareWith.dismissDropDownOnItemSelected(true);
     }
 
     private boolean validate() {
@@ -122,9 +134,24 @@ public class ShareDialog extends DialogFragment
             etSubject.setError("The subject cannot be empty");
             return false;
         }
+        
+        DrawableRecipientChip[] chips = chipInputShareWith.getSortedRecipients();
 
-        if(etShareWith.getText().toString().isEmpty()){
-            etShareWith.setError("Please provide email ids separated with comma(,) to share records");
+        if(chips.length == 0){
+            chipInputShareWith.setError("Please provide email ids separated with comma(,) to share records");
+        }
+
+        for (DrawableRecipientChip chip : chips) {
+            String email = chip.getEntry().getDestination();
+            VmrDebug.printLogI(this.getClass(), email);
+            if(!Validator.isEmailValid(email)){
+                chipInputShareWith.setError("Invalid email address");
+                return false;
+            }
+        }
+
+        if(chipInputShareWith.getText().toString().isEmpty()){
+
             return false;
         }
 
@@ -152,7 +179,7 @@ public class ShareDialog extends DialogFragment
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Processing...");
 
-        String[] emailArray = etShareWith.getText().toString().split(",");
+        String[] emailArray = chipInputShareWith.getText().toString().split(",");
         final StringBuilder emails = new StringBuilder();
         for(String email : emailArray){
             emails.append(email).append(",");

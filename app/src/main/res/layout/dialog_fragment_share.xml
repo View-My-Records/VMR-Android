@@ -30,7 +30,15 @@
         android:padding="10dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" >
 
-            <android.support.design.widget.TextInputLayout
+        <com.android.ex.chips.RecipientEditTextView
+            android:id="@+id/chipInputShareWith"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:hint="Emails"
+            android:minHeight="56dp" />
+
+        <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" >
                 <EditText
@@ -43,18 +51,18 @@
                     android:maxLines="5" />
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-                <EditText
-                    android:id="@+id/etShareWith"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Share with"
-                    android:inputType="textEmailAddress"
-                    android:lines="4"
-                    android:maxLines="8" />
-            </android.support.design.widget.TextInputLayout>
+            <!--<android.support.design.widget.TextInputLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content" >-->
+                <!--<EditText-->
+                    <!--android:id="@+id/etShareWith"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:hint="Share with"-->
+                    <!--android:inputType="textEmailAddress"-->
+                    <!--android:lines="4"-->
+                    <!--android:maxLines="8" />-->
+            <!--</android.support.design.widget.TextInputLayout>-->
 
             <Spinner
                 android:id="@+id/spinnerPermission"

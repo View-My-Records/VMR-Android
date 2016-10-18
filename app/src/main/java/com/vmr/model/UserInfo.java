@@ -71,26 +71,29 @@ public class UserInfo implements Parcelable {
 
     public UserInfo(JSONObject jsonObject) throws JSONException{
         super();
-        this.setSlNo(jsonObject.getString(Constants.Response.Login.SERIAL_LNO));
-        this.setResult(jsonObject.getString(Constants.Response.Login.RESULT));
-        this.setRootNodref(jsonObject.getString(Constants.Response.Login.ROOT_NODE_REF));
-        this.setUrlType(jsonObject.getString(Constants.Response.Login.URL_TYPE));
-        this.setUserType(jsonObject.getString(Constants.Response.Login.USER_TYPE));
-        this.setMembershipType(jsonObject.getString(Constants.Response.Login.MEMBERSHIP_TYPE));
-        this.setEmailId(jsonObject.getString(Constants.Response.Login.EMAIL_ID));
-        this.setEmpType(jsonObject.getString(Constants.Response.Login.EMPLOYEE_TYPE));
-        this.setUserId(jsonObject.getString(Constants.Response.Login.USER_ID));
-        this.setHttpSessionId(jsonObject.getString(Constants.Response.Login.SESSION_ID));
-        this.setUserName(jsonObject.getString(Constants.Response.Login.USER_NAME));
-        this.setLoggedinUserId(jsonObject.getString(Constants.Response.Login.CURRENT_USER_ID));
-        this.setLastLoginTime(jsonObject.getString(Constants.Response.Login.LAST_LOGIN_TIME));
+        if(jsonObject.has(Constants.Response.Login.RESULT))
+            this.setResult(jsonObject.getString(Constants.Response.Login.RESULT));
+        if(jsonObject.has(Constants.Response.Login.SERIAL_LNO)) {
+            this.setSlNo(jsonObject.getString(Constants.Response.Login.SERIAL_LNO));
+            this.setRootNodref(jsonObject.getString(Constants.Response.Login.ROOT_NODE_REF));
+            this.setUrlType(jsonObject.getString(Constants.Response.Login.URL_TYPE));
+            this.setUserType(jsonObject.getString(Constants.Response.Login.USER_TYPE));
+            this.setMembershipType(jsonObject.getString(Constants.Response.Login.MEMBERSHIP_TYPE));
+            this.setEmailId(jsonObject.getString(Constants.Response.Login.EMAIL_ID));
+            this.setEmpType(jsonObject.getString(Constants.Response.Login.EMPLOYEE_TYPE));
+            this.setUserId(jsonObject.getString(Constants.Response.Login.USER_ID));
+            this.setHttpSessionId(jsonObject.getString(Constants.Response.Login.SESSION_ID));
+            this.setUserName(jsonObject.getString(Constants.Response.Login.USER_NAME));
+            this.setLoggedinUserId(jsonObject.getString(Constants.Response.Login.CURRENT_USER_ID));
+            this.setLastLoginTime(jsonObject.getString(Constants.Response.Login.LAST_LOGIN_TIME));
 
-        if(this.getMembershipType().equalsIgnoreCase(Constants.Request.Login.Domain.INDIVIDUAL) ){
-            this.setLastName(jsonObject.getString(Constants.Response.Login.LAST_NAME));
-            this.setFirstName(jsonObject.getString(Constants.Response.Login.FIRST_NAME));
-        }else {
-            this.setCorpName(jsonObject.getString(Constants.Response.Login.CORP_NAME));
-            this.setCorpId(jsonObject.getString(Constants.Response.Login.CORP_ID));
+            if (this.getMembershipType().equalsIgnoreCase(Constants.Request.Login.Domain.INDIVIDUAL)) {
+                this.setLastName(jsonObject.getString(Constants.Response.Login.LAST_NAME));
+                this.setFirstName(jsonObject.getString(Constants.Response.Login.FIRST_NAME));
+            } else {
+                this.setCorpName(jsonObject.getString(Constants.Response.Login.CORP_NAME));
+                this.setCorpId(jsonObject.getString(Constants.Response.Login.CORP_ID));
+            }
         }
     }
 

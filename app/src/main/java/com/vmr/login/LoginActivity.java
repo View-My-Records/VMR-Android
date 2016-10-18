@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -126,7 +127,20 @@ public class LoginActivity extends AppCompatActivity
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
         loginProgress.dismiss();
-        onLoginComplete(userInfo);
+        if(userInfo.getResult().equals("success")) {
+            onLoginComplete(userInfo);
+        } else if(userInfo.getResult().contains("locked")) {
+            new AlertDialog.Builder(this)
+                .setTitle("Locked")
+                .setMessage("The account you are tring to log in is locked. Please contact VMR admin.")
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
+        }
     }
 
     @Override
