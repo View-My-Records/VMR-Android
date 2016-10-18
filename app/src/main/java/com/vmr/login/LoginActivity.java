@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.google.firebase.crash.FirebaseCrash;
 import com.vmr.BuildConfig;
 import com.vmr.R;
 import com.vmr.app.Vmr;
@@ -71,6 +72,8 @@ public class LoginActivity extends AppCompatActivity
         loginProgress = new ProgressDialog(this);
         loginProgress.setMessage("Logging in...");
         loginProgress.setCanceledOnTouchOutside(false);
+
+        FirebaseCrash.report(new Exception("My first Android non-fatal error"));
     }
 
     @Override

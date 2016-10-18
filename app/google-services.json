@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "378044963620",
+    "firebase_url": "https://vmr-android-4d5cf.firebaseio.com",
+    "project_id": "vmr-android-4d5cf",
+    "storage_bucket": "vmr-android-4d5cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378044963620:android:cbd67cedf7bd1c02",
+        "android_client_info": {
+          "package_name": "com.vmr"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "378044963620-pekuvfangcesi1qlroeptdvmcq2srrt5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxCsUKa2bPiXJzd6UgbzwPIwIKOXbzZSU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

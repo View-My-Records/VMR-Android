@@ -704,7 +704,7 @@ public class FragmentMyRecords extends Fragment
 
         final EditText userInput = (EditText) promptsView.findViewById(R.id.etNewItemName);
 
-        String recordName = record.getRecordName().substring(0, record.getRecordName().lastIndexOf('.'));
+        final String recordName = record.getRecordName().substring(0, record.getRecordName().lastIndexOf('.'));
         final String recordExt  = record.getRecordName().substring(1, record.getRecordName().lastIndexOf('.'));
 
         userInput.setText(recordName);

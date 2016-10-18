@@ -76,5 +76,8 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.android.support:support-vector-drawable:24.2.1'
     compile 'com.klinkerapps:android-chips:1.1.0@aar'
+    compile 'com.google.firebase:firebase-crash:9.6.1'
     testCompile 'junit:junit:4.12'
 }
+
+apply plugin: 'com.google.gms.google-services'
