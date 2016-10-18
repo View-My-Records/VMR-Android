@@ -179,9 +179,11 @@ public class ShareDialog extends DialogFragment
         final ProgressDialog progressDialog = new ProgressDialog(getActivity());
         progressDialog.setMessage("Processing...");
 
-        String[] emailArray = chipInputShareWith.getText().toString().split(",");
+        DrawableRecipientChip[] chips = chipInputShareWith.getSortedRecipients();
+
         final StringBuilder emails = new StringBuilder();
-        for(String email : emailArray){
+        for (DrawableRecipientChip chip : chips) {
+            String email = chip.getEntry().getDestination();
             emails.append(email).append(",");
         }
 
