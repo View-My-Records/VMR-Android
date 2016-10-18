@@ -21,9 +21,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:ems="15"
-                android:hint="Username"
+                android:hint="@string/login_hint_username"
                 android:imeOptions="actionNext"
-                android:inputType="text"
+                android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
                 android:nextFocusForward="@+id/etIndividualPassword"
                 android:text="induser">
@@ -42,7 +42,7 @@
                 android:layout_height="wrap_content"
                 android:ems="15"
                 android:hint="Password"
-                android:inputType="textPassword"
+                android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
                 android:text="Qwer!234" />
         </android.support.design.widget.TextInputLayout>

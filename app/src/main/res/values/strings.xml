@@ -96,6 +96,7 @@
     <string name="volley_error_something_went_wrong">Something went wrong</string>
     <string name="volley_error_internet_not_available">"Internet not available"</string>
     <string name="toast_internet_unavailable">Internet service is not available</string>
+    <string name="login_hint_username">Username</string>
 
     <string-array name="list_url_types">
         <item>"STANDARD"</item>

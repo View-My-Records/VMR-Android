@@ -24,9 +24,11 @@
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
                 android:ems="15"
-                android:hint="Username"
-                android:inputType="textEmailAddress"
-                android:maxLines="1" />
+                android:hint="@string/login_hint_username"
+                android:imeOptions="actionNext"
+                android:inputType="text|textNoSuggestions"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/etCorpPassword" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -42,8 +44,10 @@
                 android:layout_centerHorizontal="true"
                 android:ems="15"
                 android:hint="Password"
-                android:inputType="textPassword"
+                android:imeOptions="actionNext"
+                android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
+                android:nextFocusForward="@+id/etCorpID"
                 android:text="Qwer!234" />
         </android.support.design.widget.TextInputLayout>
 
@@ -60,7 +64,7 @@
                 android:layout_centerHorizontal="true"
                 android:ems="15"
                 android:hint="Corporate-ID"
-                android:inputType="text"
+                android:inputType="text|textNoSuggestions"
                 android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
