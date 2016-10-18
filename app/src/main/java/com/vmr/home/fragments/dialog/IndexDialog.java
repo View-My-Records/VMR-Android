@@ -139,7 +139,11 @@ public class IndexDialog extends DialogFragment
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         toolbar.inflateMenu(R.menu.index_menu);
         toolbar.setOnMenuItemClickListener(this);
-
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                getDialog().dismiss();
+            }
+        });
         setHasOptionsMenu(true);
         setupFormFields(dialogView);
         setupClassifications();

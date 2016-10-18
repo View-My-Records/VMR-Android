@@ -15,7 +15,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            android:title="Indexing..."/>
+            android:title="Indexing..."
+
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"/>
 
     </android.support.design.widget.AppBarLayout>
 

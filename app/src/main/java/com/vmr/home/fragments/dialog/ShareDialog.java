@@ -105,6 +105,11 @@ public class ShareDialog extends DialogFragment
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         toolbar.inflateMenu(R.menu.share_menu);
         toolbar.setOnMenuItemClickListener(this);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                getDialog().dismiss();
+            }
+        });
         setHasOptionsMenu(true);
         setupFormFields(dialogView);
 
