@@ -84,6 +84,8 @@ public class FragmentLoginIndividual extends Fragment {
                 }
             }
         });
+
+        etUsername.setSelection(etUsername.getText().length());
         return rootView;
     }
 

@@ -22,9 +22,12 @@
                 android:layout_centerHorizontal="true"
                 android:ems="15"
                 android:hint="Username"
-                android:inputType="textEmailAddress"
+                android:imeOptions="actionNext"
+                android:inputType="text"
                 android:maxLines="1"
-                android:text="induser" />
+                android:nextFocusForward="@+id/etIndividualPassword"
+                android:text="induser">
+            </AutoCompleteTextView>
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
