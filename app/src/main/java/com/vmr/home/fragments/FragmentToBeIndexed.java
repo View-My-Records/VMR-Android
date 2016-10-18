@@ -262,7 +262,7 @@ public class FragmentToBeIndexed extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
                             }
                         })
                         .show();
@@ -473,7 +473,7 @@ public class FragmentToBeIndexed extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE);
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
                             }
                         })
                         .show();

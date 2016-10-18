@@ -79,7 +79,7 @@ public class FragmentLoginProfessional extends Fragment {
                             .setAction("OK", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    PermissionHandler.requestPermission(getActivity(),Manifest.permission.INTERNET);
+                                    PermissionHandler.requestPermission(getActivity(),Manifest.permission.INTERNET, 1);
                                 }
                             })
                             .show();

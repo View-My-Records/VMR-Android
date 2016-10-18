@@ -187,33 +187,44 @@ public class LoginActivity extends AppCompatActivity
     // Handle clicks on fragments buttons
     @Override
     public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
-//        if() {
-//
-//        } else {
+        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+            loginController.fetchCustomIndividualDetail(email, password, domain);
+        } else {
             loginController.fetchIndividualDetail(email, password, domain);
-//        }
+        }
         this.remember = remember;
-
         loginProgress.show();
     }
 
     @Override
     public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchFamilyDetail(username, password, accountId, domain);
+        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+            loginController.fetchCustomFamilyDetail(username, password, accountId, domain);
+        } else {
+            loginController.fetchFamilyDetail(username, password, accountId, domain);
+        }
         this.remember = remember;
         loginProgress.show();
     }
 
     @Override
     public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchProfessionalDetail(username, password, accountId, domain);
+        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+            loginController.fetchCustomProfessionalDetail(username, password, accountId, domain);
+        } else {
+            loginController.fetchProfessionalDetail(username, password, accountId, domain);
+        }
         this.remember = remember;
         loginProgress.show();
     }
 
     @Override
     public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        loginController.fetchCorporateDetail(username, password, accountId, domain);
+        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+            loginController.fetchCustomCorporateDetail(username, password, accountId, domain);
+        } else {
+            loginController.fetchCorporateDetail(username, password, accountId, domain);
+        }
         this.remember = remember;
         loginProgress.show();
     }

@@ -18,9 +18,9 @@ public class PermissionHandler {
         return result == PackageManager.PERMISSION_GRANTED;
     }
 
-    public static void requestPermission(Activity activity, String permission ){
+    public static void requestPermission(Activity activity, String permission, int requestCode ){
 //        if (!ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
-            ActivityCompat.requestPermissions(activity, new String[]{permission},1);
+            ActivityCompat.requestPermissions(activity, new String[]{permission}, requestCode);
 //        }
     }
 }

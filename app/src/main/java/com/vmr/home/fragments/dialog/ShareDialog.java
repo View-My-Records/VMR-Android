@@ -1,12 +1,16 @@
 package com.vmr.home.fragments.dialog;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.text.util.Rfc822Tokenizer;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -29,6 +33,7 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.controller.RecordExpiryController;
 import com.vmr.home.controller.ShareRecordController;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.Validator;
 
 import org.json.JSONArray;
@@ -52,6 +57,7 @@ public class ShareDialog extends DialogFragment
     private static final String NODE_REF = "NODE_REF";
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
     TextView tvInvisibleError;
+    private int READ_CONTACTS_REQUEST = 101;
     private String recordNodeRef;
     private Date shareExpiryDate;
     private Spinner spPermissions;
@@ -122,10 +128,30 @@ public class ShareDialog extends DialogFragment
         });
 
         chipInputShareWith.setTokenizer(new Rfc822Tokenizer());
-        BaseRecipientAdapter adapter = new BaseRecipientAdapter(BaseRecipientAdapter.QUERY_TYPE_EMAIL, getActivity());
-        adapter.setShowMobileOnly(true);
-        chipInputShareWith.setAdapter(adapter);
-        chipInputShareWith.dismissDropDownOnItemSelected(true);
+        chipInputShareWith.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+
+        if(PermissionHandler.checkPermission(Manifest.permission.READ_CONTACTS)) {
+            BaseRecipientAdapter adapter = new BaseRecipientAdapter(BaseRecipientAdapter.QUERY_TYPE_EMAIL, getActivity());
+            adapter.setShowMobileOnly(true);
+            chipInputShareWith.setAdapter(adapter);
+            chipInputShareWith.dismissDropDownOnItemSelected(true);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, READ_CONTACTS_REQUEST );
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode == READ_CONTACTS_REQUEST && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            BaseRecipientAdapter adapter = new BaseRecipientAdapter(BaseRecipientAdapter.QUERY_TYPE_EMAIL, getActivity());
+            adapter.setShowMobileOnly(true);
+            chipInputShareWith.setAdapter(adapter);
+            chipInputShareWith.dismissDropDownOnItemSelected(true);
+            VmrDebug.printLogI(this.getClass(), "Read contacts permission approved.");
+        }
     }
 
     private boolean validate() {
