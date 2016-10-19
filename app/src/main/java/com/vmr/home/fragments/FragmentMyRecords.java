@@ -235,7 +235,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -246,7 +246,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onReceiveFromActivityFailure(VolleyError error) {
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -400,12 +400,6 @@ public class FragmentMyRecords extends Fragment
     private File createImageFile() {
         // Create an image file name
         File mediaStorageDir = new File(getActivity().getFilesDir().getAbsolutePath());
-
-//        if (!mediaStorageDir.exists()){
-//            if (!mediaStorageDir.mkdirs()){
-//                return null;
-//            }
-//        }
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");

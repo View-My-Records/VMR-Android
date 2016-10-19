@@ -425,7 +425,7 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
         sendToMyRecords.onReceiveFromActivityFailure(error);
     }
 
@@ -514,6 +514,6 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchNotificationsFailure(VolleyError error) {
-        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
     }
 }
