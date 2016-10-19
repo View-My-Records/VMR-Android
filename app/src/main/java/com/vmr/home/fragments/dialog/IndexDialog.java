@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -142,7 +144,7 @@ public class IndexDialog extends DialogFragment
         View dialogView = inflater.inflate(R.layout.dialog_fragment_index, container);
 
         Toolbar toolbar = (Toolbar) dialogView.findViewById(R.id.toolbar_index_dialog);
-        toolbar.setTitle("Indexing...");
+        toolbar.setTitle(recordName);
         toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
         toolbar.inflateMenu(R.menu.index_menu);
         toolbar.setOnMenuItemClickListener(this);
@@ -229,15 +231,24 @@ public class IndexDialog extends DialogFragment
         if(etQuickReference.getText().toString().equals("")){
             etQuickReference.setError("This field can't be left empty");
             return false;
+        } else if(etQuickReference.getText().toString().length() < 2){
+            etQuickReference.setError("Quick Reference text is too short");
+            return false;
         }
 
         if(etGeoTag.getText().toString().equals("")){
             etGeoTag.setError("This field can't be left empty");
             return false;
+        } else if(etGeoTag.getText().toString().length() < 2){
+            etGeoTag.setError("Geo-Tag text is too short");
+            return false;
         }
 
         if(etRemarks.getText().toString().equals("")){
             etRemarks.setError("This field can't be left empty");
+            return false;
+        } else if(etRemarks.getText().toString().length() < 2){
+            etRemarks.setError("Remarks text is too short");
             return false;
         }
 
@@ -465,6 +476,12 @@ public class IndexDialog extends DialogFragment
             }
         }
         return null;
+    }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
     @Override
