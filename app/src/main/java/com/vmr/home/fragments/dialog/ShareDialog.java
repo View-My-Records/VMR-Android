@@ -161,15 +161,11 @@ public class ShareDialog extends DialogFragment
 
     private boolean validate() {
 
-        if(etSubject.getText().toString().isEmpty()){
-            etSubject.setError("The subject cannot be empty");
-            return false;
-        }
-        
         DrawableRecipientChip[] chips = chipInputShareWith.getSortedRecipients();
 
         if(chips.length == 0){
             chipInputShareWith.setError("Please provide email ids separated with comma(,) to share records");
+            return false;
         }
 
         for (DrawableRecipientChip chip : chips) {
@@ -181,8 +177,8 @@ public class ShareDialog extends DialogFragment
             }
         }
 
-        if(chipInputShareWith.getText().toString().isEmpty()){
-
+        if(etSubject.getText().toString().isEmpty()){
+            etSubject.setError("The subject cannot be empty");
             return false;
         }
 

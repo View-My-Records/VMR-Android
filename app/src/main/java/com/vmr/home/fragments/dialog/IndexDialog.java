@@ -183,6 +183,7 @@ public class IndexDialog extends DialogFragment
         lifeSpanAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, lifeSpanList);
         lifeSpanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
+        categoryMap.put("Select permission", "");
         categoryMap.put("Normal", "NORM");
         categoryMap.put("Confidential", "CONF");
         categoryMap.put("Highly Secure", "HCON");
@@ -208,10 +209,34 @@ public class IndexDialog extends DialogFragment
     }
 
     private boolean validateIndices() {
+
+        if(etQuickReference.getText().toString().equals("")){
+            etQuickReference.setError("This field can't be left empty");
+            return false;
+        }
+
+        if(etGeoTag.getText().toString().equals("")){
+            etQuickReference.setError("This field can't be left empty");
+            return false;
+        }
+
+        if(etRemarks.getText().toString().equals("")){
+            etQuickReference.setError("This field can't be left empty");
+            return false;
+        }
+
         if (spClassification.getSelectedItemPosition() == 0) {
             new AlertDialog
                     .Builder(getActivity())
                     .setMessage("Please select document type.")
+                    .show();
+            return false;
+        }
+
+        if(spCategory.getSelectedItemPosition() == 0){
+            new AlertDialog
+                    .Builder(getActivity())
+                    .setMessage("Please select document permission.")
                     .show();
             return false;
         }
@@ -221,6 +246,11 @@ public class IndexDialog extends DialogFragment
                     .Builder(getActivity())
                     .setMessage("Please select next action date.")
                     .show();
+            return false;
+        }
+
+        if(etActionMessage.getText().toString().equals("")){
+            etQuickReference.setError("This field can't be left empty");
             return false;
         }
 

@@ -51,14 +51,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Quick Reference"
+                    android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/etGeoTag" />
             </android.support.design.widget.TextInputLayout>
-
-            <Spinner
-                android:id="@+id/spinnerLifeSpan"
-                android:layout_width="match_parent"
-                android:layout_height="56dp" />
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -68,8 +65,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Geo Tag"
+                    android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/etRemarks" />
             </android.support.design.widget.TextInputLayout>
 
             <android.support.design.widget.TextInputLayout
@@ -80,9 +79,16 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="Remarks"
+                    android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:maxLines="1" />
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/spinnerLifeSpan" />
             </android.support.design.widget.TextInputLayout>
+
+            <Spinner
+                android:id="@+id/spinnerLifeSpan"
+                android:layout_width="match_parent"
+                android:layout_height="56dp" />
 
             <Spinner
                 android:id="@+id/spinnerCategory"
