@@ -59,6 +59,7 @@ public class UploadService extends IntentService {
                             NotificationManager nm = (NotificationManager)Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
                             nm.cancel(upload.getFileName(), notificationId);
                             nm.notify(notificationId, uploadCompleteNotification);
+                            UploadService.this.sendBroadcast(new Intent().setAction("upload_complete"));
                         }
                     }
 

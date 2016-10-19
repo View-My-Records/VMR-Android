@@ -6,9 +6,11 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -91,8 +93,8 @@ public class FragmentMyRecords extends Fragment
         RecordsAdapter.OnItemClickListener,
         RecordsAdapter.OnItemOptionsClickListener,
         AddItemMenu.OnItemClickListener,
-        RecordOptionsMenu.OnOptionClickListener
-{
+        RecordOptionsMenu.OnOptionClickListener {
+
     private static int FILE_PICKER_INTENT = 100;
     private static int REQUEST_IMAGE_CAPTURE = 101;
     File photoFile;
@@ -114,6 +116,13 @@ public class FragmentMyRecords extends Fragment
     private RecordsAdapter recordsAdapter;
     // Stack
     private Stack<String> recordStack;
+    BroadcastReceiver broadCastUploadComplete = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File upload success broadcast received.");
+            refreshFolder();
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,6 +145,8 @@ public class FragmentMyRecords extends Fragment
 
         recordStack = new Stack<>();
         recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
+
+
 
         if(DEBUG) VmrDebug.printLogI(this.getClass(), recordStack.peek());
         if(DEBUG) VmrDebug.printLogI(this.getClass(), Vmr.getLoggedInUserInfo().getRootNodref());
@@ -171,7 +182,7 @@ public class FragmentMyRecords extends Fragment
         super.onStart();
         records = dbManager.getAllRecords(recordStack.peek());
         recordsAdapter.updateDataset(records);
-//        refreshFolder();
+        getActivity().registerReceiver(this.broadCastUploadComplete, new IntentFilter("upload_complete"));
     }
 
     @Override
@@ -186,6 +197,7 @@ public class FragmentMyRecords extends Fragment
     public void onDetach() {
         super.onDetach();
         fragmentInteractionListener = null;
+        getActivity().unregisterReceiver(broadCastUploadComplete);
     }
 
     @Override
