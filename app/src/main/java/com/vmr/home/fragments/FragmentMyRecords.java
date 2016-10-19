@@ -399,14 +399,13 @@ public class FragmentMyRecords extends Fragment
 
     private File createImageFile() {
         // Create an image file name
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), "VMR");
+        File mediaStorageDir = new File(getActivity().getFilesDir().getAbsolutePath());
 
-        if (!mediaStorageDir.exists()){
-            if (!mediaStorageDir.mkdirs()){
-                return null;
-            }
-        }
+//        if (!mediaStorageDir.exists()){
+//            if (!mediaStorageDir.mkdirs()){
+//                return null;
+//            }
+//        }
 
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         return new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
@@ -1068,7 +1067,7 @@ public class FragmentMyRecords extends Fragment
 
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
-                    Toast.makeText(getActivity(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getActivity(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
                     dbManager.moveRecordToTrash(record);
                 }
             }
