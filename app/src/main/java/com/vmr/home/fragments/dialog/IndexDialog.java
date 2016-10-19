@@ -36,6 +36,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -68,6 +70,7 @@ public class IndexDialog extends DialogFragment
     ArrayAdapter<String> lifeSpanAdapter;
     ArrayAdapter<String> categoryAdapter;
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
+    Map<String , String> propertiesMap;
     private String recordDocType;
     private String recordNodeRef;
     private String recordName;
@@ -87,6 +90,7 @@ public class IndexDialog extends DialogFragment
     private EditText etActionMessage;
     private HomeController homeController;
     private FetchIndexController fetchIndexController;
+    private ProgressDialog mProgressDialog;
 
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
@@ -95,9 +99,10 @@ public class IndexDialog extends DialogFragment
         arguments.putString( NODE_REF, record.getNodeRef());
         arguments.putString( PROGRAM, null);
         arguments.putString( FILE_NAME, record.getRecordName());
-        if(record.getRecordDocType().equals("vmr_unindexed"))
+        if(record.getRecordDocType().equals("vmr:unindexed"))
             arguments.putBoolean( INDEXED_STATUS, false);
-        else arguments.putBoolean( INDEXED_STATUS, true);
+        else
+            arguments.putBoolean( INDEXED_STATUS, true);
 
         newDialog.setArguments(arguments);
 
@@ -119,6 +124,8 @@ public class IndexDialog extends DialogFragment
         fetchIndexController = new FetchIndexController(this);
         classificationAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, classificationsList);
         classificationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        mProgressDialog = new ProgressDialog(getActivity());
     }
 
     @NonNull
@@ -186,10 +193,11 @@ public class IndexDialog extends DialogFragment
         categoryMap.put("Select permission", "");
         categoryMap.put("Normal", "NORM");
         categoryMap.put("Confidential", "CONF");
-        categoryMap.put("Highly Secure", "HCON");
+        categoryMap.put("Highly Secure", "HCONF");
         categoryList.addAll(categoryMap.keySet());
         categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spCategory.setSelection(3);
 
         btnSetNextAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -204,8 +212,16 @@ public class IndexDialog extends DialogFragment
     @Override
     public void onStart() {
         super.onStart();
-        if(recordIndexStatus)
+        fetchIndices();
+    }
+
+    private void fetchIndices(){
+        if(recordIndexStatus) {
             fetchIndexController.fetchIndices(recordNodeRef, "");
+            mProgressDialog.setMessage("Fetching indices");
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
     }
 
     private boolean validateIndices() {
@@ -216,27 +232,27 @@ public class IndexDialog extends DialogFragment
         }
 
         if(etGeoTag.getText().toString().equals("")){
-            etQuickReference.setError("This field can't be left empty");
+            etGeoTag.setError("This field can't be left empty");
             return false;
         }
 
         if(etRemarks.getText().toString().equals("")){
-            etQuickReference.setError("This field can't be left empty");
+            etRemarks.setError("This field can't be left empty");
             return false;
         }
 
-        if (spClassification.getSelectedItemPosition() == 0) {
+        if(spCategory.getSelectedItemPosition() == 3){
             new AlertDialog
                     .Builder(getActivity())
-                    .setMessage("Please select document type.")
+                    .setMessage("Please select document permission.")
                     .show();
             return false;
         }
 
-        if(spCategory.getSelectedItemPosition() == 0){
+        if(Integer.valueOf(spLifeSpan.getSelectedItem().toString()) < Integer.valueOf(propertiesMap.get("vmr_doclifespan"))){
             new AlertDialog
                     .Builder(getActivity())
-                    .setMessage("Please select document permission.")
+                    .setMessage("Record lifespan cannot be reduced.")
                     .show();
             return false;
         }
@@ -246,11 +262,6 @@ public class IndexDialog extends DialogFragment
                     .Builder(getActivity())
                     .setMessage("Please select next action date.")
                     .show();
-            return false;
-        }
-
-        if(etActionMessage.getText().toString().equals("")){
-            etQuickReference.setError("This field can't be left empty");
             return false;
         }
 
@@ -412,29 +423,48 @@ public class IndexDialog extends DialogFragment
 
     @Override
     public void onFetchIndexSuccess(JSONObject jsonObject) {
+        mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "Indices fetched");
         try {
             if(!jsonObject.getString("DoctypeID").equals("vmr_unindexed")) {
-                Toast.makeText(getActivity(), "File is already indexed", Toast.LENGTH_SHORT).show();
-                VmrDebug.printLogI(this.getClass(), "Map->"+classificationsMap.toString());
-                VmrDebug.printLogI(this.getClass(), "List->"+classificationsList.toString());
-                spClassification.setSelection(classificationsList.indexOf(jsonObject.getString("DoctypeName")));
-                Map<String , String > propertiesMap = getPropertiesMap(jsonObject.getJSONArray("Properties"));
+                VmrDebug.printLogI(this.getClass(), recordName +" already indexed");
+                String value = jsonObject.getString("DoctypeID");
+                String key = getKeyFromValue(classificationsMap,value);
+
+                spClassification.setSelection(classificationsList.indexOf(key));
+
+                propertiesMap = getPropertiesMap(jsonObject.getJSONArray("Properties"));
 
                 indexFormLayout.setVisibility(View.VISIBLE);
                 etQuickReference.setText(propertiesMap.get("vmr_quickref"));
                 spLifeSpan.setSelection(lifeSpanList.indexOf(propertiesMap.get("vmr_doclifespan")));
+
                 etGeoTag.setText(propertiesMap.get("vmr_geotag"));
                 etRemarks.setText(propertiesMap.get("vmr_remarks"));
-                spCategory.setSelection(categoryList.indexOf(propertiesMap.get("vmr_category")));
-                tvNextAction.setText(propertiesMap.get("vmr_reminderdate"));
+
+                String key2 = getKeyFromValue(categoryMap, propertiesMap.get("vmr_category"));
+                VmrDebug.printLogI(this.getClass(), "Catagory key2 -> " + propertiesMap.get("vmr_category"));
+                spCategory.setSelection(categoryList.indexOf(key2));
+
+                DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.getDefault());
+                nextActionDate = df.parse(propertiesMap.get("vmr_reminderdate"));
+                tvNextAction.setText(this.df.format(nextActionDate));
                 etActionMessage.setText(propertiesMap.get("vmr_remindermessage"));
             } else {
-                Toast.makeText(getActivity(), "File not indexed", Toast.LENGTH_SHORT).show();
+                VmrDebug.printLogI(this.getClass(), recordName +" not indexed");
             }
-        } catch (JSONException e) {
+        } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
+    }
+
+    private String getKeyFromValue(Map<String, String> hm, String value) {
+        for (String o : hm.keySet()) {
+            if (hm.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -464,7 +494,8 @@ public class IndexDialog extends DialogFragment
             }
             return true;
         } else if (id == R.id.action_refresh) {
-
+            setupClassifications();
+            fetchIndices();
             return true;
         } else if (id == R.id.action_reset) {
 

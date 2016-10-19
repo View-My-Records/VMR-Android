@@ -3,12 +3,9 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.vmr.debug.VmrDebug;
 import com.vmr.network.PostLoginRequest;
-import com.vmr.network.error.FetchError;
 import com.vmr.utils.VmrURL;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -37,13 +34,14 @@ public class SaveIndexRequest extends PostLoginRequest<String> {
     @Override
     protected Response<String> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-        JSONObject jsonObject;
-        try {
-            jsonObject = new JSONObject(jsonString);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return Response.error(new FetchError());
-        }
+//        JSONObject jsonObject;
+//        try {
+////            jsonObject = new JSONObject(jsonString);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//            return Response.error(new FetchError());
+//        }
+        VmrDebug.printLogI(this.getClass(), jsonString);
 
         return Response.success(jsonString, getCacheEntry());
     }

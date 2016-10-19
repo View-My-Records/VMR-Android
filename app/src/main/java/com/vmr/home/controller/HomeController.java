@@ -726,6 +726,18 @@ public class HomeController {
         list.add(Constants.Request.Login.Corporate.PASSWORD);
         list.add(Constants.Request.Login.Corporate.NAME);
 
+        list.add(Constants.Request.Login.Custom.Individual.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Individual.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Family.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Family.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Family.NAME);
+        list.add(Constants.Request.Login.Custom.Professional.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Professional.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Professional.NAME);
+        list.add(Constants.Request.Login.Custom.Corporate.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Corporate.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Corporate.NAME);
+
         Vmr.getUserMap().keySet().retainAll(list);
     }
 
