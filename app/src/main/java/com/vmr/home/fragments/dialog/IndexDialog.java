@@ -1,13 +1,19 @@
 package com.vmr.home.fragments.dialog;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -26,6 +32,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
@@ -34,6 +43,7 @@ import com.vmr.home.controller.FetchIndexController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PermissionHandler;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,7 +68,9 @@ public class IndexDialog extends DialogFragment
         FetchIndexController.OnFetchIndicesListener,
         AdapterView.OnItemSelectedListener,
         Toolbar.OnMenuItemClickListener,
-        DateTimePickerDialog.VmrDateTimePicker {
+        DateTimePickerDialog.VmrDateTimePicker,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
 
     private static final String NODE_REF = "NODE_REF";
     private static final String PROGRAM = "PROGRAM";
@@ -73,7 +85,8 @@ public class IndexDialog extends DialogFragment
     ArrayAdapter<String> lifeSpanAdapter;
     ArrayAdapter<String> categoryAdapter;
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
-    Map<String , String> propertiesMap;
+    Map<String, String> propertiesMap;
+    GoogleApiClient mGoogleApiClient;
     private String recordDocType;
     private String recordNodeRef;
     private String recordName;
@@ -95,20 +108,19 @@ public class IndexDialog extends DialogFragment
     private HomeController homeController;
     private FetchIndexController fetchIndexController;
     private ProgressDialog mProgressDialog;
-
     private OnIndexDialogDismissListener onIndexDialogDismissListener;
 
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
 
         Bundle arguments = new Bundle();
-        arguments.putString( NODE_REF, record.getNodeRef());
-        arguments.putString( PROGRAM, null);
-        arguments.putString( FILE_NAME, record.getRecordName());
-        if(record.getRecordDocType().equals("vmr:unindexed"))
-            arguments.putBoolean( INDEXED_STATUS, false);
+        arguments.putString(NODE_REF, record.getNodeRef());
+        arguments.putString(PROGRAM, null);
+        arguments.putString(FILE_NAME, record.getRecordName());
+        if (record.getRecordDocType().equals("vmr:unindexed"))
+            arguments.putBoolean(INDEXED_STATUS, false);
         else
-            arguments.putBoolean( INDEXED_STATUS, true);
+            arguments.putBoolean(INDEXED_STATUS, true);
 
         newDialog.setArguments(arguments);
 
@@ -201,7 +213,7 @@ public class IndexDialog extends DialogFragment
         categoryMap.put("Normal", "NORM");
         categoryMap.put("Confidential", "CONF");
         categoryMap.put("Highly Secure", "HCONF");
-        categoryList.add(0, "Select permission" );
+        categoryList.add(0, "Select permission");
         categoryList.addAll(categoryMap.keySet());
         categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -228,7 +240,19 @@ public class IndexDialog extends DialogFragment
         btnGeoTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "This feature is not available yet.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Feature is not available yet", Toast.LENGTH_SHORT).show();
+                if (PermissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    mGoogleApiClient.connect();
+                } else {
+                    Snackbar.make(getDialog().findViewById(R.id.clayout), "Application needs permission to use GPS", Snackbar.LENGTH_LONG)
+                            .setAction("OK", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 1);
+                                }
+                            })
+                            .show();
+                }
             }
         });
     }
@@ -237,10 +261,11 @@ public class IndexDialog extends DialogFragment
     public void onStart() {
         super.onStart();
         fetchIndices();
+        buildGoogleApiClient();
     }
 
-    private void fetchIndices(){
-        if(recordIndexStatus) {
+    private void fetchIndices() {
+        if (recordIndexStatus) {
             fetchIndexController.fetchIndices(recordNodeRef, "");
             mProgressDialog.setMessage("Fetching indices");
             mProgressDialog.setCancelable(false);
@@ -250,31 +275,31 @@ public class IndexDialog extends DialogFragment
 
     private boolean validateIndices() {
 
-        if(etQuickReference.getText().toString().equals("")){
+        if (etQuickReference.getText().toString().equals("")) {
             etQuickReference.setError("This field can't be left empty");
             return false;
-        } else if(etQuickReference.getText().toString().length() < 2){
+        } else if (etQuickReference.getText().toString().length() < 2) {
             etQuickReference.setError("Quick Reference text is too short");
             return false;
         }
 
-        if(etGeoTag.getText().toString().equals("")){
+        if (etGeoTag.getText().toString().equals("")) {
             etGeoTag.setError("This field can't be left empty");
             return false;
-        } else if(etGeoTag.getText().toString().length() < 2){
+        } else if (etGeoTag.getText().toString().length() < 2) {
             etGeoTag.setError("Geo-Tag text is too short");
             return false;
         }
 
-        if(etRemarks.getText().toString().equals("")){
+        if (etRemarks.getText().toString().equals("")) {
             etRemarks.setError("This field can't be left empty");
             return false;
-        } else if(etRemarks.getText().toString().length() < 2){
+        } else if (etRemarks.getText().toString().length() < 2) {
             etRemarks.setError("Remarks text is too short");
             return false;
         }
 
-        if(spCategory.getSelectedItemPosition() == 0){
+        if (spCategory.getSelectedItemPosition() == 0) {
             new AlertDialog
                     .Builder(getActivity())
                     .setMessage("Please select document permission.")
@@ -282,7 +307,7 @@ public class IndexDialog extends DialogFragment
             return false;
         }
 
-        if(recordIndexStatus) {
+        if (recordIndexStatus) {
             if (Integer.valueOf(spLifeSpan.getSelectedItem().toString()) < Integer.valueOf(propertiesMap.get("vmr_doclifespan"))) {
                 new AlertDialog
                         .Builder(getActivity())
@@ -468,10 +493,10 @@ public class IndexDialog extends DialogFragment
         mProgressDialog.dismiss();
         VmrDebug.printLogI(this.getClass(), "Indices fetched");
         try {
-            if(!jsonObject.getString("DoctypeID").equals("vmr_unindexed")) {
-                VmrDebug.printLogI(this.getClass(), recordName +" already indexed");
+            if (!jsonObject.getString("DoctypeID").equals("vmr_unindexed")) {
+                VmrDebug.printLogI(this.getClass(), recordName + " already indexed");
                 String value = jsonObject.getString("DoctypeID");
-                String key = getKeyFromValue(classificationsMap,value);
+                String key = getKeyFromValue(classificationsMap, value);
 
                 spClassification.setSelection(classificationsList.indexOf(key));
 
@@ -493,7 +518,7 @@ public class IndexDialog extends DialogFragment
                 tvNextAction.setText(this.df.format(nextActionDate));
                 etActionMessage.setText(propertiesMap.get("vmr_remindermessage"));
             } else {
-                VmrDebug.printLogI(this.getClass(), recordName +" not indexed");
+                VmrDebug.printLogI(this.getClass(), recordName + " not indexed");
             }
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
@@ -512,6 +537,7 @@ public class IndexDialog extends DialogFragment
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
+        mGoogleApiClient.disconnect();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         onIndexDialogDismissListener.onDismiss();
     }
@@ -521,10 +547,10 @@ public class IndexDialog extends DialogFragment
         VmrDebug.printLogI(this.getClass(), "Failed to retrieve indices");
     }
 
-    private Map<String , String > getPropertiesMap(JSONArray properties) throws JSONException {
-        Map<String , String > propertiesMap = new HashMap<>();
+    private Map<String, String> getPropertiesMap(JSONArray properties) throws JSONException {
+        Map<String, String> propertiesMap = new HashMap<>();
         JSONObject jsonObject;
-        for(int i=0; i< properties.length() - 1; i++){
+        for (int i = 0; i < properties.length() - 1; i++) {
             jsonObject = properties.getJSONObject(i);
             propertiesMap.put(jsonObject.getString("propertyName"), jsonObject.getString("propertyValue"));
         }
@@ -559,6 +585,46 @@ public class IndexDialog extends DialogFragment
 
     public void setOnIndexDialogDismissListener(OnIndexDialogDismissListener onIndexDialogDismissListener) {
         this.onIndexDialogDismissListener = onIndexDialogDismissListener;
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 1 );
+        } else {
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                String mLatitudeText = String.valueOf(mLastLocation.getLatitude());
+                String mLongitudeText = String.valueOf(mLastLocation.getLongitude());
+                Toast.makeText(getActivity(), "Latitude: " + mLatitudeText + "\nLongitude: " + mLongitudeText, Toast.LENGTH_LONG).show();
+                VmrDebug.printLogI(this.getClass(), "Latitude: " + mLatitudeText + "\nLongitude: " + mLongitudeText);
+            }
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+        Toast.makeText(getActivity(), "Connection suspended...", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Toast.makeText(getActivity(), "Failed to connect...", Toast.LENGTH_SHORT).show();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
     public interface OnIndexDialogDismissListener {

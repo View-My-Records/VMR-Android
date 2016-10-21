@@ -525,7 +525,6 @@ public class HomeActivity extends AppCompatActivity
             public void onFileDownloadSuccess(File file) {
                 VmrDebug.printLogI(HomeActivity.this.getClass(), "File download complete");
                 progressDialog.dismiss();
-                VmrDebug.printLogI(HomeActivity.this.getClass(), "File size -> " + file.length());
                 try {
                     if (file != null) {
                         final File tempFile = new File(getExternalCacheDir(), record.getRecordName());

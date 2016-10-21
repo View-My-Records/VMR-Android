@@ -31,7 +31,7 @@ def getVersionName = { ->
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion '24.0.3'
     defaultConfig {
         applicationId "com.vmr"
@@ -61,22 +61,23 @@ dependencies {
     compile('org.apache.httpcomponents:httpmime:4.3') {
         exclude module: "httpclient"
     }
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    compile 'com.android.support:design:24.2.1'
-    compile 'com.android.support:support-v4:24.2.1'
-    compile 'com.android.support:support-v13:24.2.1'
-    compile 'com.android.support:preference-v7:24.2.1'
-    compile 'com.android.support:preference-v14:24.2.1'
-    compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.android.support:appcompat-v7:25.0.0'
+    compile 'com.android.support:design:25.0.0'
+    compile 'com.android.support:support-v4:25.0.0'
+    compile 'com.android.support:support-v13:25.0.0'
+    compile 'com.android.support:preference-v7:25.0.0'
+    compile 'com.android.support:preference-v14:25.0.0'
+    compile 'com.android.support:recyclerview-v7:25.0.0'
     compile 'com.google.android.gms:play-services-appindexing:9.6.1'
     compile 'com.android.volley:volley:1.0.0'
-    compile 'com.android.support:cardview-v7:24.2.1'
-    compile 'com.android.support:gridlayout-v7:24.2.1'
+    compile 'com.android.support:cardview-v7:25.0.0'
+    compile 'com.android.support:gridlayout-v7:25.0.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile 'com.android.support:support-vector-drawable:24.2.1'
+    compile 'com.android.support:support-vector-drawable:25.0.0'
     compile 'com.klinkerapps:android-chips:1.1.0@aar'
     compile 'com.google.firebase:firebase-crash:9.6.1'
+    compile 'com.google.android.gms:play-services-location:9.6.1'
     testCompile 'junit:junit:4.12'
 }
 
