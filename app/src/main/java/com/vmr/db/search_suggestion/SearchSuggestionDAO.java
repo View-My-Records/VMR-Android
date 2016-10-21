@@ -28,8 +28,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_RECORD, // Table Name
                 new String[] { DbConstants.RECORD_NAME, DbConstants.RECORD_IS_FOLDER, DbConstants.RECORD_NODE_REF, DbConstants.RECORD_PARENT_NODE_REF }, // Select columns
-                DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_NAME + " LIKE ? " , // where
-                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "%"+searchTerm+"%" } , // conditions
+                DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_IS_FOLDER + "=? AND " + DbConstants.RECORD_NAME + " LIKE ? " , // where
+                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0", "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_NAME, // order by
@@ -39,7 +39,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Records");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
-                searchSuggestion.setRecordLocation("Records");
+                searchSuggestion.setRecordLocation("records");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.RECORD_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.RECORD_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.RECORD_PARENT_NODE_REF)));
@@ -60,8 +60,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_TRASH, // Table Name
                 new String[] { DbConstants.TRASH_NAME, DbConstants.TRASH_IS_FOLDER, DbConstants.TRASH_NODE_REF, DbConstants.TRASH_PARENT_NODE_REF }, // Select columns
-                DbConstants.TRASH_NAME + " LIKE ? " , // where
-                new String[] {  "%"+searchTerm+"%" } , // conditions
+                DbConstants.TRASH_MASTER_OWNER + "=? AND " + DbConstants.TRASH_IS_FOLDER + "=? AND " + DbConstants.TRASH_NAME + " LIKE ? " , // where
+                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0" ,"%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_NAME, // order by
@@ -71,7 +71,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Trash");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
-                searchSuggestion.setRecordLocation("Trash");
+                searchSuggestion.setRecordLocation("trash");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.TRASH_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.TRASH_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.TRASH_PARENT_NODE_REF)));
@@ -92,8 +92,8 @@ public class SearchSuggestionDAO {
         Cursor c = db.query(
                 DbConstants.TABLE_SHARED, // Table Name
                 new String[] { DbConstants.SHARED_FILE_NAME, DbConstants.SHARED_IS_FOLDER, DbConstants.SHARED_NODE_REF, DbConstants.SHARED_PARENT_NODE_REF }, // Select columns
-                DbConstants.SHARED_FILE_NAME + " LIKE ? " , // where
-                new String[] {  "%"+searchTerm+"%" } , // conditions
+                DbConstants.SHARED_MASTER_OWNER + "=? AND " + DbConstants.SHARED_IS_FOLDER + "=? AND " + DbConstants.SHARED_FILE_NAME + " LIKE ? " , // where
+                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0" , "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.SHARED_FILE_NAME, // order by
@@ -103,7 +103,7 @@ public class SearchSuggestionDAO {
             VmrDebug.printLogI(this.getClass(), "Suggestion retrieved from Shared");
             do {
                 SearchSuggestion searchSuggestion = new SearchSuggestion();
-                searchSuggestion.setRecordLocation("Shared");
+                searchSuggestion.setRecordLocation("shared");
                 searchSuggestion.setRecordName(          c.getString( c.getColumnIndex(DbConstants.SHARED_FILE_NAME)));
                 searchSuggestion.setRecordNodeRef(       c.getString( c.getColumnIndex(DbConstants.SHARED_NODE_REF)));
                 searchSuggestion.setRecordParentNodeRef( c.getString( c.getColumnIndex(DbConstants.SHARED_PARENT_NODE_REF)));

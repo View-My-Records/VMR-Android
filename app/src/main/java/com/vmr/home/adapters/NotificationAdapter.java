@@ -12,9 +12,7 @@ import android.widget.TextView;
 import com.vmr.R;
 import com.vmr.db.notification.Notification;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 /*
  * Created by abhijit on 8/25/16.
@@ -45,10 +43,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         } else {
             holder.setReadIndicator(View.VISIBLE);
         }
-        SimpleDateFormat localDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
-        String day = DateUtils.getRelativeTimeSpanString(item.getCreatedDate().getTime()).toString();
-        String time = localDateFormat.format(item.getCreatedDate().getTime());
-        holder.setReceiveTimeStamp( day + "\n" + time);
+//        SimpleDateFormat localDateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+//        String day = DateUtils.getRelativeTimeSpanString(item.getCreatedDate().getTime()).toString();
+//        String time = localDateFormat.format(item.getCreatedDate().getTime());
+//        holder.setReceiveTimeStamp( day + "\n" + time);
+        holder.setReceiveTimeStamp( DateUtils.getRelativeTimeSpanString(item.getCreatedDate().getTime()).toString());
         holder.setSenderName(item.getSenderFirstName() + " " + item.getSenderLastName());
         holder.setMessageBody(item.getSubject());
         holder.bind(itemsList.get(position), itemClickListener);

@@ -70,7 +70,7 @@ public class SearchSuggestionProvider extends ContentProvider {
                                     s.getRecordName(),      // record name to be shown
                                     null,
                                     s.getRecordLocation(),  // location of file/folder
-                                    Intent.ACTION_SEARCH,
+                                    Intent.ACTION_VIEW,
                                     intentDate    // node ref of file/folder
                             });
                     } else {

@@ -254,6 +254,16 @@ public abstract class Constants {
                 public static final String TAG          = "VMR_MESSAGE";
             }
 
+            public final static class Search {
+                public static final String PAGE_MODE        = "pageMode";
+                public static final String INBOX_ID         = "InboxrowId";
+                public static final String SEARCH_PATTERN   = "searchPattern";              // .jpg
+                public static final String ALF_NODEREF      = "alfNoderef";                 //workspace://SpacesStore/3f3fb831-e148-4d77-a907-7ccde58155cb
+                public static final String CONTENT_TYPE     = "contentType";                //vmr_doc
+                public static final String SEARCH_BY_PATTERN= "searchByPattern";        //false
+                public static final String TAG              = "VMR_SEARCH";
+            }
+
         }
 
         public final static class Notification {

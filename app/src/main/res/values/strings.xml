@@ -96,11 +96,11 @@
     <string name="volley_error_something_went_wrong">Something went wrong</string>
     <string name="volley_error_internet_not_available">"Internet not available"</string>
     <string name="toast_internet_unavailable">Internet service is not available</string>
-    <string name="login_hint_username">Username</string>
+    <string name="login_hint_username">User Name</string>
     <string name="login_hint_password">Password</string>
-    <string name="login_hint_corporate_id">Corporate-ID</string>
-    <string name="login_hint_professional_id">Professional-ID</string>
-    <string name="login_hint_family_id">Family-ID</string>
+    <string name="login_hint_corporate_id">Corporate-Id</string>
+    <string name="login_hint_professional_id">Professional-Id</string>
+    <string name="login_hint_family_id">Family-Id</string>
 
     <string-array name="list_url_types">
         <item>"STANDARD"</item>
@@ -114,6 +114,23 @@
         <item>"Print"</item>
         <item>"Download"</item>
         <item>"Share Further"</item>
+    </string-array>
+
+    <string-array name="list_doc_types">
+        <item>"Select Document Types"</item>
+        <item>"Bill and Warranty Cards"</item>
+        <item>"Education"</item>
+        <item>"Financial Records"</item>
+        <item>"Identity/Address Proof"</item>
+        <item>"Individual Records"</item>
+        <item>"Insurance"</item>
+        <item>"Legal Documents"</item>
+        <item>"Medical/HealthCare"</item>
+        <item>"Others"</item>
+        <item>"Photo/Video"</item>
+        <item>"Property Related "</item>
+        <item>"Publications"</item>
+        <item>"Vehicle Related"</item>
     </string-array>
 
     <string-array name="list_preference_entry_values">

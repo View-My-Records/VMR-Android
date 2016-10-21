@@ -21,6 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+
         <activity
             android:name=".login.LoginActivity"
             android:theme="@style/AppTheme.NoActionBar" >
@@ -29,6 +30,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".home.HomeActivity"
             android:label="@string/title_activity_home"
@@ -39,15 +41,16 @@
             </intent-filter>
             <meta-data
                 android:name="android.app.default_searchable"
-                android:value=".home.SearchResultActivity" />
+                android:value=".HomeActivity" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
         </activity>
+
         <activity
             android:name=".home.activity.SearchResultActivity"
             android:launchMode="singleTop"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -60,7 +63,9 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
-
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".home.SearchResultActivity" />
         </activity>
 
         <provider
@@ -81,7 +86,6 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths">
-
             </meta-data>
         </provider>
 

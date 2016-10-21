@@ -325,4 +325,12 @@ public class DbManager {
     public void updateUploadStatusUploading(int uploadId) {
         this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_UPLOADING);
     }
+
+    public TrashRecord getTrashRecord(String nodeRef) {
+        return this.trashRecordDAO.getTrashRecord(nodeRef);
+    }
+
+    public SharedRecord getSharedRecord(String nodeRef) {
+        return this.sharedRecordDAO.getSharedRecord(nodeRef);
+    }
 }

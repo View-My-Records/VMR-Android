@@ -159,4 +159,27 @@ public class SharedRecordDAO {
         }
         return record;
     }
+
+    public SharedRecord getSharedRecord(String nodeRef) {
+        SharedRecord record = new SharedRecord();
+        Cursor c = db.query(
+                DbConstants.TABLE_SHARED, // Table Name
+                DbConstants.SHARED_COLUMNS, // Select columns
+                DbConstants.SHARED_NODE_REF + "=?" , // where
+                new String[]{ nodeRef }, // noderef
+                null, // group by
+                null, // having
+                null, // order by
+                null );
+
+        if (c.moveToFirst()) {
+            SharedRecord newRecord = buildFromCursor(c);
+            if (newRecord != null) {
+                record = newRecord;
+            }
+        }
+
+        VmrDebug.printLogI(this.getClass(), record.getRecordName() + " retrieved");
+        return record;
+    }
 }

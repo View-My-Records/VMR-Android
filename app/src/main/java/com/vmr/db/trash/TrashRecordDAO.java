@@ -130,4 +130,26 @@ public class TrashRecordDAO {
         }
         return record;
     }
+
+    public TrashRecord getTrashRecord(String nodeRef) {
+        TrashRecord trashRecord = new TrashRecord();
+        Cursor c = db.query(
+                DbConstants.TABLE_TRASH, // Table Name
+                DbConstants.TRASH_COLUMNS, // Select columns
+                DbConstants.TRASH_NODE_REF + "=?" , // where
+                new String[]{ nodeRef }, // noderef
+                null, // group by
+                null, // having
+                null, // order by
+                null );
+        if (c.moveToFirst()) {
+            TrashRecord newRecord = buildFromCursor(c);
+            if (newRecord != null) {
+                trashRecord = newRecord;
+            }
+        }
+
+        VmrDebug.printLogI(this.getClass(), trashRecord.getRecordName() + " retrieved");
+        return trashRecord;
+    }
 }
