@@ -66,11 +66,20 @@ public class FileUtils {
     }
 
     public static String getMimeType(String filePath) {
-        String type = null;
-        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath);
-        if (extension != null) {
+        String type;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(filePath).toLowerCase();
+        if (!extension.equals("")) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        } else {
+            type = "*/*";
         }
         return type;
+    }
+
+    public static String getMimeType(File file) throws IOException {
+        String type = file.toURL().openConnection().getContentType();
+        if(type != null)
+            return type;
+        return null;
     }
 }

@@ -689,6 +689,12 @@ public class FragmentMyRecords extends Fragment
         FragmentManager fm = getActivity().getFragmentManager();
         IndexDialog indexDialog = IndexDialog.newInstance(record);
         indexDialog.show(fm, "Index");
+        indexDialog.setIndexDialogDismiss(new IndexDialog.OnIndexDialogDismissListener() {
+            @Override
+            public void onDismiss() {
+                refreshFolder();
+            }
+        });
     }
 
     @Override
@@ -905,10 +911,14 @@ public class FragmentMyRecords extends Fragment
     }
 
     private void pasteRecord(final String parentNode){
+
+        final boolean[] isCanceled = {false};
+
         final HomeController copyController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
             @Override
             public void onCopyItemSuccess(JSONObject jsonObject) {
                 VmrDebug.printLogI(this.getClass(), "Copy success" );
+                refreshFolder();
             }
 
             @Override
@@ -921,6 +931,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onMoveItemSuccess(JSONObject jsonObject) {
                 VmrDebug.printLogI(this.getClass(), "Move success" );
+                refreshFolder();
             }
 
             @Override
@@ -940,15 +951,18 @@ public class FragmentMyRecords extends Fragment
                         Snackbar
                                 .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
                                 .show();
+                        isCanceled[0] = true;
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
-                        Record parent = dbManager.getRecord(parentNode);
-                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Parent record name " + parent.getRecordName());
-                        moveController.moveItem(clipBoard.first, parent);
+                        if(!isCanceled[0]) {
+                            Record parent = dbManager.getRecord(parentNode);
+                            VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Parent record name " + parent.getRecordName());
+                            moveController.moveItem(clipBoard.first, parent);
+                        }
                     }
                 });
 
@@ -961,14 +975,17 @@ public class FragmentMyRecords extends Fragment
                         Snackbar
                                 .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
                                 .show();
+                        isCanceled[0] = true;
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
-                        Record parent = dbManager.getRecord(parentNode);
-                        copyController.copyItem(clipBoard.first, parent);
+                        if(!isCanceled[0]) {
+                            Record parent = dbManager.getRecord(parentNode);
+                            copyController.copyItem(clipBoard.first, parent);
+                        }
                     }
                 });
 
@@ -1009,36 +1026,36 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onDuplicateClicked(final Record record) {
         VmrDebug.printLogI(this.getClass(), "Duplicate button clicked" );
-//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
 
         final HomeController duplicateController =  new HomeController(new VmrResponseListener.OnCopyItemListener() {
             @Override
             public void onCopyItemSuccess(JSONObject jsonObject) {
-
+                refreshFolder();
             }
 
             @Override
             public void onCopyItemFailure(VolleyError error) {
-
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Duplicate request failed." );
             }
         });
-
-        Snackbar
-                .make(getActivity().findViewById(R.id.clayout), "New copy of " + record.getRecordName() + " created", Snackbar.LENGTH_LONG)
+        final boolean[] isCanceled = {false};
+        Snackbar.make(getActivity().findViewById(R.id.clayout), "New copy of " + record.getRecordName() + " created", Snackbar.LENGTH_LONG)
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Snackbar
-                                .make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
+                        Snackbar.make(getActivity().findViewById(R.id.clayout), "Action canceled", Snackbar.LENGTH_SHORT)
                                 .show();
+                        isCanceled[0] = true;
                     }
                 })
                 .setCallback(new Snackbar.Callback() {
                     @Override
                     public void onDismissed(Snackbar snackbar, int event) {
                         super.onDismissed(snackbar, event);
-                        Record parent = dbManager.getRecord(recordStack.peek());
-                        duplicateController.copyItem(record, parent);
+                        if(!isCanceled[0]) {
+                            Record parent = dbManager.getRecord(recordStack.peek());
+                            duplicateController.copyItem(record, parent);
+                        }
                     }
                 })
                 .show();
@@ -1060,15 +1077,17 @@ public class FragmentMyRecords extends Fragment
                 refreshFolder();
 
                 for (DeleteMessage dm : deleteMessages) {
-                    if(dm.getStatus().equals("success"))
-//                    Toast.makeText(getActivity(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
-                    dbManager.moveRecordToTrash(record);
+                    if(dm.getStatus().equals("success")) {
+                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), dm.getObjectType() + " " + dm.getName() + " deleted");
+                        dbManager.moveRecordToTrash(record);
+                    }
                 }
             }
 
             @Override
             public void onMoveToTrashFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Can't delete. File may be already removed.");
+                refreshFolder();
             }
 
         });

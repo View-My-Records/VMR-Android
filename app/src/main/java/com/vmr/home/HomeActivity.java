@@ -60,6 +60,7 @@ import com.vmr.utils.Constants;
 import com.vmr.utils.FileUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -116,32 +117,34 @@ public class HomeActivity extends AppCompatActivity
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-//        Intent intent  = getIntent();
-        String intentDataString = intent.getDataString();
-        String[] parts;
+        if(intent.getAction().equals(Intent.ACTION_SEARCH) || intent.getAction().equals(Intent.ACTION_VIEW)) {
 
-        if(intentDataString != null) {
-            parts = intentDataString.split("#");
-            location     =   parts[0];
-            nodeRef      =    parts[1];
-            recordName   = parts[2];
-            isFolder     =   parts[3];
-        }
-        String queryString = intent.getExtras().getString(SearchManager.QUERY);
+            String intentDataString = intent.getDataString();
+            String[] parts;
 
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            VmrDebug.printLogI(this.getClass(), "-------------------Action Search");
-            VmrDebug.printLogI(this.getClass(), "-----Query->" + queryString);
-            intent.setClass(this,SearchResultActivity.class);
-            startActivity(intent);
-//            initiateSearch();
-        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            VmrDebug.printLogI(this.getClass(), "-------------------Action View");
-            VmrDebug.printLogI(this.getClass(), "-----Location->"+location);
-            VmrDebug.printLogI(this.getClass(), "-----NodeRef->"+nodeRef);
-            VmrDebug.printLogI(this.getClass(), "-----RecordName->"+recordName);
-            VmrDebug.printLogI(this.getClass(), "-----IsFolder->"+isFolder);
-            getRecord();
+            if (intentDataString != null) {
+                parts = intentDataString.split("#");
+                location = parts[0];
+                nodeRef = parts[1];
+                recordName = parts[2];
+                isFolder = parts[3];
+            }
+
+            String queryString = intent.getExtras().getString(SearchManager.QUERY);
+
+            if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+                VmrDebug.printLogI(this.getClass(), "-------------------Action Search");
+                VmrDebug.printLogI(this.getClass(), "-----Query->" + queryString);
+                intent.setClass(this, SearchResultActivity.class);
+                startActivity(intent);
+            } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+                VmrDebug.printLogI(this.getClass(), "-------------------Action View");
+                VmrDebug.printLogI(this.getClass(), "-----Location->" + location);
+                VmrDebug.printLogI(this.getClass(), "-----NodeRef->" + nodeRef);
+                VmrDebug.printLogI(this.getClass(), "-----RecordName->" + recordName);
+                VmrDebug.printLogI(this.getClass(), "-----IsFolder->" + isFolder);
+                getRecord(location);
+            }
         }
     }
 
@@ -476,62 +479,6 @@ public class HomeActivity extends AppCompatActivity
         this.pasteClickListener = pasteClickListener;
     }
 
-//    @Override
-//    public boolean onQueryTextSubmit(String query) {
-//        VmrDebug.printLogI(this.getClass(), "onQueryTextSubmit->" + query);
-////        SearchSuggestionProvider suggestions =
-////                new SearchSuggestionProvider(this,
-////                        SearchSuggestionProvider.AUTHORITY,
-////                        SearchSuggestionProvider.MODE);
-////        suggestions.saveRecentQuery(query, null);
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean onQueryTextChange(String newText) {
-//        VmrDebug.printLogI(this.getClass(), "onQueryTextChange->" + newText);
-//
-//        return false;
-//    }
-
-//    @Override
-//    public boolean onClose() {
-//        VmrDebug.printLogI(this.getClass(), "onQueryClose->");
-//        return false;
-//    }
-
-//    @Override
-//    public boolean onSuggestionSelect(int position) {
-//        VmrDebug.printLogI(this.getClass(), "onSuggestionSelect->");
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean onSuggestionClick(int position) {
-//
-//        Cursor c = searchView.getSuggestionsAdapter().getCursor();
-//        VmrDebug.printLogI(this.getClass(), "onSuggestionClick->" +c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1)));
-//
-//        Intent intent = new Intent(this, HomeActivity.class);
-//        intent.setAction(Intent.ACTION_VIEW);
-//
-////        intent.putExtra("id", id);
-//
-//        PendingIntent pendingIntent =
-//                TaskStackBuilder.create(this)
-//                        // add all of DetailsActivity's parents to the stack,
-//                        // followed by DetailsActivity itself
-//                        .addNextIntentWithParentStack(getIntent())
-//                        .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
-//
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-//        builder.setContentIntent(pendingIntent);
-//
-//        startActivity(intent);
-//
-//        return true;
-//    }
-
     @Override
     public void onFetchNotificationsSuccess(List<NotificationItem> notificationItemList) {
         if( notificationItemList != null && notificationItemList.size() > 0)
@@ -550,9 +497,7 @@ public class HomeActivity extends AppCompatActivity
 //        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
     }
 
-    public void getRecord() {
-
-
+    public void getRecord(String location) {
         switch (location){
             case "records":
                 final Record record = Vmr.getDbManager().getRecord(nodeRef);
@@ -567,47 +512,47 @@ public class HomeActivity extends AppCompatActivity
                 getFile(sharedRecord);
                 break;
             default:
+                break;
         }
     }
 
     private void getFile(final Record record){
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Receiving file...");
+        progressDialog.setMessage("Receiving file..." + record.getRecordName());
         progressDialog.show();
         HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
+                VmrDebug.printLogI(HomeActivity.this.getClass(), "File download complete");
                 progressDialog.dismiss();
+                VmrDebug.printLogI(HomeActivity.this.getClass(), "File size -> " + file.length());
                 try {
                     if (file != null) {
-                        final File tempFile = new File(HomeActivity.this.getExternalCacheDir(), record.getRecordName());
-                        if (tempFile.exists() && tempFile.delete()) {
-                            FileUtils.copyFile(file, tempFile);
+                        final File tempFile = new File(getExternalCacheDir(), record.getRecordName());
+                        if (tempFile.exists())
+                            tempFile.delete();
+                        FileUtils.copyFile(file, tempFile);
 
-                            Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            Uri fileUri = Uri.fromFile(tempFile);
-                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                            try {
-                                startActivity(openFileIntent);
-                                VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                        Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                        openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Uri fileUri = Uri.fromFile(tempFile);
+                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                        startActivity(openFileIntent);
                     } else {
                         VmrDebug.printLogI(HomeActivity.this.getClass(), "null file");
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     VmrDebug.printLogI(this.getClass(), "File download failed");
                     e.printStackTrace();
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
             public void onFileDownloadFailure(VolleyError error) {
                 Toast.makeText(HomeActivity.this, "Couldn't download the file.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
         });
 
@@ -616,37 +561,40 @@ public class HomeActivity extends AppCompatActivity
 
     private void getFile(final TrashRecord record){
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Receiving file...");
+        progressDialog.setMessage("Receiving file...\n" + record.getRecordName());
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.show();
         HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
-                progressDialog.dismiss();
+                progressDialog.setMessage("Download complete");
                 try {
                     if (file != null) {
-                        final File tempFile = new File(HomeActivity.this.getExternalCacheDir(), record.getRecordName());
-                        if (tempFile.exists() && tempFile.delete()) {
-                            FileUtils.copyFile(file, tempFile);
+                        final File tempFile = new File(HomeActivity.this.getCacheDir(), record.getRecordName());
+//                        if (tempFile.exists())
+//                            tempFile.delete();
+                        FileUtils.copyFile(file, tempFile);
 
-                            Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            Uri fileUri = Uri.fromFile(tempFile);
-                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                            try {
-                                startActivity(openFileIntent);
-                                VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                        Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                        openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Uri fileUri = Uri.fromFile(tempFile);
+                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getName()));
+                        startActivity(openFileIntent);
+
+                        VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");
+                        progressDialog.dismiss();
                     } else {
                         VmrDebug.printLogI(HomeActivity.this.getClass(), "null file");
+                        progressDialog.dismiss();
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     VmrDebug.printLogI(this.getClass(), "File download failed");
                     e.printStackTrace();
+                    progressDialog.dismiss();
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
                 }
-
             }
 
             @Override
@@ -660,7 +608,7 @@ public class HomeActivity extends AppCompatActivity
 
     private void getFile(final SharedRecord record){
         final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Receiving file...");
+        progressDialog.setMessage("Receiving file..." + record.getRecordName());
         progressDialog.show();
         HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
             @Override
@@ -673,9 +621,9 @@ public class HomeActivity extends AppCompatActivity
                             FileUtils.copyFile(file, tempFile);
 
                             Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             Uri fileUri = Uri.fromFile(tempFile);
-                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getName()));
                             try {
                                 startActivity(openFileIntent);
                                 VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");

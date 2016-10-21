@@ -94,6 +94,8 @@ public class IndexDialog extends DialogFragment
     private FetchIndexController fetchIndexController;
     private ProgressDialog mProgressDialog;
 
+    private OnIndexDialogDismissListener indexDialogDismiss;
+
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
 
@@ -260,12 +262,14 @@ public class IndexDialog extends DialogFragment
             return false;
         }
 
-        if(Integer.valueOf(spLifeSpan.getSelectedItem().toString()) < Integer.valueOf(propertiesMap.get("vmr_doclifespan"))){
-            new AlertDialog
-                    .Builder(getActivity())
-                    .setMessage("Record lifespan cannot be reduced.")
-                    .show();
-            return false;
+        if(recordIndexStatus) {
+            if (Integer.valueOf(spLifeSpan.getSelectedItem().toString()) < Integer.valueOf(propertiesMap.get("vmr_doclifespan"))) {
+                new AlertDialog
+                        .Builder(getActivity())
+                        .setMessage("Record lifespan cannot be reduced.")
+                        .show();
+                return false;
+            }
         }
 
         if (nextActionDate == null || nextActionDate.before(new Date(System.currentTimeMillis()))) {
@@ -523,5 +527,13 @@ public class IndexDialog extends DialogFragment
             return true;
         }
         return false;
+    }
+
+    public void setIndexDialogDismiss(OnIndexDialogDismissListener indexDialogDismiss) {
+        this.indexDialogDismiss = indexDialogDismiss;
+    }
+
+    public interface OnIndexDialogDismissListener {
+        void onDismiss();
     }
 }
