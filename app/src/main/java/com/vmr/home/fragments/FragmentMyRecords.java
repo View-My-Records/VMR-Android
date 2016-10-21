@@ -689,7 +689,7 @@ public class FragmentMyRecords extends Fragment
         FragmentManager fm = getActivity().getFragmentManager();
         IndexDialog indexDialog = IndexDialog.newInstance(record);
         indexDialog.show(fm, "Index");
-        indexDialog.setIndexDialogDismiss(new IndexDialog.OnIndexDialogDismissListener() {
+        indexDialog.setOnIndexDialogDismissListener(new IndexDialog.OnIndexDialogDismissListener() {
             @Override
             public void onDismiss() {
                 refreshFolder();

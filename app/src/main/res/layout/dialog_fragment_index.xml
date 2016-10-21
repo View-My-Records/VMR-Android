@@ -2,6 +2,7 @@
 <android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/clayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true">
@@ -24,6 +25,7 @@
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/llFormLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -57,9 +59,16 @@
                     android:nextFocusForward="@+id/etGeoTag" />
             </android.support.design.widget.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="56dp" >
+                android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="220dp"
+                android:layout_height="56dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/btnGeoTag">
                 <EditText
                     android:id="@+id/etGeoTag"
                     android:layout_width="match_parent"
@@ -70,6 +79,21 @@
                     android:maxLines="1"
                     android:nextFocusForward="@+id/etRemarks" />
             </android.support.design.widget.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/btnGeoTag"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@android:color/transparent"
+                    android:enabled="false"
+                    android:padding="8dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_gps_fixed_black_24dp"
+                    android:tint="@android:color/darker_gray" />
+            </RelativeLayout>
 
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
@@ -96,6 +120,7 @@
                 android:layout_height="56dp" />
 
             <RelativeLayout
+                android:id="@+id/rlNextActionDate"
                 android:layout_width="match_parent"
                 android:layout_height="56dp">
                 <TextView
@@ -111,14 +136,18 @@
                     android:maxLines="1"
                     android:text="Select date and time for next action" />
 
-                <Button
+                <ImageButton
                     android:id="@+id/btnSetDateTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="56dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:text="Set" />
+                    android:background="@android:color/transparent"
+                    android:padding="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ic_alarm_black_24dp"
+                    android:tint="@android:color/darker_gray"/>
             </RelativeLayout>
 
             <android.support.design.widget.TextInputLayout

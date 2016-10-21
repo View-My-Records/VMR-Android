@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -85,16 +86,17 @@ public class IndexDialog extends DialogFragment
     private EditText etQuickReference;
     private Spinner spLifeSpan;
     private EditText etGeoTag;
+    private ImageButton btnGeoTag;
     private EditText etRemarks;
     private Spinner spCategory;
     private TextView tvNextAction;
-    private TextView btnSetNextAction;
+    private ImageButton btnSetNextAction;
     private EditText etActionMessage;
     private HomeController homeController;
     private FetchIndexController fetchIndexController;
     private ProgressDialog mProgressDialog;
 
-    private OnIndexDialogDismissListener indexDialogDismiss;
+    private OnIndexDialogDismissListener onIndexDialogDismissListener;
 
     public static IndexDialog newInstance(Record record) {
         IndexDialog newDialog = new IndexDialog();
@@ -179,10 +181,11 @@ public class IndexDialog extends DialogFragment
         etQuickReference = (EditText) dialogView.findViewById(R.id.etQuickReference);
         spLifeSpan = (Spinner) dialogView.findViewById(R.id.spinnerLifeSpan);
         etGeoTag = (EditText) dialogView.findViewById(R.id.etGeoTag);
+        btnGeoTag = (ImageButton) dialogView.findViewById(R.id.btnGeoTag);
         etRemarks = (EditText) dialogView.findViewById(R.id.etRemarks);
         spCategory = (Spinner) dialogView.findViewById(R.id.spinnerCategory);
         tvNextAction = (TextView) dialogView.findViewById(R.id.tvNextAction);
-        btnSetNextAction = (TextView) dialogView.findViewById(R.id.btnSetDateTime);
+        btnSetNextAction = (ImageButton) dialogView.findViewById(R.id.btnSetDateTime);
         etActionMessage = (EditText) dialogView.findViewById(R.id.etActionMessage);
 
         lifeSpanList.add("1");
@@ -194,14 +197,24 @@ public class IndexDialog extends DialogFragment
         lifeSpanAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, lifeSpanList);
         lifeSpanAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-        categoryMap.put("Select permission", "");
+//        categoryMap.put("Select permission", "");
         categoryMap.put("Normal", "NORM");
         categoryMap.put("Confidential", "CONF");
         categoryMap.put("Highly Secure", "HCONF");
+        categoryList.add(0, "Select permission" );
         categoryList.addAll(categoryMap.keySet());
         categoryAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item, categoryList);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spCategory.setSelection(3);
+
+        tvNextAction.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DateTimePickerDialog dateTimePicker = new DateTimePickerDialog();
+                dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
+                dateTimePicker.show(getActivity().getFragmentManager(), "DateTimePicker");
+            }
+        });
 
         btnSetNextAction.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -209,6 +222,13 @@ public class IndexDialog extends DialogFragment
                 DateTimePickerDialog dateTimePicker = new DateTimePickerDialog();
                 dateTimePicker.setDateTimePickerInterface(IndexDialog.this);
                 dateTimePicker.show(getActivity().getFragmentManager(), "DateTimePicker");
+            }
+        });
+
+        btnGeoTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getActivity(), "This feature is not available yet.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -254,7 +274,7 @@ public class IndexDialog extends DialogFragment
             return false;
         }
 
-        if(spCategory.getSelectedItemPosition() == 3){
+        if(spCategory.getSelectedItemPosition() == 0){
             new AlertDialog
                     .Builder(getActivity())
                     .setMessage("Please select document permission.")
@@ -284,17 +304,24 @@ public class IndexDialog extends DialogFragment
     }
 
     private void saveIndex() {
+
+        final ProgressDialog saveIndexProgress = new ProgressDialog(getActivity());
+        saveIndexProgress.setMessage("Saving indices...");
+        saveIndexProgress.show();
+
         HomeController saveIndexController = new HomeController(new VmrResponseListener.OnSaveIndex() {
             @Override
             public void onSaveIndexSuccess(String response) {
                 VmrDebug.printLogI(IndexDialog.this.getClass(), "Index saved");
                 Toast.makeText(getActivity(), "Index saved successfully", Toast.LENGTH_SHORT).show();
+                saveIndexProgress.dismiss();
                 getDialog().dismiss();
             }
 
             @Override
             public void onSaveIndexFailure(VolleyError error) {
                 Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                saveIndexProgress.dismiss();
             }
         });
 
@@ -486,6 +513,7 @@ public class IndexDialog extends DialogFragment
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        onIndexDialogDismissListener.onDismiss();
     }
 
     @Override
@@ -529,8 +557,8 @@ public class IndexDialog extends DialogFragment
         return false;
     }
 
-    public void setIndexDialogDismiss(OnIndexDialogDismissListener indexDialogDismiss) {
-        this.indexDialogDismiss = indexDialogDismiss;
+    public void setOnIndexDialogDismissListener(OnIndexDialogDismissListener onIndexDialogDismissListener) {
+        this.onIndexDialogDismissListener = onIndexDialogDismissListener;
     }
 
     public interface OnIndexDialogDismissListener {
