@@ -31,12 +31,12 @@ def getVersionName = { ->
 }
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 24
     buildToolsVersion '25.0.0'
     defaultConfig {
         applicationId "com.vmr"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 24
         versionName getVersionName()
         versionCode getVersionCode()
         vectorDrawables.useSupportLibrary = true
@@ -52,6 +52,10 @@ android {
     }
     useLibrary 'org.apache.http.legacy'
     productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
 
