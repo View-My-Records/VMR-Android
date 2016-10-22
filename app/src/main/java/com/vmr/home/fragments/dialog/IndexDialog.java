@@ -7,9 +7,15 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -49,6 +55,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -151,6 +158,16 @@ public class IndexDialog extends DialogFragment
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         Dialog dialog = super.onCreateDialog(savedInstanceState);
         dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+//        dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        ActionBar toolbar = dialog.getActionBar();
+//        toolbar.setTitle("Indexing...");
+//        toolbar.setDisplayHomeAsUpEnabled(true);
+//        toolbar.setDisplayShowHomeEnabled(true);
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+//            toolbar.setHomeAsUpIndicator(android.R.drawable.ic_menu_close_clear_cancel);
+//        }
+        dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         return dialog;
     }
 
@@ -240,19 +257,8 @@ public class IndexDialog extends DialogFragment
         btnGeoTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getActivity(), "Feature is not available yet", Toast.LENGTH_SHORT).show();
-                if (PermissionHandler.checkPermission(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                    mGoogleApiClient.connect();
-                } else {
-                    Snackbar.make(getDialog().findViewById(R.id.clayout), "Application needs permission to use GPS", Snackbar.LENGTH_LONG)
-                            .setAction("OK", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 1);
-                                }
-                            })
-                            .show();
-                }
+//                Toast.makeText(getActivity(), "Feature is not available yet", Toast.LENGTH_SHORT).show();
+                getLocation();
             }
         });
     }
@@ -589,6 +595,7 @@ public class IndexDialog extends DialogFragment
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
+        VmrDebug.printLogI(IndexDialog.this.getClass(), "Connected to Google Play services...");
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -600,6 +607,7 @@ public class IndexDialog extends DialogFragment
             PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 1 );
         } else {
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            VmrDebug.printLogI(IndexDialog.this.getClass(), "Received location coordinates..." + mLastLocation);
             if (mLastLocation != null) {
                 String mLatitudeText = String.valueOf(mLastLocation.getLatitude());
                 String mLongitudeText = String.valueOf(mLastLocation.getLongitude());
@@ -625,6 +633,82 @@ public class IndexDialog extends DialogFragment
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+
+    private void getLocation(){
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                VmrDebug.printLogI(IndexDialog.this.getClass(), "Location : " + location);
+            }
+
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        if (PermissionHandler.checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+//            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+            String locationProvider = LocationManager.NETWORK_PROVIDER;
+            Location lastKnownLocation = locationManager.getLastKnownLocation(locationProvider);
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+
+            if(lastKnownLocation !=null) {
+                List<Address> address = new ArrayList<>();
+                try {
+                    address = geocoder.getFromLocation(lastKnownLocation.getLatitude(), lastKnownLocation.getLongitude(), 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //String addr = address.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                String city = address.get(0).getLocality();
+                String state = address.get(0).getAdminArea();
+                String country = address.get(0).getCountryName();
+                //String postalCode = address.get(0).getPostalCode();
+                //String knownName = address.get(0).getFeatureName();
+                etGeoTag.setText(city + ", " + state+", "+country);
+
+            } else {
+                if(!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
+                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+                    Snackbar.make(getDialog().findViewById(R.id.clayout), "GPS Service is off", Snackbar.LENGTH_LONG)
+                            .setAction("TURN ON", new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivity(intent);
+                                }
+                            })
+                            .show();
+                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+                } else {
+                    Toast.makeText(getActivity(), "Waiting for GPS to fix", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        } else {
+            Snackbar snackbar =
+                    Snackbar
+                    .make(getDialog().findViewById(R.id.clayout), "Application needs permission to use GPS", Snackbar.LENGTH_LONG)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION, 1);
+                        }
+                    });
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+            snackbar.show();
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        }
     }
 
     public interface OnIndexDialogDismissListener {

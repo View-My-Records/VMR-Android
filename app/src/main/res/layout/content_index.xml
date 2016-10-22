@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_index"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.vmr.home.activity.IndexActivity"
+    tools:showIn="@layout/activity_index">
+
+    <Spinner
+        android:id="@+id/spinnerClassification"
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
+
+    <LinearLayout
+        android:id="@+id/indexFormLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinnerClassification"
+        android:orientation="vertical" >
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp" >
+            <EditText
+                android:id="@+id/etQuickReference"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Quick Reference"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/etGeoTag" />
+        </android.support.design.widget.TextInputLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="220dp"
+                android:layout_height="56dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/btnGeoTag">
+                <EditText
+                    android:id="@+id/etGeoTag"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Geo Tag"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/etRemarks" />
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/btnGeoTag"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:enabled="false"
+                android:padding="8dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_gps_fixed_black_24dp"
+                android:tint="@android:color/darker_gray" />
+        </RelativeLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp" >
+            <EditText
+                android:id="@+id/etRemarks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Remarks"
+                android:imeOptions="actionNext"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/spinnerLifeSpan" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/spinnerLifeSpan"
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="56dp" />
+
+        <RelativeLayout
+            android:id="@+id/rlNextActionDate"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+            <TextView
+                android:id="@+id/tvNextAction"
+                android:layout_width="158dp"
+                android:layout_height="56dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_toLeftOf="@+id/btnSetDateTime"
+                android:clickable="true"
+                android:gravity="center"
+                android:inputType="none"
+                android:maxLines="1"
+                android:text="Select date and time for next action" />
+
+            <ImageButton
+                android:id="@+id/btnSetDateTime"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_alarm_black_24dp"
+                android:tint="@android:color/darker_gray"/>
+        </RelativeLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp" >
+            <EditText
+                android:id="@+id/etActionMessage"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Action Message"
+                android:inputType="text" />
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

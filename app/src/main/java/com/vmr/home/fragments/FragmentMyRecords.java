@@ -50,11 +50,11 @@ import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
+import com.vmr.home.activity.IndexActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.context_menu.AddItemMenu;
 import com.vmr.home.context_menu.RecordOptionsMenu;
 import com.vmr.home.controller.HomeController;
-import com.vmr.home.fragments.dialog.IndexDialog;
 import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.model.DeleteMessage;
@@ -97,6 +97,7 @@ public class FragmentMyRecords extends Fragment
 
     private static int FILE_PICKER_INTENT = 100;
     private static int REQUEST_IMAGE_CAPTURE = 101;
+    private static int REQUEST_INDEX_FILE = 102;
     File photoFile;
     private boolean DEBUG = true;
     // FragmentInteractionListener
@@ -436,9 +437,9 @@ public class FragmentMyRecords extends Fragment
             } else if(requestCode == REQUEST_IMAGE_CAPTURE){
                 Uri uri = data.getData();
                 onFilePicked(uri);
+            } else if(requestCode == REQUEST_INDEX_FILE){
+                refreshFolder();
             }
-        } else {
-            if(DEBUG) VmrDebug.printLogI(this.getClass(), "File choose action canceled");
         }
     }
 
@@ -686,15 +687,18 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onIndexClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Index button clicked" );
-        FragmentManager fm = getActivity().getFragmentManager();
-        IndexDialog indexDialog = IndexDialog.newInstance(record);
-        indexDialog.show(fm, "Index");
-        indexDialog.setOnIndexDialogDismissListener(new IndexDialog.OnIndexDialogDismissListener() {
-            @Override
-            public void onDismiss() {
-                refreshFolder();
-            }
-        });
+//        FragmentManager fm = getActivity().getFragmentManager();
+//        IndexDialog indexDialog = IndexDialog.newInstance(record);
+//        indexDialog.show(fm, "Index");
+//        indexDialog.setOnIndexDialogDismissListener(new IndexDialog.OnIndexDialogDismissListener() {
+//            @Override
+//            public void onDismiss() {
+//                refreshFolder();
+//            }
+//        });
+
+        Intent indexIntent = IndexActivity.newInstance(getActivity(), record);
+        startActivityForResult(indexIntent, REQUEST_INDEX_FILE);
     }
 
     @Override

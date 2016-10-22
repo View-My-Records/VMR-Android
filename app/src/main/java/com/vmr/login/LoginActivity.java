@@ -1,6 +1,7 @@
 package com.vmr.login;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -13,7 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -189,6 +192,8 @@ public class LoginActivity extends AppCompatActivity
     // Handle clicks on fragments buttons
     @Override
     public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomIndividualDetail(email, password, domain);
         } else {
@@ -200,6 +205,8 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomFamilyDetail(username, password, accountId, domain);
         } else {
@@ -211,6 +218,8 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomProfessionalDetail(username, password, accountId, domain);
         } else {
@@ -222,6 +231,8 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomCorporateDetail(username, password, accountId, domain);
         } else {

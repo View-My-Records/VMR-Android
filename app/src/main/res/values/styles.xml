@@ -1,8 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme"
-        parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -25,12 +24,13 @@
     </style>
 
     <!--<style name="DialogStyle" parent="Theme.AppCompat.Dialog">-->
-        <!--<item name="android:windowMinWidthMajor">100%</item>-->
-        <!--<item name="android:windowMinWidthMinor">100%</item>-->
+    <!--<item name="android:windowMinWidthMajor">100%</item>-->
+    <!--<item name="android:windowMinWidthMinor">100%</item>-->
     <!--</style>-->
 
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="actionMenuTextColor">@color/cardview_dark_background</item>
-    </style>`
+    </style>
+    `
 
 </resources>
