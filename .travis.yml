@@ -19,7 +19,7 @@ android:
       - extra-google-google_play_services
       - extra-google-m3repository
       - extra-android-m3repository
-      - addon-google_apis-google-19
+#      - addon-google_apis-google-19
 
       # Specify at least one system image,
       # if you need to run emulator(s) during your tests
