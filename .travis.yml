@@ -17,8 +17,8 @@ android:
 
       # Additional components
       - extra-google-google_play_services
-      - extra-google-m3repository
-      - extra-android-m3repository
+      - extra-google-m2repository
+      - extra-android-m2repository
 #      - addon-google_apis-google-19
 
       # Specify at least one system image,
