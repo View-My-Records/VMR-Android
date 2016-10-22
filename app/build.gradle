@@ -84,5 +84,3 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:9.8.00'
     testCompile 'junit:junit:4.12'
 }
-
-apply plugin: 'com.google.gms.google-services'
