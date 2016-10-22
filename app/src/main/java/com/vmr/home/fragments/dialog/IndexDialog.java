@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -17,9 +16,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -38,9 +35,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
@@ -75,9 +69,7 @@ public class IndexDialog extends DialogFragment
         FetchIndexController.OnFetchIndicesListener,
         AdapterView.OnItemSelectedListener,
         Toolbar.OnMenuItemClickListener,
-        DateTimePickerDialog.VmrDateTimePicker,
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener {
+        DateTimePickerDialog.VmrDateTimePicker {
 
     private static final String NODE_REF = "NODE_REF";
     private static final String PROGRAM = "PROGRAM";
@@ -93,7 +85,6 @@ public class IndexDialog extends DialogFragment
     ArrayAdapter<String> categoryAdapter;
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
     Map<String, String> propertiesMap;
-    GoogleApiClient mGoogleApiClient;
     private String recordDocType;
     private String recordNodeRef;
     private String recordName;
@@ -267,7 +258,6 @@ public class IndexDialog extends DialogFragment
     public void onStart() {
         super.onStart();
         fetchIndices();
-        buildGoogleApiClient();
     }
 
     private void fetchIndices() {
@@ -543,7 +533,6 @@ public class IndexDialog extends DialogFragment
     @Override
     public void onDismiss(DialogInterface dialog) {
         super.onDismiss(dialog);
-        mGoogleApiClient.disconnect();
         getActivity().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         onIndexDialogDismissListener.onDismiss();
     }
@@ -591,48 +580,6 @@ public class IndexDialog extends DialogFragment
 
     public void setOnIndexDialogDismissListener(OnIndexDialogDismissListener onIndexDialogDismissListener) {
         this.onIndexDialogDismissListener = onIndexDialogDismissListener;
-    }
-
-    @Override
-    public void onConnected(@Nullable Bundle bundle) {
-        VmrDebug.printLogI(IndexDialog.this.getClass(), "Connected to Google Play services...");
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            PermissionHandler.requestPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION, 1 );
-        } else {
-            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            VmrDebug.printLogI(IndexDialog.this.getClass(), "Received location coordinates..." + mLastLocation);
-            if (mLastLocation != null) {
-                String mLatitudeText = String.valueOf(mLastLocation.getLatitude());
-                String mLongitudeText = String.valueOf(mLastLocation.getLongitude());
-                Toast.makeText(getActivity(), "Latitude: " + mLatitudeText + "\nLongitude: " + mLongitudeText, Toast.LENGTH_LONG).show();
-                VmrDebug.printLogI(this.getClass(), "Latitude: " + mLatitudeText + "\nLongitude: " + mLongitudeText);
-            }
-        }
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Toast.makeText(getActivity(), "Connection suspended...", Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Toast.makeText(getActivity(), "Failed to connect...", Toast.LENGTH_SHORT).show();
-    }
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
     }
 
     private void getLocation(){
