@@ -126,6 +126,36 @@ public class HomeController {
         this.onSaveIndex = onSaveIndex;
     }
 
+    public static void removeUnwantedParams(){
+        List<String> list = new ArrayList<>();
+        list.add(Constants.Request.Login.DOMAIN);
+        list.add(Constants.Request.Login.Individual.EMAIL_ID);
+        list.add(Constants.Request.Login.Individual.PASSWORD);
+        list.add(Constants.Request.Login.Family.EMAIL_ID);
+        list.add(Constants.Request.Login.Family.PASSWORD);
+        list.add(Constants.Request.Login.Family.NAME);
+        list.add(Constants.Request.Login.Professional.EMAIL_ID);
+        list.add(Constants.Request.Login.Professional.PASSWORD);
+        list.add(Constants.Request.Login.Professional.NAME);
+        list.add(Constants.Request.Login.Corporate.EMAIL_ID);
+        list.add(Constants.Request.Login.Corporate.PASSWORD);
+        list.add(Constants.Request.Login.Corporate.NAME);
+
+        list.add(Constants.Request.Login.Custom.Individual.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Individual.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Family.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Family.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Family.NAME);
+        list.add(Constants.Request.Login.Custom.Professional.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Professional.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Professional.NAME);
+        list.add(Constants.Request.Login.Custom.Corporate.EMAIL_ID);
+        list.add(Constants.Request.Login.Custom.Corporate.PASSWORD);
+        list.add(Constants.Request.Login.Custom.Corporate.NAME);
+
+        Vmr.getUserMap().keySet().retainAll(list);
+    }
+
     public void fetchAllFilesAndFolders(String nodeRef){
         removeUnwantedParams();
         Map<String, String> formData = Vmr.getUserMap();
@@ -798,36 +828,6 @@ public class HomeController {
                 );
 
         VmrRequestQueue.getInstance().addToRequestQueue(saveIndexRequest, Constants.Request.FolderNavigation.SaveIndex.TAG);
-    }
-
-    public void removeUnwantedParams(){
-        List<String> list = new ArrayList<>();
-        list.add(Constants.Request.Login.DOMAIN);
-        list.add(Constants.Request.Login.Individual.EMAIL_ID);
-        list.add(Constants.Request.Login.Individual.PASSWORD);
-        list.add(Constants.Request.Login.Family.EMAIL_ID);
-        list.add(Constants.Request.Login.Family.PASSWORD);
-        list.add(Constants.Request.Login.Family.NAME);
-        list.add(Constants.Request.Login.Professional.EMAIL_ID);
-        list.add(Constants.Request.Login.Professional.PASSWORD);
-        list.add(Constants.Request.Login.Professional.NAME);
-        list.add(Constants.Request.Login.Corporate.EMAIL_ID);
-        list.add(Constants.Request.Login.Corporate.PASSWORD);
-        list.add(Constants.Request.Login.Corporate.NAME);
-
-        list.add(Constants.Request.Login.Custom.Individual.EMAIL_ID);
-        list.add(Constants.Request.Login.Custom.Individual.PASSWORD);
-        list.add(Constants.Request.Login.Custom.Family.EMAIL_ID);
-        list.add(Constants.Request.Login.Custom.Family.PASSWORD);
-        list.add(Constants.Request.Login.Custom.Family.NAME);
-        list.add(Constants.Request.Login.Custom.Professional.EMAIL_ID);
-        list.add(Constants.Request.Login.Custom.Professional.PASSWORD);
-        list.add(Constants.Request.Login.Custom.Professional.NAME);
-        list.add(Constants.Request.Login.Custom.Corporate.EMAIL_ID);
-        list.add(Constants.Request.Login.Custom.Corporate.PASSWORD);
-        list.add(Constants.Request.Login.Custom.Corporate.NAME);
-
-        Vmr.getUserMap().keySet().retainAll(list);
     }
 
 }
