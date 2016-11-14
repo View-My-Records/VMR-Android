@@ -1,4 +1,4 @@
-package com.vmr.home.adapters;
+package com.vmr.inbox.adapter;
 
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -17,12 +17,12 @@ import java.util.List;
 /*
  * Created by abhijit on 8/25/16.
  */
-public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.TrashViewHolder>{
+public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.TrashViewHolder>{
 
     private final OnNotificationClickListener itemClickListener;
     private List<Notification> itemsList;
 
-    public NotificationAdapter(List<Notification> itemsList, OnNotificationClickListener itemClickListener ) {
+    public InboxAdapter(List<Notification> itemsList, OnNotificationClickListener itemClickListener ) {
         this.itemClickListener = itemClickListener;
         this.itemsList = itemsList;
     }

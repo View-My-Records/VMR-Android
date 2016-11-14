@@ -28,7 +28,7 @@ public class MessageController {
         Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.Message.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.INBOX_MESSAGE_DISPLAY );
-        formData.put(Constants.Request.FolderNavigation.Message.INBOX_ID, notification.getId());
+        formData.put(Constants.Request.FolderNavigation.Message.INBOX_ID, notification.getInboxId());
 
         MessageRequest request =
                 new MessageRequest(

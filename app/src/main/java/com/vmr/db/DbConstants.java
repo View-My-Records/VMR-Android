@@ -169,10 +169,14 @@ public class DbConstants {
     public static final String INBOX_HAS_BODY     = "HAS_BODY";
     public static final String INBOX_BODY         = "BODY";
     public static final String INBOX_READ_FLAG    = "IS_READ";
+    public static final String INBOX_TO_USER_ID   = "TO_USER_ID";
+    public static final String INBOX_SENDER_ID    = "SENDER_ID";
     public static final String INBOX_SENDER_FIRST_NAME = "SENDER_FIRST_NAME";
     public static final String INBOX_SENDER_LAST_NAME = "SENDER_LAST_NAME";
     public static final String INBOX_CREATION_DATE = "CREATED_ON";
-    public static final String INBOX_UPDATED_DATE = "UPDATED_ON";
+    public static final String INBOX_UPDATED_DATE  = "UPDATED_ON";
+    public static final String INBOX_REFERENCE_ID  = "REFERENCE_ID";
+    public static final String INBOX_DOCUMENT_ID  = "DOCUMENT_ID";
     //All Columns
     public static final String[] INBOX_COLUMNS
             = {
@@ -186,8 +190,12 @@ public class DbConstants {
             INBOX_READ_FLAG,
             INBOX_CREATION_DATE,
             INBOX_UPDATED_DATE,
+            INBOX_TO_USER_ID,
+            INBOX_SENDER_ID,
             INBOX_SENDER_FIRST_NAME,
-            INBOX_SENDER_LAST_NAME
+            INBOX_SENDER_LAST_NAME,
+            INBOX_REFERENCE_ID,
+            INBOX_DOCUMENT_ID
     };
 
     public static final String UPLOAD_ID            = "UPLOAD_ID";
@@ -213,5 +221,5 @@ public class DbConstants {
 
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 16;
+    static final int VERSION = 20;
 }

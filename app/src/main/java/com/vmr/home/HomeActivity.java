@@ -36,10 +36,8 @@ import com.vmr.db.record.Record;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.activity.InboxActivity;
 import com.vmr.home.activity.SearchResultActivity;
 import com.vmr.home.controller.HomeController;
-import com.vmr.home.controller.NotificationController;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
 import com.vmr.home.fragments.FragmentMyRecords;
@@ -51,6 +49,8 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
+import com.vmr.inbox.InboxActivity;
+import com.vmr.inbox.controller.InboxController;
 import com.vmr.model.NotificationItem;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
@@ -80,7 +80,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
         VmrResponseListener.OnFetchRecordsListener,
-        NotificationController.OnFetchNotificationsListener
+        InboxController.OnFetchInboxListener
 //        SearchView.OnQueryTextListener,
 //        SearchView.OnCloseListener,
 //        SearchView.OnSuggestionListener
@@ -98,7 +98,7 @@ public class HomeActivity extends AppCompatActivity
     private boolean backPressedOnce = false;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
-    private NotificationController notificationController;
+    private InboxController inboxController;
     private Interaction.HomeToMyRecordsInterface sendToMyRecords;
     private Interaction.OnHomeClickListener homeClickListener;
     private Interaction.OnPasteClickListener pasteClickListener;
@@ -187,12 +187,12 @@ public class HomeActivity extends AppCompatActivity
         HomeController homeController = new HomeController(this);
         homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
 
-        notificationController = new NotificationController(this);
+        inboxController = new InboxController(this);
         updateNotifications();
     }
 
     public void updateNotifications(){
-        notificationController.fetchNotifications();
+        inboxController.fetchNotifications();
     }
 
     private void setupNavigationDrawer(Toolbar toolbar) {

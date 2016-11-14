@@ -333,4 +333,12 @@ public class DbManager {
     public SharedRecord getSharedRecord(String nodeRef) {
         return this.sharedRecordDAO.getSharedRecord(nodeRef);
     }
+
+    public void removeAllNotifications() {
+        this.notificationDAO.removeAllNotifications();
+    }
+
+    public void removeAllNotifications(List<Notification> notificationItemList) {
+        this.notificationDAO.removeAllNotifications(notificationItemList);
+    }
 }

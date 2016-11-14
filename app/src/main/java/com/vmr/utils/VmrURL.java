@@ -24,7 +24,11 @@ public class VmrURL {
         return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.FILE_UPLOAD;
     }
 
-    public static String getNotificationUrl(){
-        return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.NOTIFICATION;
+    public static String getInboxUrl(){
+        return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.INBOX;
+    }
+
+    public static String getAccountSetupUrl(){
+        return PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL) + Constants.Url.ACCOUNT_SETUP;
     }
 }

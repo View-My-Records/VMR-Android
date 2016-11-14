@@ -21,7 +21,7 @@ public abstract class Constants {
         public final static String SHARE_RECORDS       = "/vmr/shareRecords.do";
         public final static String REPORT_DATA         = "/vmr/reportData.do";
         public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
-        public final static String NOTIFICATION        = "/vmr/indoxData.do";
+        public final static String INBOX               = "/vmr/indoxData.do";
     }
 
     public final static class Request {
@@ -264,9 +264,37 @@ public abstract class Constants {
 
         }
 
-        public final static class Notification {
+        public final static class Inbox {
+
+            public static final String DATA_TYPE = "dataType";
+            public static final String TAG       = "VMR_NOTIFICATION";
+
+            public final static class PageMode {
+                public static final String ADD_PARTNER = "ADD_PARTNER";
+                public static final String REJECT_PARTNER_LINKING = "REJECT_PARTNER_LINKING";
+            }
+
+            public final static class Accept {
+                public static final String PAGE_MODE                = "pageMode";
+                public static final String CLIENT_ID                = "clientId";
+                public static final String PARTNER_ID               = "partnerId";
+                public static final String INBOX_ROW_ID             = "inboxRowId";
+                public static final String ASSOCIATION_TYPE_INDEX   = "associationTypeIndex";
+                public static final String TAG                      = "VMR_ACCEPT";
+            }
+
+            public final static class Reject {
+                public static final String PAGE_MODE                = "pageMode";
+                public static final String INBOX_ID                 = "inboxId";
+                public static final String CLIENT_ACTION_COMMENTS   = "clientActionComments";
+                public static final String ASSOCIATION_TYPE         = "associationType2";
+                public static final String TAG                      = "VMR_REJECT";
+            }
+
+            public final static class View {
                 public static final String DATA_TYPE = "dataType";
                 public static final String TAG       = "VMR_NOTIFICATION";
+            }
         }
 
         public final static class Share {
@@ -276,6 +304,7 @@ public abstract class Constants {
             public final static class PageMode {
                 public static final String SHARE_RECORDS_LIFESPAN_CHECK = "SHARE_RECORDS_LIFESPAN_CHECK";
                 public static final String SHARE_RECORDS = "SHARE_RECORDS";
+                public static final String MULTIPLE_SHARE_ACTION = "MULTIPLE_SHARE_ACTION";
             }
 
             public final static class RecordLifespanCheck {
@@ -287,10 +316,19 @@ public abstract class Constants {
 
             public final static class ShareRecord {
                 public static final String PAGE_MODE                    = "pageMode";
-                public static final String SHARE_JSON = "shareReJsonString";
+                public static final String SHARE_JSON                   = "shareReJsonString";
                 public static final String TOTAL_RECORD_COUNT           = "TotalshareRecordCount";
                 public static final String CURRENT_RECORD_COUNT         = "CurrentRecordCount";
-                public static final String SHARED_FOLDEROR_FILESNAMES   = "SharedFolderorFilesnames";
+                public static final String SHARED_FOLDER_OR_FILENAMES   = "SharedFolderorFilesnames";
+            }
+
+            public final static class ViewRecord {
+                public static final String PAGE_MODE                = "pageMode";
+                public static final String FILE_SELECTED_NODE_REF   = "fileSelectedNodeRef";
+                public static final String SHARE_FROM_ID            = "shareFromId";
+                public static final String SHARE_TO_ID              = "shareToId";
+                public static final String INBOX_REF_ID             = "inboxRefId";
+                public static final String TAG                      = "VMR_VIEW_INBOX";
             }
         }
 

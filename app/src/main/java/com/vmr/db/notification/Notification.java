@@ -16,16 +16,20 @@ public class Notification {
     private long masterId;
     private String masterOwner;
 
-    private String    id;
+    private String  inboxId;
     private int     type;
+    private String  toUserId;
     private String  subject;
     private boolean hasBody;
     private boolean isRead;
     private String  body;
     private Date    createdOn;
     private Date    updatedOn;
+    private String  senderId;
     private String  senderFirstName;
     private String  senderLastName;
+    private String  referenceId;
+    private String documentId;
 
     public static List<Notification> getNotificationList(List<NotificationItem> notificationItemList){
         List<Notification> dbNotificationList = new ArrayList<>();
@@ -35,20 +39,40 @@ public class Notification {
             notificationItem = new Notification();
             notificationItem.setMasterId(0);
             notificationItem.setMasterOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
-            notificationItem.setId(i.getInboxId());
+            notificationItem.setInboxId(i.getInboxId());
             notificationItem.setType(i.getMailType());
+            notificationItem.setToUserId(i.getToUserId());
             notificationItem.setSubject(i.getMailSubject());
             notificationItem.setHasBody(false);
             notificationItem.setBody(null);
             notificationItem.setRead(false);
             notificationItem.setCreatedOn(i.getCreatedOn());
             notificationItem.setUpdatedOn(new Date(System.currentTimeMillis()));
+            notificationItem.setSenderId(i.getUserdetails().getSenderId());
             notificationItem.setSenderFirstName(i.getUserdetails().getFirstName());
             notificationItem.setSenderLastName(i.getUserdetails().getLastName());
+            notificationItem.setReferenceId(i.getReferenceId());
+            notificationItem.setDocumentId(i.getDocumentAccessDetail().getDocId());
             dbNotificationList.add(notificationItem);
         }
 
         return dbNotificationList;
+    }
+
+    public String getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(String senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getToUserId() {
+        return toUserId;
+    }
+
+    public void setToUserId(String toUserId) {
+        this.toUserId = toUserId;
     }
 
     public long getMasterId() {
@@ -67,12 +91,12 @@ public class Notification {
         this.masterOwner = masterOwner;
     }
 
-    public String getId() {
-        return id;
+    public String getInboxId() {
+        return inboxId;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setInboxId(String inboxId) {
+        this.inboxId = inboxId;
     }
 
     public int getType() {
@@ -145,5 +169,21 @@ public class Notification {
 
     public void setSenderLastName(String senderLastName) {
         this.senderLastName = senderLastName;
+    }
+
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 }

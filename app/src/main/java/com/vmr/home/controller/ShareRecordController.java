@@ -29,7 +29,7 @@ public class ShareRecordController {
         formData.put(Constants.Request.Share.ShareRecord.SHARE_JSON, shareJson.toString());
         formData.put(Constants.Request.Share.ShareRecord.TOTAL_RECORD_COUNT, String.valueOf(totalCount));
         formData.put(Constants.Request.Share.ShareRecord.CURRENT_RECORD_COUNT, String.valueOf(currentCount));
-        formData.put(Constants.Request.Share.ShareRecord.SHARED_FOLDEROR_FILESNAMES, recordNames);
+        formData.put(Constants.Request.Share.ShareRecord.SHARED_FOLDER_OR_FILENAMES, recordNames);
 
         ShareRequest request =
                 new ShareRequest(

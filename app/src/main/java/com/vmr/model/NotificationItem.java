@@ -18,15 +18,20 @@ import java.util.Locale;
 
 public class NotificationItem {
 
-    private String inboxId;           //":12363,
-    private String mailSubject;     //":"A Record(s) has been  Shared with you - Another test share",
+    private String inboxId;             //":12363,
+    private String mailSubject;         //":"A Record(s) has been  Shared with you - Another test share",
     private String mailBody;
     private int mailType;
-    private UserDetails userdetails;//":{  },
-    private Date createdOn;         //":"Oct 3, 2016 7:05:28 PM",
+    private String  toUserId;
+    private DocumentAccessDetail documentAccessDetail; //:{ }
+    private UserDetails userdetails;    //":{  },
+    private String referenceId;         //:48683046
+    private String createdBy;           //:690
+    private Date createdOn;             //":"Oct 3, 2016 7:05:28 PM",
+    private Date updatedOn;             //":"Oct 3, 2016 7:05:28 PM",
+
     public NotificationItem(JSONObject inboxJson) {
-        Date result ;
-        DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.ENGLISH);
+        DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.getDefault());
 
         try {
             this.setInboxId(inboxJson.getString("inboxId"));
@@ -34,9 +39,13 @@ public class NotificationItem {
 //            this.setMailBody(inboxJson.getString("mailBody"));
             this.setMailBody("");
             this.setMailType(inboxJson.getInt("mailType"));
+            this.setToUserId(inboxJson.getString("toUserId"));
+            this.setDocumentAccessDetail(new DocumentAccessDetail(inboxJson.getJSONObject("documentAccessReqId")));
             this.setUserdetails(new UserDetails(inboxJson.getJSONObject("userdetails")));
-            result = df.parse(inboxJson.getString("createdOn"));
-            this.setCreatedOn(result);
+            this.setReferenceId(inboxJson.getString("referenceId"));
+            this.setCreatedBy(inboxJson.getString("createdBy"));
+            this.setCreatedOn(df.parse(inboxJson.getString("createdOn")));
+            this.setUpdatedOn(df.parse(inboxJson.getString("lastUpdatedOn")));
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
@@ -91,6 +100,22 @@ public class NotificationItem {
         this.mailType = mailType;
     }
 
+    public String getToUserId() {
+        return toUserId;
+    }
+
+    public void setToUserId(String toUserId) {
+        this.toUserId = toUserId;
+    }
+
+    public DocumentAccessDetail getDocumentAccessDetail() {
+        return documentAccessDetail;
+    }
+
+    public void setDocumentAccessDetail(DocumentAccessDetail documentAccessDetail) {
+        this.documentAccessDetail = documentAccessDetail;
+    }
+
     public UserDetails getUserdetails() {
         return userdetails;
     }
@@ -107,18 +132,42 @@ public class NotificationItem {
         this.createdOn = createdOn;
     }
 
-    public class UserDetails{
 
+    public String getReferenceId() {
+        return referenceId;
+    }
+
+    public void setReferenceId(String referenceId) {
+        this.referenceId = referenceId;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public Date getUpdatedOn() {
+        return updatedOn;
+    }
+
+    public void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
+    }
+
+    public class UserDetails {
+
+        private String senderId;  // 760
         private String firstName; //":"Abhijit",
         private String corporateName; //":"Fname",
         private String lastName; //":"Parate",
         private String emailId; //":"abhijitpparate@gmail.com",
 
         UserDetails(JSONObject userDetailJson) {
-            Date result ;
-            DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
-
             try {
+                this.setSenderId(userDetailJson.getString("slNo"));
                 this.setFirstName(userDetailJson.getString("firstName"));
                 if(userDetailJson.has("corporateName"))
                     this.setCorporateName(userDetailJson.getString("corporateName"));
@@ -127,6 +176,14 @@ public class NotificationItem {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        public String getSenderId() {
+            return senderId;
+        }
+
+        public void setSenderId(String senderId) {
+            this.senderId = senderId;
         }
 
         public String getFirstName() {
@@ -159,6 +216,121 @@ public class NotificationItem {
 
         public void setEmailId(String emailId) {
             this.emailId = emailId;
+        }
+    }
+
+    public class DocumentAccessDetail {
+
+        private String  docAccessId;         //": 11422,
+        private String  docId;               //": "workspace://SpacesStore/a96bf127-c073-4538-9496-c6e2bac8d0da",
+        private String  docApproveDuration;  //": 2,
+        private String  docStatus;           //": 1,
+        private String  docRequesterId;      //": 690,
+        private Date    docRequestedDate;    //": "Oct 3, 2016 7:05:28 PM",
+        private String  createdBy;           //": 690,
+        private String  lastUpdatedBy;       //": 690,
+        private Date    createdOn;           //": "Oct 3, 2016 7:05:28 PM",
+        private Date    lastUpdatedOn;       //": "Oct 3, 2016 7:05:28 PM"
+
+        DocumentAccessDetail(JSONObject documentAccessJSON){
+
+            try {
+                this.setDocAccessId(documentAccessJSON.getString("docAccessId"));
+                this.setDocId(documentAccessJSON.getString("docId"));
+                this.setDocApproveDuration(documentAccessJSON.getString("docId"));
+                this.setDocStatus(documentAccessJSON.getString("docStatus"));
+                this.setDocRequesterId(documentAccessJSON.getString("docRequesterId"));
+                this.setDocRequestedDate(documentAccessJSON.getString("docRequestedDate"));
+                this.setCreatedBy(documentAccessJSON.getString("createdBy"));
+                this.setLastUpdatedBy(documentAccessJSON.getString("lastUpdatedBy"));
+                this.setCreatedOn(documentAccessJSON.getString("createdOn"));
+                this.setLastUpdatedOn(documentAccessJSON.getString("lastUpdatedOn"));
+            } catch (JSONException | ParseException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public String getDocAccessId() {
+            return docAccessId;
+        }
+
+        public void setDocAccessId(String docAccessId) {
+            this.docAccessId = docAccessId;
+        }
+
+        public String getDocId() {
+            return docId;
+        }
+
+        public void setDocId(String docId) {
+            this.docId = docId;
+        }
+
+        public String getDocApproveDuration() {
+            return docApproveDuration;
+        }
+
+        public void setDocApproveDuration(String docApproveDuration) {
+            this.docApproveDuration = docApproveDuration;
+        }
+
+        public String getDocStatus() {
+            return docStatus;
+        }
+
+        public void setDocStatus(String docStatus) {
+            this.docStatus = docStatus;
+        }
+
+        public String getDocRequesterId() {
+            return docRequesterId;
+        }
+
+        public void setDocRequesterId(String docRequesterId) {
+            this.docRequesterId = docRequesterId;
+        }
+
+        public Date getDocRequestedDate() {
+            return docRequestedDate;
+        }
+
+        public void setDocRequestedDate(String docRequestedDate) throws ParseException{
+            DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.getDefault());
+            this.docRequestedDate = df.parse(docRequestedDate);
+        }
+
+        public String getCreatedBy() {
+            return createdBy;
+        }
+
+        public void setCreatedBy(String createdBy) {
+            this.createdBy = createdBy;
+        }
+
+        public String getLastUpdatedBy() {
+            return lastUpdatedBy;
+        }
+
+        public void setLastUpdatedBy(String lastUpdatedBy) {
+            this.lastUpdatedBy = lastUpdatedBy;
+        }
+
+        public Date getCreatedOn() {
+            return createdOn;
+        }
+
+        public void setCreatedOn(String createdOn) throws ParseException {
+            DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.getDefault());
+            this.createdOn = df.parse(createdOn);
+        }
+
+        public Date getLastUpdatedOn() {
+            return lastUpdatedOn;
+        }
+
+        public void setLastUpdatedOn(String lastUpdatedOn) throws ParseException {
+            DateFormat df = new SimpleDateFormat("MMM dd, yyyy HH:mm:ss a", Locale.getDefault());
+            this.lastUpdatedOn = df.parse(lastUpdatedOn);
         }
     }
 }

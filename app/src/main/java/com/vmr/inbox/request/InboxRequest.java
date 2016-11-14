@@ -1,4 +1,4 @@
-package com.vmr.home.request;
+package com.vmr.inbox.request;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -25,7 +25,7 @@ public class InboxRequest extends PostLoginRequest<List<NotificationItem>> {
             Map<String, String> formData,
             Response.Listener<List<NotificationItem>> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, VmrURL.getNotificationUrl(), successListener, errorListener);
+        super(Method.POST, VmrURL.getInboxUrl(), successListener, errorListener);
         this.formData = formData;
     }
 

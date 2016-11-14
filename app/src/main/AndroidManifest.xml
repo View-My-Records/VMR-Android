@@ -124,7 +124,7 @@
                 android:value="com.vmr.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".home.activity.InboxActivity"
+            android:name=".inbox.InboxActivity"
             android:label="@string/title_activity_inbox"
             android:parentActivityName=".home.HomeActivity">
             <meta-data
