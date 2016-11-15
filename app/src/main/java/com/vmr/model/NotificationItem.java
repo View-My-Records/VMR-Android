@@ -40,9 +40,17 @@ public class NotificationItem {
             this.setMailBody("");
             this.setMailType(inboxJson.getInt("mailType"));
             this.setToUserId(inboxJson.getString("toUserId"));
-            this.setDocumentAccessDetail(new DocumentAccessDetail(inboxJson.getJSONObject("documentAccessReqId")));
-            this.setUserdetails(new UserDetails(inboxJson.getJSONObject("userdetails")));
-            this.setReferenceId(inboxJson.getString("referenceId"));
+
+            if(inboxJson.has("documentAccessReqId"))
+                this.setDocumentAccessDetail(new DocumentAccessDetail(inboxJson.getJSONObject("documentAccessReqId")));
+
+            if(inboxJson.has("userdetails")){
+                this.setUserdetails(new UserDetails(inboxJson.getJSONObject("userdetails")));
+            }
+
+            if(inboxJson.has("referenceId"))
+                this.setReferenceId(inboxJson.getString("referenceId"));
+
             this.setCreatedBy(inboxJson.getString("createdBy"));
             this.setCreatedOn(df.parse(inboxJson.getString("createdOn")));
             this.setUpdatedOn(df.parse(inboxJson.getString("lastUpdatedOn")));
@@ -168,10 +176,12 @@ public class NotificationItem {
         UserDetails(JSONObject userDetailJson) {
             try {
                 this.setSenderId(userDetailJson.getString("slNo"));
-                this.setFirstName(userDetailJson.getString("firstName"));
-                if(userDetailJson.has("corporateName"))
-                    this.setCorporateName(userDetailJson.getString("corporateName"));
-                this.setLastName(userDetailJson.getString("lastName"));
+                if(userDetailJson.has("corporatename")) {
+                    this.setCorporateName(userDetailJson.getString("corporatename"));
+                } else {
+                    this.setFirstName(userDetailJson.getString("firstName"));
+                    this.setLastName(userDetailJson.getString("lastName"));
+                }
                 this.setEmailId(userDetailJson.getString("emailId"));
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -236,7 +246,8 @@ public class NotificationItem {
 
             try {
                 this.setDocAccessId(documentAccessJSON.getString("docAccessId"));
-                this.setDocId(documentAccessJSON.getString("docId"));
+                if(documentAccessJSON.has("docId"))
+                    this.setDocId(documentAccessJSON.getString("docId"));
                 this.setDocApproveDuration(documentAccessJSON.getString("docId"));
                 this.setDocStatus(documentAccessJSON.getString("docStatus"));
                 this.setDocRequesterId(documentAccessJSON.getString("docRequesterId"));

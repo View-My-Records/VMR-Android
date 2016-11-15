@@ -190,6 +190,20 @@ public class NotificationDAO {
                         inboxId}) > 0;
     }
 
+    public boolean updateMessageReadFlag(String inboxId){
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), "Updating message body");
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DbConstants.INBOX_READ_FLAG, 1);
+
+        return db.update(
+                DbConstants.TABLE_INBOX,
+                contentValues,
+                DbConstants.INBOX_MASTER_OWNER + "=? AND "
+                        + DbConstants.INBOX_ID + "=?",
+                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                        inboxId}) > 0;
+    }
+
     public void removeAllNotifications(){
         String owner = Vmr.getLoggedInUserInfo().getLoggedinUserId();
         int result = db.delete( DbConstants.TABLE_INBOX ,

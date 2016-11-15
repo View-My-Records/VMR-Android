@@ -48,7 +48,11 @@ public class InboxAdapter extends RecyclerView.Adapter<InboxAdapter.TrashViewHol
 //        String time = localDateFormat.format(item.getCreatedDate().getTime());
 //        holder.setReceiveTimeStamp( day + "\n" + time);
         holder.setReceiveTimeStamp( DateUtils.getRelativeTimeSpanString(item.getCreatedDate().getTime()).toString());
-        holder.setSenderName(item.getSenderFirstName() + " " + item.getSenderLastName());
+        if(item.getSenderFirstName()!= null) {
+            holder.setSenderName(item.getSenderFirstName() + " " + item.getSenderLastName());
+        } else {
+            holder.setSenderName(item.getSenderLastName());
+        }
         holder.setMessageBody(item.getSubject());
         holder.bind(itemsList.get(position), itemClickListener);
     }

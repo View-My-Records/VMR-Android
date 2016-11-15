@@ -306,6 +306,10 @@ public class DbManager {
         this.notificationDAO.updateMessageBody(inboxId, messageBody);
     }
 
+    public void updateNotificationReadFlag(String inboxId){
+        this.notificationDAO.updateMessageReadFlag(inboxId);
+    }
+
     public List<UploadQueue> getUploadQueue() {
         return this.uploadQueueDAO.fetchAllPendingUploads();
     }

@@ -49,9 +49,14 @@ public class Notification {
             notificationItem.setCreatedOn(i.getCreatedOn());
             notificationItem.setUpdatedOn(new Date(System.currentTimeMillis()));
             notificationItem.setSenderId(i.getUserdetails().getSenderId());
-            notificationItem.setSenderFirstName(i.getUserdetails().getFirstName());
-            notificationItem.setSenderLastName(i.getUserdetails().getLastName());
+            if(i.getUserdetails().getFirstName()!=null) {
+                notificationItem.setSenderFirstName(i.getUserdetails().getFirstName());
+                notificationItem.setSenderLastName(i.getUserdetails().getLastName());
+            } else {
+                notificationItem.setSenderLastName(i.getUserdetails().getCorporateName());
+            }
             notificationItem.setReferenceId(i.getReferenceId());
+            if(i.getDocumentAccessDetail() != null)
             notificationItem.setDocumentId(i.getDocumentAccessDetail().getDocId());
             dbNotificationList.add(notificationItem);
         }
