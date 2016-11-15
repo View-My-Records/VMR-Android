@@ -246,20 +246,22 @@ public class SearchResultActivity
                 try {
                     if (file != null) {
                         final File tempFile = new File(SearchResultActivity.this.getExternalCacheDir(), result.getRecordName());
-                        if (tempFile.exists() && tempFile.delete()) {
+                        if (tempFile.exists())
+                            tempFile.delete();
                             FileUtils.copyFile(file, tempFile);
 
-                            Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                            Intent openFileIntent = new Intent();
+                            openFileIntent.setAction(Intent.ACTION_VIEW);
                             openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             Uri fileUri = Uri.fromFile(tempFile);
                             openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                            VmrDebug.printLogI(SearchResultActivity.this.getClass(), FileUtils.getMimeType(tempFile.getAbsolutePath()));
                             try {
                                 startActivity(openFileIntent);
                                 VmrDebug.printLogI(SearchResultActivity.this.getClass(), "File opened.");
                             } catch (ActivityNotFoundException e) {
                                 Toast.makeText(SearchResultActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
                             }
-                        }
                     } else {
                         VmrDebug.printLogI(SearchResultActivity.this.getClass(), "null file");
                     }
