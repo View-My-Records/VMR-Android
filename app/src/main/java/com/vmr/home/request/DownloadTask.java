@@ -78,8 +78,8 @@ public class DownloadTask extends AsyncTask<String, String, String> {
         this.progressListener = progressListener;
     }
 
-    public void setDownloadPacket(DownloadPacket downloadPacket) {
-        this.downloadPacket = downloadPacket;
+    public DownloadPacket getDownloadPacket() {
+        return this.downloadPacket;
     }
 
     @Override
@@ -102,10 +102,6 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             urlConnection.setRequestProperty("Origin", "http://vmrdev.cloudapp.net:8080" );
             urlConnection.setRequestProperty("Referer", "http://vmrdev.cloudapp.net:8080/vmr/main.do" );
             urlConnection.setRequestProperty("X-Requested-With", "XMLHttpRequest" );
-
-
-
-
 
             StringBuilder postParameters
                     = new StringBuilder()
