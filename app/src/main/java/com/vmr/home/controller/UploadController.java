@@ -36,7 +36,7 @@ public class UploadController {
         this.onFileUpload = onFileUpload;
     }
 
-    public void uploadFile(UploadPacket uploadPacket, int uploadId)  {
+    public void uploadFile(UploadPacket uploadPacket, int uploadId, UploadRequest.UploadProgressListener progressListener)  {
 
         requestTag = uploadId;
 
@@ -63,7 +63,8 @@ public class UploadController {
 //                                Vmr.getVMRContext().unregisterReceiver(cancelUploadReceiver);
                                 onFileUpload.onFileUploadFailure(error);
                             }
-                        }
+                        },
+                        progressListener
                 );
 
         uploadRequest.setTag(requestTag);

@@ -5,7 +5,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.support.v7.app.NotificationCompat;
+import android.os.Build;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -13,6 +13,7 @@ import com.vmr.app.Vmr;
 import com.vmr.broadcast_receivers.CancelUploadReceiver;
 import com.vmr.db.upload_queue.UploadQueue;
 import com.vmr.home.controller.UploadController;
+import com.vmr.home.request.UploadRequest;
 import com.vmr.model.UploadPacket;
 import com.vmr.utils.Constants;
 
@@ -49,7 +50,7 @@ public class UploadService extends IntentService {
                             Vmr.getDbManager().updateUploadSuccess(upload.getId());
                             Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                             Notification uploadCompleteNotification =
-                                    new NotificationCompat.Builder(Vmr.getVMRContext())
+                                    new Notification.Builder(Vmr.getVMRContext())
                                             .setContentTitle(upload.getFileName())
                                             .setContentText("Upload complete")
                                             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
@@ -107,24 +108,41 @@ public class UploadService extends IntentService {
                 cancelUploadIntent.putExtra(Constants.Request.FolderNavigation.UploadFile.TAG, upload.getId());
                 PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, cancelUploadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-
-                Notification downloadingNotification =
-                        new NotificationCompat.Builder(Vmr.getVMRContext())
+                final Notification.Builder downloadingNotification =
+                        new Notification.Builder(Vmr.getVMRContext())
                                 .setContentTitle(upload.getFileName())
                                 .setContentText("Uploading...")
                                 .setSmallIcon(android.R.drawable.stat_sys_upload)
-                                .setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG)
+
                                 .setProgress(0,0,true)
                                 .setOngoing(true)
                                 .addAction(android.R.drawable.ic_menu_close_clear_cancel,
                                             getApplicationContext().getResources().getString(android.R.string.cancel),
-                                            pIntent)
-                                .build();
-                NotificationManager nm = (NotificationManager) Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
+                                            pIntent);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                    downloadingNotification.setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG);
+                }
+                final NotificationManager nm = (NotificationManager) Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
 
-                uploadController.uploadFile(uploadPacket, upload.getId());
+                UploadRequest.UploadProgressListener progressListener = new UploadRequest.UploadProgressListener() {
+                    @Override
+                    public void onUploadProgress(long fileLength, long transferred, int progressPercent) {
+                        if(progressPercent == 0) {
+                            downloadingNotification.setProgress(0, 0, true);
+                            downloadingNotification.setContentText("Uploading...");
+                        } else if( progressPercent == 100){
+                            downloadingNotification.setProgress(0, 0, true);
+                            downloadingNotification.setContentText("Finalizing...");
+                        } else {
+                            downloadingNotification.setProgress(100, progressPercent, false);
+                            downloadingNotification.setContentText( progressPercent + "%");
+                        }
+                        nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
+                    }
+                };
+                uploadController.uploadFile(uploadPacket, upload.getId(), progressListener);
                 Vmr.getDbManager().updateUploadStatusUploading(upload.getId());
-                nm.notify(upload.getFileName(), notificationId ,downloadingNotification);
+                nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
             }
         } else {
             Toast.makeText(Vmr.getVMRContext(), "Upload queue empty", Toast.LENGTH_SHORT).show();

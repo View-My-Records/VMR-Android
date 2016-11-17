@@ -19,7 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FilterOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 
 /*
@@ -27,22 +29,24 @@ import java.util.Map;
  */
 public class UploadRequest extends PostLoginRequest<JSONObject> {
 
-    MultipartEntityBuilder entity = MultipartEntityBuilder.create();
-    HttpEntity httpentity;
-    String boundary = String.valueOf(System.currentTimeMillis());
+    private MultipartEntityBuilder entity = MultipartEntityBuilder.create();
+    private HttpEntity httpentity;
+    private String boundary = String.valueOf(System.currentTimeMillis());
     private Map<String, String> formData;
 //    private MultipartEntity entity = new MultipartEntity();
     private UploadPacket uploadPacket;
-
+    private UploadProgressListener progressListener;
 
     public UploadRequest(
             Map<String, String> formData,
             UploadPacket uploadPacket,
             Response.Listener<JSONObject> successListener,
-            Response.ErrorListener errorListener) {
+            Response.ErrorListener errorListener,
+            UploadProgressListener progressListener) {
         super(Method.POST, VmrURL.getFileUploadUrl(), successListener, errorListener);
         this.formData = formData;
         this.uploadPacket = uploadPacket;
+        this.progressListener = progressListener;
         entity.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
         entity.setBoundary(boundary);
         buildMultipartEntity();
@@ -65,7 +69,8 @@ public class UploadRequest extends PostLoginRequest<JSONObject> {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             httpentity = entity.build();
-            httpentity.writeTo(bos);
+            httpentity.writeTo(new OutputStreamWithProgress(bos, uploadPacket.getFile().length(),
+                    progressListener));
         } catch (IOException e) {
             VolleyLog.e("IOException writing to ByteArrayOutputStream");
         }
@@ -96,5 +101,42 @@ public class UploadRequest extends PostLoginRequest<JSONObject> {
             entity.addTextBody(entry.getKey(), entry.getValue());
         }
         entity.addPart(Constants.Request.FolderNavigation.UploadFile.FILE, new FileBody(uploadPacket.getFile()));
+    }
+
+    public interface UploadProgressListener {
+        void onUploadProgress(long fileLength, long transferred, int progressPercent);
+    }
+
+    private static class OutputStreamWithProgress extends FilterOutputStream {
+        private final UploadProgressListener progressListener;
+        private long transferred;
+        private long fileLength;
+
+        OutputStreamWithProgress(final OutputStream out, long fileLength,
+                                 final UploadProgressListener listener) {
+            super(out);
+            this.fileLength = fileLength;
+            this.progressListener = listener;
+            this.transferred = 0;
+        }
+
+        public void write(byte[] b, int off, int len) throws IOException {
+            out.write(b, off, len);
+            if (progressListener != null) {
+                this.transferred += len;
+                int progress = (int) (transferred * 100 / fileLength);
+                this.progressListener.onUploadProgress(this.fileLength, this.transferred, progress);
+            }
+        }
+
+        public void write(int b) throws IOException {
+            out.write(b);
+            if (progressListener != null) {
+                this.transferred++;
+                int progress = (int) (transferred * 100 / fileLength);
+                this.progressListener.onUploadProgress(this.fileLength , this.transferred, progress);
+            }
+        }
+
     }
 }

@@ -23,10 +23,8 @@ import com.vmr.home.request.RenameItemRequest;
 import com.vmr.home.request.SaveIndexRequest;
 import com.vmr.home.request.SharedByMeRequest;
 import com.vmr.home.request.TrashRequest;
-import com.vmr.home.request.UploadRequest;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.SearchResult;
-import com.vmr.model.UploadPacket;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.model.VmrTrashItem;
@@ -39,7 +37,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -745,44 +742,6 @@ public class HomeController {
                 );
         VmrRequestQueue.getInstance()
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
-    }
-
-    public void uploadFile(UploadPacket uploadPacket)  {
-
-        Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
-        formData.put(Constants.Request.FolderNavigation.UploadFile.FILE_NAMES, Uri.encode(uploadPacket.getFileName()));
-        formData.put(Constants.Request.FolderNavigation.UploadFile.CONTENT_TYPE, uploadPacket.getContentType());
-        formData.put(Constants.Request.FolderNavigation.UploadFile.PARENT_NODE_REF, uploadPacket.getParentNodeRef());
-
-        UploadRequest uploadRequest =
-                new UploadRequest(
-                        formData,
-                        uploadPacket,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                onFileUpload.onFileUploadSuccess(jsonObject);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                onFileUpload.onFileUploadFailure(error);
-                            }
-                        }
-                );
-
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                VmrDebug.printLogI(this.getClass(), uploadRequest.getHeaders().toString());
-                VmrDebug.printLogI(this.getClass(), new String(uploadRequest.getBody(), StandardCharsets.UTF_8));
-            }
-        } catch (AuthFailureError authFailureError) {
-            authFailureError.printStackTrace();
-        }
-        VmrRequestQueue.getInstance()
-                .addToRequestQueue(uploadRequest, Constants.Request.FolderNavigation.UploadFile.TAG);
     }
 
     public void saveIndex(String filePropertyJsonString,
