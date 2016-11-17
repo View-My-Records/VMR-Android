@@ -37,6 +37,7 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.activity.SearchResultActivity;
+import com.vmr.home.controller.DownloadController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.FragmentAbout;
 import com.vmr.home.fragments.FragmentHelp;
@@ -49,6 +50,7 @@ import com.vmr.home.fragments.FragmentSharedWithMe;
 import com.vmr.home.fragments.FragmentToBeIndexed;
 import com.vmr.home.fragments.FragmentTrash;
 import com.vmr.home.interfaces.Interaction;
+import com.vmr.home.request.DownloadRequest;
 import com.vmr.inbox.InboxActivity;
 import com.vmr.inbox.controller.InboxController;
 import com.vmr.model.NotificationItem;
@@ -520,7 +522,7 @@ public class HomeActivity extends AppCompatActivity
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Receiving file..." + record.getRecordName());
         progressDialog.show();
-        HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
+        DownloadController controller = new DownloadController(new DownloadController.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
                 VmrDebug.printLogI(HomeActivity.this.getClass(), "File download complete");
@@ -554,8 +556,14 @@ public class HomeActivity extends AppCompatActivity
                 progressDialog.dismiss();
             }
         });
-
-        controller.downloadFile(record);
+        DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+            @Override
+            public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                progressDialog.setMessage("Receiving file..." + record.getRecordName());
+                progressDialog.setProgress(progressPercent);
+            }
+        };
+        controller.downloadFile(record, progressListener);
     }
 
     private void getFile(final TrashRecord record){
@@ -563,89 +571,95 @@ public class HomeActivity extends AppCompatActivity
         progressDialog.setMessage("Receiving file...\n" + record.getRecordName());
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progressDialog.show();
-        HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
+        DownloadController controller = new DownloadController(new DownloadController.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
-                progressDialog.setMessage("Download complete");
+                VmrDebug.printLogI(HomeActivity.this.getClass(), "File download complete");
+                progressDialog.dismiss();
                 try {
                     if (file != null) {
-                        final File tempFile = new File(HomeActivity.this.getCacheDir(), record.getRecordName());
-//                        if (tempFile.exists())
-//                            tempFile.delete();
+                        final File tempFile = new File(getExternalCacheDir(), record.getRecordName());
+                        if (tempFile.exists())
+                            tempFile.delete();
                         FileUtils.copyFile(file, tempFile);
 
                         Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
                         openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         Uri fileUri = Uri.fromFile(tempFile);
-                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getName()));
+                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
                         startActivity(openFileIntent);
-
-                        VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");
-                        progressDialog.dismiss();
                     } else {
                         VmrDebug.printLogI(HomeActivity.this.getClass(), "null file");
-                        progressDialog.dismiss();
                     }
                 } catch (IOException e) {
                     VmrDebug.printLogI(this.getClass(), "File download failed");
                     e.printStackTrace();
-                    progressDialog.dismiss();
                 } catch (ActivityNotFoundException e) {
                     Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
                 }
             }
 
             @Override
             public void onFileDownloadFailure(VolleyError error) {
                 Toast.makeText(HomeActivity.this, "Couldn't download the file.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
         });
-
-        controller.downloadFile(record);
+        DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+            @Override
+            public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                progressDialog.setMessage("Receiving file..." + record.getRecordName());
+                progressDialog.setProgress(progressPercent);
+            }
+        };
+        controller.downloadFile(record, progressListener);
     }
 
     private void getFile(final SharedRecord record){
         final ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Receiving file..." + record.getRecordName());
         progressDialog.show();
-        HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
+        DownloadController controller = new DownloadController(new DownloadController.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
+                VmrDebug.printLogI(HomeActivity.this.getClass(), "File download complete");
                 progressDialog.dismiss();
                 try {
                     if (file != null) {
-                        final File tempFile = new File(HomeActivity.this.getExternalCacheDir(), record.getRecordName());
-                        if (tempFile.exists() && tempFile.delete()) {
-                            FileUtils.copyFile(file, tempFile);
+                        final File tempFile = new File(getExternalCacheDir(), record.getRecordName());
+                        if (tempFile.exists())
+                            tempFile.delete();
+                        FileUtils.copyFile(file, tempFile);
 
-                            Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-//                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            Uri fileUri = Uri.fromFile(tempFile);
-                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getName()));
-                            try {
-                                startActivity(openFileIntent);
-                                VmrDebug.printLogI(HomeActivity.this.getClass(), "File opened.");
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-                            }
-                        }
+                        Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                        openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Uri fileUri = Uri.fromFile(tempFile);
+                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
+                        startActivity(openFileIntent);
                     } else {
                         VmrDebug.printLogI(HomeActivity.this.getClass(), "null file");
                     }
-                } catch (Exception e) {
+                } catch (IOException e) {
                     VmrDebug.printLogI(this.getClass(), "File download failed");
                     e.printStackTrace();
+                } catch (ActivityNotFoundException e) {
+                    Toast.makeText(HomeActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
             public void onFileDownloadFailure(VolleyError error) {
                 Toast.makeText(HomeActivity.this, "Couldn't download the file.", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
             }
         });
-
-        controller.downloadFile(record);
+        DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+            @Override
+            public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                progressDialog.setMessage("Receiving file..." + record.getRecordName());
+                progressDialog.setProgress(progressPercent);
+            }
+        };
+        controller.downloadFile(record, progressListener);
     }
 }

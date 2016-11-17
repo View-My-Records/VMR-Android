@@ -29,11 +29,11 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.ResultAdapter;
-import com.vmr.home.controller.HomeController;
+import com.vmr.home.controller.DownloadController;
 import com.vmr.home.controller.SearchController;
+import com.vmr.home.request.DownloadRequest;
 import com.vmr.model.Classification;
 import com.vmr.model.SearchResult;
-import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.FileUtils;
 
 import java.io.File;
@@ -236,13 +236,13 @@ public class SearchResultActivity
     }
 
     private void getFile(final SearchResult result){
-        final ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Receiving file...");
-        progressDialog.show();
-        HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
+        final ProgressDialog downloadProgress = new ProgressDialog(this);
+        downloadProgress.setMessage("Receiving file...");
+        downloadProgress.show();
+        DownloadController dlController = new DownloadController(new DownloadController.OnFileDownload() {
             @Override
             public void onFileDownloadSuccess(File file) {
-                progressDialog.dismiss();
+                downloadProgress.dismiss();
                 try {
                     if (file != null) {
                         final File tempFile = new File(SearchResultActivity.this.getExternalCacheDir(), result.getRecordName());
@@ -278,7 +278,23 @@ public class SearchResultActivity
             }
         });
 
-        controller.downloadFile(result);
+        VmrDebug.printLogI(this.getClass(), "Downloading...");
+        downloadProgress.setMessage("Receiving file...");
+        downloadProgress.setCanceledOnTouchOutside(false);
+        DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+            @Override
+            public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                if(progressPercent == 100){
+                    downloadProgress.setProgress(progressPercent);
+                    downloadProgress.setMessage("Finalizing...");
+                } else {
+                    downloadProgress.setProgress(progressPercent);
+                    downloadProgress.setMessage("Downloading... " + progressPercent + "%");
+                }
+            }
+        };
+        dlController.downloadFile(result, progressListener);
+        downloadProgress.show();
     }
 
     @Override

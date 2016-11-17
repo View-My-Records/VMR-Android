@@ -9,6 +9,8 @@ import com.vmr.db.record.Record;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.home.request.DownloadRequest;
+import com.vmr.home.request.DownloadTask;
+import com.vmr.model.DownloadPacket;
 import com.vmr.model.SearchResult;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.utils.Constants;
@@ -20,48 +22,24 @@ import java.util.Map;
  * Created by abhijit on 11/17/16.
  */
 
-public class DownloadController {
+public class DownloadTaskController {
 
     private OnFileDownload onFileDownload;
 
-    public DownloadController(OnFileDownload onFileDownload) {
+    public DownloadTaskController(OnFileDownload onFileDownload) {
         this.onFileDownload = onFileDownload;
     }
 
-    public void downloadFile(Record record, DownloadRequest.DownloadProgressListener progressListener){
+    public void downloadFile(Record record, DownloadTask.DownloadProgressListener progressListener){
 
-        Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
-        formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
-        formData.put(Constants.Request.FolderNavigation.DownloadFile.NODE_REF, record.getNodeRef());
-        formData.put(Constants.Request.FolderNavigation.DownloadFile.FILE_NAME, Uri.encode(record.getRecordName()));
-        formData.put(Constants.Request.FolderNavigation.DownloadFile.MIME_TYPE, "application/octet-stream");
-
-        DownloadRequest downloadRequest =
-                new DownloadRequest(
-                        formData,
-                        new Response.Listener<File>() {
-                            @Override
-                            public void onResponse(File file) {
-                                onFileDownload.onFileDownloadSuccess(file);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                onFileDownload.onFileDownloadFailure(error);
-                            }
-                        },
-                        progressListener
-                );
-        VmrRequestQueue.getInstance()
-                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
+        DownloadTask downloadTask = new DownloadTask(new DownloadPacket(record), progressListener);
+        downloadTask.execute();
+//        downloadTask.cancel(true);
     }
 
     public void downloadFile(TrashRecord record, DownloadRequest.DownloadProgressListener progressListener){
 
         Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.NODE_REF, record.getNodeRef());
         formData.put(Constants.Request.FolderNavigation.DownloadFile.FILE_NAME, Uri.encode(record.getRecordName()));
@@ -91,7 +69,6 @@ public class DownloadController {
     public void downloadFile(SharedRecord record, DownloadRequest.DownloadProgressListener progressListener){
 
         Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.NODE_REF, record.getNodeRef());
         formData.put(Constants.Request.FolderNavigation.DownloadFile.FILE_NAME, Uri.encode(record.getRecordName()));
@@ -121,7 +98,6 @@ public class DownloadController {
     public void downloadFile(SearchResult record, DownloadRequest.DownloadProgressListener progressListener){
 
         Map<String, String> formData = Vmr.getUserMap();
-        formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.DOWNLOAD_FILE_STREAM);
         formData.put(Constants.Request.FolderNavigation.DownloadFile.NODE_REF, record.getNodeRef());
         formData.put(Constants.Request.FolderNavigation.DownloadFile.FILE_NAME, Uri.encode(record.getRecordName()));
@@ -152,4 +128,6 @@ public class DownloadController {
         void onFileDownloadSuccess(File file);
         void onFileDownloadFailure(VolleyError error);
     }
+
+
 }

@@ -36,9 +36,11 @@ import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.context_menu.RecordOptionsMenu;
+import com.vmr.home.controller.DownloadController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.dialog.FolderPicker;
 import com.vmr.home.fragments.dialog.IndexDialog;
+import com.vmr.home.request.DownloadRequest;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VmrRequestQueue;
@@ -320,7 +322,7 @@ public class FragmentSharedWithMe extends Fragment
 
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 VmrDebug.printLogI(this.getClass(),record.getRecordName() + " File clicked");
-                HomeController dlController = new HomeController(new VmrResponseListener.OnFileDownload() {
+                DownloadController dlController = new DownloadController(new DownloadController.OnFileDownload() {
                     @Override
                     public void onFileDownloadSuccess(File file) {
                         try {
@@ -352,20 +354,33 @@ public class FragmentSharedWithMe extends Fragment
 
                     @Override
                     public void onFileDownloadFailure(VolleyError error) {
-
+                        VmrDebug.printLogI(FragmentSharedWithMe.this.getClass(), "File download failed");
                     }
                 });
-                dlController.downloadFile(record);
-                Notification downloadingNotification =
+                final Notification.Builder downloadingNotification =
                         new Notification.Builder(getActivity())
-                        .setContentTitle(record.getRecordName())
-                        .setContentText("Download in progress")
-                        .setSmallIcon(android.R.drawable.stat_sys_download)
-                        .setProgress(0,0,true)
-                        .setOngoing(true)
-                        .build();
+                                .setContentTitle(record.getRecordName())
+                                .setContentText("Downloading...")
+                                .setSmallIcon(android.R.drawable.stat_sys_download)
+                                .setProgress(0,0,true)
+                                .setOngoing(true);
+                DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+                    @Override
+                    public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                        if(progressPercent == 0){
+                            downloadingNotification.setProgress(0,0,true);
+                        } else if(progressPercent == 100){
+                            downloadingNotification.setProgress(0,0,true);
+                            downloadingNotification.setContentText("Finalizing...");
+                        } else {
+                            downloadingNotification.setProgress(100,progressPercent,false);
+                            downloadingNotification.setContentText("Downloading... " + progressPercent + "%");
+                        }
+                    }
+                };
+                dlController.downloadFile(record, progressListener);
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                nm.notify(record.getRecordName(), Integer.valueOf(record.getRecordId()) ,downloadingNotification);
+                nm.notify(record.getRecordName(), Integer.valueOf(record.getRecordId()) ,downloadingNotification.build());
 
             } else {
                 Snackbar.make(getActivity().findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
