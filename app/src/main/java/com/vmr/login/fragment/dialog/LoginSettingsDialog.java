@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
 import com.vmr.login.LoginController;
 import com.vmr.response_listener.VmrResponseListener;
@@ -113,23 +112,23 @@ public class LoginSettingsDialog extends DialogFragment {
                     @Override
                     public void onClick(View v) {
                         if(swOffline.isChecked()) {
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.OFFLINE);
+                            PrefUtils.setSharedPreference( PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.OFFLINE);
                         } else {
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
+                            PrefUtils.setSharedPreference(PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
                         }
 
                         if(swCustom.isChecked()) {
                             if (urlValidFlag) {
-                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.CUSTOM);
-                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE, spUrlType.getSelectedItem().toString());
-                                PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, etCustomUrl.getText().toString());
+                                PrefUtils.setSharedPreference(PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.CUSTOM);
+                                PrefUtils.setSharedPreference(PrefConstants.URL_TYPE, spUrlType.getSelectedItem().toString());
+                                PrefUtils.setSharedPreference(PrefConstants.BASE_URL, etCustomUrl.getText().toString());
                                 dialog.dismiss();
                             } else {
                                 checkUrlController.checkUrl(etCustomUrl.getText().toString());
                             }
                         } else {
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
-                            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
+                            PrefUtils.setSharedPreference(PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
+                            PrefUtils.setSharedPreference(PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
                             dialog.dismiss();
                         }
                     }
@@ -155,19 +154,19 @@ public class LoginSettingsDialog extends DialogFragment {
     }
 
     private void setupPreferences() {
-        if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE) == null){
-            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
-        } else if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE).equals(PrefConstants.ApplicationMode.OFFLINE)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.APPLICATION_MODE) == null){
+            PrefUtils.setSharedPreference(PrefConstants.APPLICATION_MODE, PrefConstants.ApplicationMode.ONLINE);
+        } else if(PrefUtils.getSharedPreference(PrefConstants.APPLICATION_MODE).equals(PrefConstants.ApplicationMode.OFFLINE)) {
             swOffline.setChecked(true);
         } else {
             swOffline.setChecked(false);
         }
 
-        if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL) == null){
-            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
-            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE, PrefConstants.URLType.STANDARD);
-            PrefUtils.setSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
-        } else if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL) == null){
+            PrefUtils.setSharedPreference(PrefConstants.CUSTOM_URL, PrefConstants.CustomUrl.STANDARD);
+            PrefUtils.setSharedPreference(PrefConstants.URL_TYPE, PrefConstants.URLType.STANDARD);
+            PrefUtils.setSharedPreference(PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
+        } else if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             swCustom.setChecked(true);
             buttonCheck.setEnabled(true);
         } else {
@@ -185,21 +184,21 @@ public class LoginSettingsDialog extends DialogFragment {
         spUrlType = (Spinner) dialogView.findViewById(R.id.spUrlType);
         etCustomUrl = (EditText) dialogView.findViewById(R.id.tvCustomUrl);
 
-        etCustomUrl.setText(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+        etCustomUrl.setText(PrefUtils.getSharedPreference(PrefConstants.BASE_URL));
         etCustomUrl.setSelection(etCustomUrl.getText().length());
 
         swOffline.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 //                if(isChecked) {
-//                    if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE)
+//                    if (PrefUtils.getSharedPreference(Vmr.getContext(), PrefConstants.APPLICATION_MODE)
 //                            .equals(PrefConstants.ApplicationMode.OFFLINE)) {
 //                        buttonPositive.setEnabled(false);
 //                    } else {
 //                        buttonPositive.setEnabled(true);
 //                    }
 //                } else {
-//                    if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE)
+//                    if (PrefUtils.getSharedPreference(Vmr.getContext(), PrefConstants.APPLICATION_MODE)
 //                            .equals(PrefConstants.ApplicationMode.ONLINE)) {
 //                        buttonPositive.setEnabled(false);
 //                    } else {
@@ -207,7 +206,7 @@ public class LoginSettingsDialog extends DialogFragment {
 //                    }
 //                }
                 buttonPositive.setEnabled(true);
-                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.APPLICATION_MODE));
+                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.APPLICATION_MODE));
             }
         });
 
@@ -230,7 +229,7 @@ public class LoginSettingsDialog extends DialogFragment {
                     buttonPositive.setEnabled(true);
                 }
 
-                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL));
+                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.BASE_URL));
             }
         });
 
@@ -245,7 +244,7 @@ public class LoginSettingsDialog extends DialogFragment {
 //        spUrlType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 //            @Override
 //            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                if (PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.URL_TYPE)
+//                if (PrefUtils.getSharedPreference(Vmr.getContext(), PrefConstants.URL_TYPE)
 //                                        .equals((getResources().getStringArray(R.array.list_url_types))[position])) {
 //                    buttonPositive.setEnabled(false);
 //                } else {

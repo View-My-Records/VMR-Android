@@ -125,7 +125,7 @@ public class FragmentSharedByMe extends Fragment
     @Override
     public void onFetchSharedByMeFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override

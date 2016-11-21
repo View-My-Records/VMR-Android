@@ -8,9 +8,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +36,7 @@ public class UploadQueueDAO {
                 DbConstants.TABLE_UPLOAD_QUEUE, // Table Name
                 DbConstants.UPLOAD_COLUMNS, // Select columns
                 DbConstants.UPLOAD_OWNER + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // conditions
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID) }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.UPLOAD_DATE + " DESC ", // order by
@@ -62,7 +63,7 @@ public class UploadQueueDAO {
                 DbConstants.TABLE_UPLOAD_QUEUE, // Table Name
                 DbConstants.UPLOAD_COLUMNS, // Select columns
                 DbConstants.UPLOAD_OWNER + "=? AND " +  DbConstants.UPLOAD_STATUS + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), String.valueOf(UploadQueue.STATUS_PENDING)}, // conditions
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), String.valueOf(UploadQueue.STATUS_PENDING)}, // conditions
                 null, // group by
                 null, // having
                 DbConstants.UPLOAD_DATE + " DESC ", // order by
@@ -107,7 +108,7 @@ public class UploadQueueDAO {
                 contentValues,
                 DbConstants.UPLOAD_OWNER + "=? AND "
                         + DbConstants.UPLOAD_ID + "=?",
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID),
                         String.valueOf(uploadId)}) > 0;
 
         if(DEBUG) VmrDebug.printLogI(this.getClass(), "Updated upload queue");

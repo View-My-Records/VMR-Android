@@ -1,7 +1,8 @@
 package com.vmr.db.notification;
 
-import com.vmr.app.Vmr;
 import com.vmr.model.NotificationItem;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,7 +39,7 @@ public class Notification {
         for (NotificationItem i : notificationItemList) {
             notificationItem = new Notification();
             notificationItem.setMasterId(0);
-            notificationItem.setMasterOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+            notificationItem.setMasterOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
             notificationItem.setInboxId(i.getInboxId());
             notificationItem.setType(i.getMailType());
             notificationItem.setToUserId(i.getToUserId());

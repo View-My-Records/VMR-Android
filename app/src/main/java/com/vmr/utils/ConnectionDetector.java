@@ -12,7 +12,7 @@ import com.vmr.app.Vmr;
 
 public class ConnectionDetector {
     public static boolean isOnline() {
-        ConnectivityManager cm = (ConnectivityManager) Vmr.getVMRContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager cm = (ConnectivityManager) Vmr.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
         return netInfo != null && netInfo.isConnected();
     }

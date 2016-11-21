@@ -20,6 +20,8 @@ import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.DbFoldersAdapter;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.utils.Constants;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +33,7 @@ import java.util.Stack;
 
 public class FolderPicker extends DialogFragment {
 
-    private final String ROOT_PATH = Vmr.getLoggedInUserInfo().getRootNodref();
+    private final String ROOT_PATH = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF);
 
     private DbFoldersAdapter mAdapter;
     private List<Record> mFileList =  new ArrayList<>();

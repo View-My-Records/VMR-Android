@@ -29,7 +29,7 @@ public class VmrRequestQueue {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.
-            requestQueue = com.android.volley.toolbox.Volley.newRequestQueue(Vmr.getVMRContext());
+            requestQueue = com.android.volley.toolbox.Volley.newRequestQueue(Vmr.getContext());
         }
         return requestQueue;
     }

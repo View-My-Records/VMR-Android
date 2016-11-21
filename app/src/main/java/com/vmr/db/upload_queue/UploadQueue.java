@@ -4,7 +4,8 @@ package com.vmr.db.upload_queue;
  * Created by abhijit on 10/11/16.
  */
 
-import com.vmr.app.Vmr;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.io.File;
 import java.util.Date;
@@ -31,7 +32,7 @@ public class UploadQueue {
     }
 
     public UploadQueue(File file, String parentNodeRef) {
-        this.owner = Vmr.getLoggedInUserInfo().getLoggedinUserId();
+        this.owner = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID);
         this.filePath = file.getAbsolutePath();
         this.fileName = file.getName();
         this.parentNodeRef = parentNodeRef;

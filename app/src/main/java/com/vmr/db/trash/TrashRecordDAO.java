@@ -8,9 +8,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class TrashRecordDAO {
                 DbConstants.TABLE_TRASH, // Table Name
                 DbConstants.TRASH_COLUMNS, // Select columns
                 DbConstants.TRASH_MASTER_OWNER + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // conditions
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID) }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_IS_FOLDER + " DESC, " + "LOWER(" + DbConstants.TRASH_NAME + ") ASC ", // order by

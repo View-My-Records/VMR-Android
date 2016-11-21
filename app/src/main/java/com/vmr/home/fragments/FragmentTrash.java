@@ -28,6 +28,8 @@ import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -121,7 +123,7 @@ public class FragmentTrash extends Fragment
     public void onFetchTrashSuccess( List<VmrTrashItem> vmrTrashItems ) {
         VmrDebug.printLine("Trash folder retrieved.");
 
-        dbManager.updateAllTrash(TrashRecord.getTrashRecordList(vmrTrashItems, Vmr.getLoggedInUserInfo().getRootNodref()));
+        dbManager.updateAllTrash(TrashRecord.getTrashRecordList(vmrTrashItems, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)));
         trashRecords = dbManager.getAllTrash();
         trashAdapter.updateDataset(trashRecords);
 
@@ -139,7 +141,7 @@ public class FragmentTrash extends Fragment
     @Override
     public void onFetchTrashFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     private void setupRecyclerView(View view) {
@@ -202,14 +204,14 @@ public class FragmentTrash extends Fragment
 
                 for (DeleteMessage dm : deleteMessages) {
                     if(dm.getStatus().equals("success"))
-                        Toast.makeText(Vmr.getVMRContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Vmr.getContext(), dm.getObjectType() + " " + dm.getName() + " deleted" , Toast.LENGTH_SHORT).show();
                     dbManager.deleteRecordFromTrash(record);
                 }
             }
 
             @Override
             public void onDeleteFromTrashFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 dbManager.deleteRecordFromTrash(record);
                 refreshFolder();
             }

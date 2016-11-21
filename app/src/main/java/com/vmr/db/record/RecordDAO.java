@@ -5,11 +5,12 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrItem;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,7 +41,7 @@ public class RecordDAO {
                 DbConstants.RECORD_COLUMNS, // Select columns
                 DbConstants.RECORD_MASTER_OWNER + "=? AND "
                     +DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), // user id
                         parentNode }, // conditions
                 null, // group by
                 null, // having
@@ -69,7 +70,7 @@ public class RecordDAO {
                 DbConstants.RECORD_MASTER_OWNER + "=? AND "
                         + DbConstants.RECORD_PARENT_NODE_REF + "=? AND "
                         + DbConstants.RECORD_IS_FOLDER + "=?" , // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), // user id
                         parentNode, // noderef
                         1+"" }, // conditions
                 null, // group by
@@ -126,7 +127,7 @@ public class RecordDAO {
                         + DbConstants.RECORD_PARENT_NODE_REF + " =? AND "
                         + DbConstants.RECORD_DOC_TYPE + " IN ( " +
                         TextUtils.join(",", Collections.nCopies(inClause.length, "?")) + ")" , // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), // user id
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), // user id
                         parentNode, // noderef
                         inClause[0], inClause[1] }, // conditions
                 null, // group by
@@ -154,7 +155,7 @@ public class RecordDAO {
                 DbConstants.TABLE_RECORD, // Table Name
                 DbConstants.RECORD_COLUMNS, // Select columns
                 DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_PARENT_NODE_REF + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), parentNode }, // conditions
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), parentNode }, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_UPDATE_DATE, // order by
@@ -187,7 +188,7 @@ public class RecordDAO {
     // Adds record to DB
     public Long addRecord(Record record) {
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.RECORD_MASTER_OWNER  , Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        contentValues.put(DbConstants.RECORD_MASTER_OWNER  , PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         contentValues.put(DbConstants.RECORD_NODE_REF  , record.getNodeRef());
         contentValues.put(DbConstants.RECORD_PARENT_NODE_REF, record.getParentNodeRef());
         contentValues.put(DbConstants.RECORD_NAME      , record.getRecordName());
@@ -273,7 +274,7 @@ public class RecordDAO {
                 new String[]{nodeRef},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
-//            c.close();
+            c.close();
             return true;
         }
         return false;
@@ -287,7 +288,7 @@ public class RecordDAO {
                 DbConstants.RECORD_NODE_REF + "=?", new String[]{nodeRef, "1"},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
-//            c.close();
+            c.close();
             return true;
         }
         return false;
@@ -318,11 +319,11 @@ public class RecordDAO {
     }
 
     public void removeAllRecords(String parentNodeRef, VmrFolder vmrFolder){
-        ArrayList<String> notInClause = new ArrayList<>();
-
-        for (VmrItem vmrItem : vmrFolder.getAll()){
-            notInClause.add(vmrItem.getNodeRef());
-        }
+//        ArrayList<String> notInClause = new ArrayList<>();
+//
+//        for (VmrItem vmrItem : vmrFolder.getAll()){
+//            notInClause.add(vmrItem.getNodeRef());
+//        }
 
         StringBuilder inQuery = new StringBuilder();
 

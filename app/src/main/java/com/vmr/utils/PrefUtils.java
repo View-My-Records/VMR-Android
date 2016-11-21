@@ -7,20 +7,22 @@ package com.vmr.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.vmr.app.Vmr;
+
 public class PrefUtils {
 
-    public static void setSharedPreference(Context context, String key, String value){
+    public static void setSharedPreference(String key, String value){
         SharedPreferences sharedPreferences;
-        sharedPreferences = context.getSharedPreferences(PrefConstants.VMR_PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences = Vmr.getContext().getSharedPreferences(PrefConstants.VMR_PREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor prefEditor = sharedPreferences.edit();
         prefEditor.putString(key,value);
         prefEditor.apply();
     }
 
-    public static String getSharedPreference(Context context, String key){
+    public static String getSharedPreference(String key){
         String value;
         SharedPreferences sharedPreferences;
-        sharedPreferences = context.getSharedPreferences(PrefConstants.VMR_PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences =  Vmr.getContext().getSharedPreferences(PrefConstants.VMR_PREFERENCES, Context.MODE_PRIVATE);
         value = sharedPreferences.getString(key, "NA");
         return value;
     }

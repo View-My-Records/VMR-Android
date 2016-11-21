@@ -7,9 +7,10 @@ package com.vmr.db.search_suggestion;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class SearchSuggestionDAO {
                 DbConstants.TABLE_RECORD, // Table Name
                 new String[] { DbConstants.RECORD_NAME, DbConstants.RECORD_IS_FOLDER, DbConstants.RECORD_NODE_REF, DbConstants.RECORD_PARENT_NODE_REF }, // Select columns
                 DbConstants.RECORD_MASTER_OWNER + "=? AND " + DbConstants.RECORD_IS_FOLDER + "=? AND " + DbConstants.RECORD_NAME + " LIKE ? " , // where
-                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0", "%"+searchTerm+"%" } , // conditions
+                new String[] { PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), "0", "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECORD_NAME, // order by
@@ -61,7 +62,7 @@ public class SearchSuggestionDAO {
                 DbConstants.TABLE_TRASH, // Table Name
                 new String[] { DbConstants.TRASH_NAME, DbConstants.TRASH_IS_FOLDER, DbConstants.TRASH_NODE_REF, DbConstants.TRASH_PARENT_NODE_REF }, // Select columns
                 DbConstants.TRASH_MASTER_OWNER + "=? AND " + DbConstants.TRASH_IS_FOLDER + "=? AND " + DbConstants.TRASH_NAME + " LIKE ? " , // where
-                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0" ,"%"+searchTerm+"%" } , // conditions
+                new String[] { PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), "0" ,"%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.TRASH_NAME, // order by
@@ -93,7 +94,7 @@ public class SearchSuggestionDAO {
                 DbConstants.TABLE_SHARED, // Table Name
                 new String[] { DbConstants.SHARED_FILE_NAME, DbConstants.SHARED_IS_FOLDER, DbConstants.SHARED_NODE_REF, DbConstants.SHARED_PARENT_NODE_REF }, // Select columns
                 DbConstants.SHARED_MASTER_OWNER + "=? AND " + DbConstants.SHARED_IS_FOLDER + "=? AND " + DbConstants.SHARED_FILE_NAME + " LIKE ? " , // where
-                new String[] { Vmr.getLoggedInUserInfo().getLoggedinUserId(), "0" , "%"+searchTerm+"%" } , // conditions
+                new String[] { PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), "0" , "%"+searchTerm+"%" } , // conditions
                 null, // group by
                 null, // having
                 DbConstants.SHARED_FILE_NAME, // order by

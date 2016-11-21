@@ -8,9 +8,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +35,7 @@ public class RecentDAO {
                 DbConstants.TABLE_RECENT, // Table Name
                 DbConstants.RECENT_COLUMNS, // Select columns
                 DbConstants.RECENT_MASTER_OWNER + "=?", // where
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId()}, // conditions
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID)}, // conditions
                 null, // group by
                 null, // having
                 DbConstants.RECENT_LAST_ACCESSED + " DESC", // order by

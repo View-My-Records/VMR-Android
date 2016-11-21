@@ -227,7 +227,7 @@ public class ShareDialog extends DialogFragment
 
                     @Override
                     public void onShareRecordFailure(VolleyError error) {
-                        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                         progressDialog.dismiss();
                     }
                 });
@@ -280,7 +280,7 @@ public class ShareDialog extends DialogFragment
 
             @Override
             public void onFetchRecordExpiryFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
         });

@@ -25,15 +25,15 @@ public class NetworkChangeReceiver extends BroadcastReceiver {
                 WifiManager wifiManager = (WifiManager)context.getSystemService(Context.WIFI_SERVICE);
                 WifiInfo wifiInfo = wifiManager.getConnectionInfo();
                 String ssid = wifiInfo.getSSID();
-//                Toast.makeText(Vmr.getVMRContext(), "VMR-> Connected to " + ssid, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Vmr.getContext(), "VMR-> Connected to " + ssid, Toast.LENGTH_SHORT).show();
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
                 // connected to the mobile provider's data plan
                 TelephonyManager tm = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
                 String networkName = tm.getNetworkOperatorName();
-//                Toast.makeText(Vmr.getVMRContext(), "VMR-> Connected to " + networkName, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Vmr.getContext(), "VMR-> Connected to " + networkName, Toast.LENGTH_SHORT).show();
             }
         } else { // not connected to the internet
-//            Toast.makeText(Vmr.getVMRContext(), "VMR-> No Connectivity", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(Vmr.getContext(), "VMR-> No Connectivity", Toast.LENGTH_SHORT).show();
         }
     }
 }

@@ -54,19 +54,17 @@ import com.vmr.home.request.DownloadRequest;
 import com.vmr.inbox.InboxActivity;
 import com.vmr.inbox.controller.InboxController;
 import com.vmr.model.NotificationItem;
-import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.settings.SettingsActivity;
 import com.vmr.utils.Constants;
 import com.vmr.utils.FileUtils;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity
         implements
@@ -105,13 +103,14 @@ public class HomeActivity extends AppCompatActivity
     private Interaction.OnHomeClickListener homeClickListener;
     private Interaction.OnPasteClickListener pasteClickListener;
     // Models
-    private UserInfo userInfo;
+    //private UserInfo userInfo;
     private DbManager dbManager;
-//    private SearchSuggestionAdapter mSearchViewAdapter;
 
-    public static Intent getLaunchIntent(Context context, UserInfo userInfo) {
+    //    private SearchSuggestionAdapter mSearchViewAdapter;
+
+    public static Intent getLaunchIntent(Context context) {
         Intent intent = new Intent(context, HomeActivity.class);
-        intent.putExtra(Constants.Key.USER_DETAILS, userInfo);
+//        intent.putExtra(Constants.Key.USER_DETAILS, userInfo);
         return intent;
     }
 
@@ -169,25 +168,22 @@ public class HomeActivity extends AppCompatActivity
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
 
-            userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
+            //userInfo = getIntent().getParcelableExtra(Constants.Key.USER_DETAILS);
 
             dbManager = Vmr.getDbManager();
-            if(userInfo!=null) {
-                Vmr.setLoggedInUserInfo(userInfo);
-            }
         }
 
         setupNavigationDrawer(toolbar);
 
-        if(dbManager.getRecord(Vmr.getLoggedInUserInfo().getRootNodref()).getRecordId() == null){
+        if(dbManager.getRecord(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)).getRecordId() == null) {
             Record newRecord = new Record();
             newRecord.setRecordName("Root");
-            newRecord.setRecordNodeRef(Vmr.getLoggedInUserInfo().getRootNodref());
+            newRecord.setRecordNodeRef(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
             dbManager.addRecord(newRecord);
         }
 
         HomeController homeController = new HomeController(this);
-        homeController.fetchAllFilesAndFolders(Vmr.getLoggedInUserInfo().getRootNodref());
+        homeController.fetchAllFilesAndFolders(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
 
         inboxController = new InboxController(this);
         updateNotifications();
@@ -261,16 +257,24 @@ public class HomeActivity extends AppCompatActivity
             }
         });
 
-        if (Vmr.getLoggedInUserInfo().getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
-            accountName.setText(Vmr.getLoggedInUserInfo().getFirstName() + " " + Vmr.getLoggedInUserInfo().getLastName());
+        if (PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_MEMBERSHIP_TYPE).equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
+            accountName.setText(
+                    PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_FIRST_NAME)
+                    + " "
+                    + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_LAST_NAME));
         } else {
-            accountName.setText(Vmr.getLoggedInUserInfo().getCorpName());
+            accountName.setText(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_CORP_NAME));
         }
 
-        accountEmail.setText(Vmr.getLoggedInUserInfo().getEmailId());
+        accountEmail.setText(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL));
 
-        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.ENGLISH);
-        lastLogin.setText("Last Login: " + df.format(Vmr.getLoggedInUserInfo().getLastLoginTime()));
+        lastLogin.setText("Last Login: " + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_LAST_LOGIN));
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        dbManager = new DbManager();
     }
 
     @Override
@@ -285,7 +289,7 @@ public class HomeActivity extends AppCompatActivity
             searchView.setIconified(true);
         } else if (backPressedOnce) {
             super.onBackPressed();
-            Vmr.resetApp();
+//            Vmr.resetApp();
             finish();
             return;
         }
@@ -380,7 +384,7 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.help) {
             fragmentClass = FragmentHelp.class;
         } else if (id == R.id.log_out) {
-            Vmr.resetApp();
+//            Vmr.resetApp();
             Intent restartApp
                     = getBaseContext()
                     .getPackageManager()
@@ -453,19 +457,20 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchRecordsSuccess(VmrFolder vmrFolder) {
-        if (Vmr.getVmrRootFolder() == null) {
-            vmrFolder.setNodeRef(userInfo.getRootNodref());
-            Vmr.setVmrRootFolder(vmrFolder);
-        }
+//        if (Vmr.getVmrRootFolder() == null) {
+        vmrFolder.setNodeRef(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_SHARED_NODE_REF, vmrFolder.getSharedFolder());
+//            Vmr.setVmrRootFolder(vmrFolder);
+//        }
         toBeIndexed.setTitle(toBeIndexed.getTitle() + "(" + (vmrFolder.getTotalUnIndexed()) + ")");
-        dbManager.updateAllRecords(Record.getRecordList(Vmr.getVmrRootFolder().getAll(), Vmr.getLoggedInUserInfo().getRootNodref()));
-        List<Record> records = dbManager.getAllRecords(Vmr.getLoggedInUserInfo().getRootNodref());
+        dbManager.updateAllRecords(Record.getRecordList(vmrFolder.getAll(), PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)));
+        List<Record> records = dbManager.getAllRecords(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
         sendToMyRecords.onReceiveFromActivitySuccess(records);
     }
 
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
-//        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
         sendToMyRecords.onReceiveFromActivityFailure(error);
     }
 
@@ -496,21 +501,25 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onFetchNotificationsFailure(VolleyError error) {
-//        Toast.makeText(Vmr.getVMRContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getContext(), R.string.toast_error_something_went_wrong, Toast.LENGTH_SHORT).show();
+    }
+
+    public DbManager getDbManager() {
+        return dbManager;
     }
 
     public void getRecord(String location) {
         switch (location){
             case "records":
-                final Record record = Vmr.getDbManager().getRecord(nodeRef);
+                final Record record = dbManager.getRecord(nodeRef);
                 getFile(record);
                 break;
             case "trash":
-                TrashRecord trashRecord = Vmr.getDbManager().getTrashRecord(nodeRef);
+                TrashRecord trashRecord = dbManager.getTrashRecord(nodeRef);
                 getFile(trashRecord);
                 break;
             case "shared":
-                SharedRecord sharedRecord = Vmr.getDbManager().getSharedRecord(nodeRef);
+                SharedRecord sharedRecord = dbManager.getSharedRecord(nodeRef);
                 getFile(sharedRecord);
                 break;
             default:

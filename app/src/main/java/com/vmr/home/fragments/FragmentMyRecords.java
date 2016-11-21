@@ -70,11 +70,14 @@ import com.vmr.utils.DocumentUtils;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -148,12 +151,12 @@ public class FragmentMyRecords extends Fragment
         recordOptionsMenu.setOptionClickListener(this);
 
         recordStack = new Stack<>();
-        recordStack.push(Vmr.getLoggedInUserInfo().getRootNodref());
+        recordStack.push(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
 
 
 
         if(DEBUG) VmrDebug.printLogI(this.getClass(), recordStack.peek());
-        if(DEBUG) VmrDebug.printLogI(this.getClass(), Vmr.getLoggedInUserInfo().getRootNodref());
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
     }
 
     @Override
@@ -174,7 +177,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void run() {
                 Snackbar.make(getActivity().findViewById(R.id.clayout),
-                        "Logged in as " + Vmr.getLoggedInUserInfo().getEmailId(), Snackbar.LENGTH_SHORT).show();
+                        "Logged in as " + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL), Snackbar.LENGTH_SHORT).show();
             }
         }, 2000);
 
@@ -239,7 +242,7 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-//        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -250,7 +253,7 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onReceiveFromActivityFailure(VolleyError error) {
-//        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -262,6 +265,9 @@ public class FragmentMyRecords extends Fragment
 
     @Override
     public void onItemClick(final Record record) {
+
+//        Toast.makeText(getActivity(), record.getRecordName() + " clicked", Toast.LENGTH_SHORT).show();
+
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
 
@@ -492,7 +498,7 @@ public class FragmentMyRecords extends Fragment
             public void onCreateFolderSuccess(JSONObject jsonObject) {
                 try {
                     if (jsonObject.has("result") && jsonObject.getString("result").equals("success")) {
-                        Toast.makeText(Vmr.getVMRContext(), "New folder created.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Vmr.getContext(), "New folder created.", Toast.LENGTH_SHORT).show();
                         refreshFolder();
                     }
                 } catch (JSONException e) {
@@ -502,7 +508,7 @@ public class FragmentMyRecords extends Fragment
 
             @Override
             public void onCreateFolderFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -650,14 +656,14 @@ public class FragmentMyRecords extends Fragment
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
             dbManager.addNewRecent(record);
-//            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
+            // startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
                 final DownloadTaskController downloadTaskController;
 
                 final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
                 downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-//                downloadProgress.setMessage("Downloading " + record.getRecordName());
+                // downloadProgress.setMessage("Downloading " + record.getRecordName());
                 downloadProgress.setCancelable(true);
                 downloadProgress.setCanceledOnTouchOutside(true);
                 downloadProgress.setMax(100);
@@ -806,7 +812,7 @@ public class FragmentMyRecords extends Fragment
 
             @Override
             public void onRenameItemFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -894,64 +900,99 @@ public class FragmentMyRecords extends Fragment
 
                 final int notificationId = new Random().nextInt();
 
-                DownloadController dlController = new DownloadController(new DownloadController.OnFileDownload() {
-                    @Override
-                    public void onFileDownloadSuccess(File file) {
-                        try {
-                            if (file != null) {
-                                String fileName = FileUtils.getNewFileName(record.getRecordName(), getActivity().getCacheDir() );
-                                File newFile = new File(getActivity().getCacheDir(), fileName);
-                                FileUtils.copyFile(file, newFile);
-                                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File saved");
-                                Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                Notification downloadCompleteNotification =
-                                    new Notification.Builder(getActivity())
-                                            .setContentTitle(fileName)
-                                            .setContentText("Download complete")
-                                            .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                            .setAutoCancel(true)
-                                            .build();
-
-                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
-                                nm.cancel(record.getRecordId(), notificationId);
-                                nm.notify(notificationId, downloadCompleteNotification);
-                                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
-                            }
-                        } catch (Exception e) {
-                            VmrDebug.printLogI(this.getClass(), "File download failed");
-                            e.printStackTrace();
-                        }
-                    }
-
-                    @Override
-                    public void onFileDownloadFailure(VolleyError error) {
-
-                    }
-                });
                 final Notification.Builder downloadingNotification =
                         new Notification.Builder(getActivity())
                             .setContentTitle(record.getRecordName())
-                            .setContentText("Downloading...")
                             .setSmallIcon(android.R.drawable.stat_sys_download)
                             .setProgress(0,0,true)
                             .setOngoing(true);
-                DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
+
+                DownloadTask.DownloadProgressListener progressListener
+                        = new DownloadTask.DownloadProgressListener() {
+                    @Override
+                    public void onDownloadStarted() {
+
+                    }
+
+                    @Override
+                    public void onDownloadFailed() {
+                        Notification downloadFailedNotification =
+                                new Notification.Builder(getActivity())
+                                    .setContentTitle(record.getRecordName())
+                                    .setContentText("Download failed")
+                                    .setSmallIcon(android.R.drawable.stat_sys_warning)
+                                    .setAutoCancel(true)
+                                    .build();
+
+                        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                        nm.cancel(record.getRecordId(), notificationId);
+                        nm.notify(notificationId, downloadFailedNotification);
+                    }
+
+                    @Override
+                    public void onDownloadCanceled() {
+                        Notification downloadCanceledNotification =
+                                new Notification.Builder(getActivity())
+                                        .setContentTitle(record.getRecordName())
+                                        .setContentText("Download canceled")
+                                        .setSmallIcon(android.R.drawable.stat_sys_warning)
+                                        .setAutoCancel(true)
+                                        .build();
+
+                        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                        nm.cancel(record.getRecordId(), notificationId);
+                        nm.notify(notificationId, downloadCanceledNotification);
+                    }
+
                     @Override
                     public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
                         VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Progress " +  progressPercent);
 
                         if(progressPercent == 0){
                             downloadingNotification.setProgress(0,0,true);
-                        } else if(progressPercent == 100){
+                        } else if(progressPercent == 100) {
                             downloadingNotification.setProgress(0,0,true);
                             downloadingNotification.setContentText("Finalizing...");
                         } else {
                             downloadingNotification.setProgress(100,progressPercent,false);
                             downloadingNotification.setContentText("Downloading... " + progressPercent + "%");
                         }
+
+                        NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                        nm.notify(record.getRecordId(), notificationId ,downloadingNotification.build());
+                    }
+
+                    @Override
+                    public void onDownloadFinish(File file) {
+                        if (file != null) {
+                            try {
+                                String fileName = FileUtils.getNewFileName(record.getRecordName(), getActivity().getCacheDir() );
+                                File newFile = new File(getActivity().getCacheDir(), fileName);
+                                    FileUtils.copyFile(file, newFile);
+
+                                VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File saved");
+                                Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
+                                Notification downloadCompleteNotification =
+                                        new Notification.Builder(getActivity())
+                                                .setContentTitle(fileName)
+                                                .setContentText("Download complete")
+                                                .setSmallIcon(android.R.drawable.stat_sys_download_done)
+                                                .setAutoCancel(true)
+                                                .build();
+
+                                NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
+                                nm.cancel(record.getRecordId(), notificationId);
+                                nm.notify(notificationId, downloadCompleteNotification);
+                                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 };
-                dlController.downloadFile(record, progressListener);
+
+                new DownloadTaskController(record,progressListener).downloadFile();
+
                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
                 nm.notify(record.getRecordId(), notificationId ,downloadingNotification.build());
 
@@ -1212,7 +1253,7 @@ public class FragmentMyRecords extends Fragment
     private void setupFab(View view){
         mFabAddItem = (FloatingActionButton) view.findViewById(fab);
 
-        if(!Vmr.getLoggedInUserInfo().getUserId().equals("admin")) {
+        if(!PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID).equals("admin")) {
             mFabAddItem.setVisibility(View.VISIBLE);
             mFabAddItem.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -1239,9 +1280,9 @@ public class FragmentMyRecords extends Fragment
 
     private boolean switchToParent() {
         VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-        if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+        if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
             recordStack.pop();
-            if (recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+            if (recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
                 fragmentInteractionListener.onFragmentInteraction(Constants.Fragment.MY_RECORDS);
                 fragmentInteractionListener.setBackButton(false);
             } else {

@@ -1,7 +1,6 @@
 package com.vmr.login;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
@@ -14,9 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -37,13 +34,17 @@ import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
 public class LoginActivity extends AppCompatActivity
         implements
         VmrResponseListener.OnLoginListener,
-        VmrResponseListener.OnFetchTicketListener,
         OnLoginClickListener {
 
     ProgressDialog loginProgress;
+    DbManager dbManager;
     // Controller for queuing requests
     private LoginController loginController;
     private boolean remember = false;
@@ -55,12 +56,12 @@ public class LoginActivity extends AppCompatActivity
 
 //        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        loginController = new LoginController(this, this);
-        DbManager dbManager = new DbManager();
+        loginController = new LoginController(this);
+        dbManager = new DbManager();
         Vmr.setDbManager(dbManager);
 
-        if(PrefUtils.getSharedPreference(Vmr.getVMRContext(), PrefConstants.BASE_URL).equals("NA")) {
-            PrefUtils.setSharedPreference( Vmr.getVMRContext(), PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
+        if(PrefUtils.getSharedPreference(PrefConstants.BASE_URL).equals("NA")) {
+            PrefUtils.setSharedPreference(PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
@@ -107,10 +108,7 @@ public class LoginActivity extends AppCompatActivity
         super.onStart();
         if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
             if (!ConnectionDetector.isOnline()) {
-//                Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
-            } else {
-//                loginController.fetchAlfrescoTicket();
             }
         }
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -121,10 +119,7 @@ public class LoginActivity extends AppCompatActivity
         super.onResume();
         if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
             if (!ConnectionDetector.isOnline()) {
-//                Vmr.setAlfrescoTicket(null);
                 Snackbar.make(findViewById(android.R.id.content), getResources().getString(R.string.toast_internet_unavailable), Snackbar.LENGTH_SHORT).show();
-            } else {
-//                loginController.fetchAlfrescoTicket();
             }
         }
     }
@@ -148,53 +143,49 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
+    public DbManager getDbManager() {
+        return dbManager;
+    }
+
     @Override
     public void onLoginFailure(VolleyError error) {
         loginProgress.dismiss();
         Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
-    @Override
-    public void onFetchTicketFailure(VolleyError error) {
-        Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onFetchTicketSuccess(String ticket) {
-//        Vmr.setAlfrescoTicket(ticket);
-        if( Vmr.getLoggedInUserInfo() !=  null ) {
-            startHomeActivity();
-        }
-    }
-
     //flow after login is completed
     private void onLoginComplete(UserInfo userInfo){
         VmrDebug.printLogI(this.getClass(), "Login Success");
         if(remember){
-            Vmr.getDbManager().addUser(userInfo);
+            dbManager.addUser(userInfo);
         }
 
-        Vmr.setLoggedInUserInfo(userInfo);
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_ID, userInfo.getLoggedinUserId());
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF, userInfo.getRootNodref());
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_MEMBERSHIP_TYPE, userInfo.getMembershipType());
 
-//        if(Vmr.getAlfrescoTicket() == null) {
-//            loginController.fetchAlfrescoTicket();
-//        } else {
-            startHomeActivity();
-//        }
-    }
+        if (userInfo.getMembershipType().equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
+            PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_FIRST_NAME, userInfo.getFirstName());
+            PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_LAST_NAME, userInfo.getLastName());
+        } else {
+            PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_CORP_NAME, userInfo.getCorpName());
+        }
 
-    private void startHomeActivity(){
-        Intent intent = HomeActivity.getLaunchIntent(this, Vmr.getLoggedInUserInfo());
-        startActivity(intent);
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL, userInfo.getEmailId());
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_SESSION_ID, userInfo.getHttpSessionId());
+
+        DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm", Locale.getDefault());
+        PrefUtils.setSharedPreference(PrefConstants.VMR_LOGGED_USER_LAST_LOGIN, df.format(userInfo.getLastLoginTime()));
+//        dbManager.closeConnection();
+        Intent intent = HomeActivity.getLaunchIntent(this);
         finish();
+        startActivity(intent);
     }
 
     // Handle clicks on fragments buttons
     @Override
     public void onIndividualLoginClick(String email, String password, String domain, boolean remember) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomIndividualDetail(email, password, domain);
         } else {
             loginController.fetchIndividualDetail(email, password, domain);
@@ -205,9 +196,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onFamilyLoginClick( String username, String password, String accountId, String domain, boolean remember) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomFamilyDetail(username, password, accountId, domain);
         } else {
             loginController.fetchFamilyDetail(username, password, accountId, domain);
@@ -218,9 +207,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onProfessionalLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomProfessionalDetail(username, password, accountId, domain);
         } else {
             loginController.fetchProfessionalDetail(username, password, accountId, domain);
@@ -231,9 +218,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onCorporateLoginClick(String username, String password, String accountId, String domain, boolean remember) {
-        InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(new View(this).getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-        if(PrefUtils.getSharedPreference(this, PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
+        if(PrefUtils.getSharedPreference(PrefConstants.CUSTOM_URL).equals(PrefConstants.CustomUrl.CUSTOM)) {
             loginController.fetchCustomCorporateDetail(username, password, accountId, domain);
         } else {
             loginController.fetchCorporateDetail(username, password, accountId, domain);
@@ -241,5 +226,4 @@ public class LoginActivity extends AppCompatActivity
         this.remember = remember;
         loginProgress.show();
     }
-
 }

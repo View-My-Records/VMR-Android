@@ -42,6 +42,7 @@
                 android:layout_height="wrap_content"
                 android:ems="15"
                 android:hint="@string/login_hint_password"
+                android:imeOptions="actionDone"
                 android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
                 android:text="Qwer!234" />

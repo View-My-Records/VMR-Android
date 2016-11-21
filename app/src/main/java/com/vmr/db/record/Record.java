@@ -7,10 +7,11 @@ package com.vmr.db.record;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.vmr.app.Vmr;
 import com.vmr.model.VmrFile;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrItem;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,7 +87,7 @@ public class Record implements Parcelable {
         Record record;
         for(VmrItem item: vmrItems){
             record = new Record();
-            record.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+            record.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
             record.setRecordNodeRef(item.getNodeRef());
             record.setRecordParentNodeRef(recordParentNodeRef);
             record.setRecordName(item.getName());

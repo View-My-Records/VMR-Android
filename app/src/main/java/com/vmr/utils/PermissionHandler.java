@@ -14,7 +14,7 @@ import com.vmr.app.Vmr;
 public class PermissionHandler {
 
     public static boolean checkPermission(String permission){
-        int result = ContextCompat.checkSelfPermission(Vmr.getVMRContext(), permission);
+        int result = ContextCompat.checkSelfPermission(Vmr.getContext(), permission);
         return result == PackageManager.PERMISSION_GRANTED;
     }
 

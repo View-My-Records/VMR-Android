@@ -4,9 +4,10 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.DbConstants;
 import com.vmr.debug.VmrDebug;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -36,7 +37,7 @@ public class NotificationDAO {
                 DbConstants.TABLE_INBOX, // Table Name
                 DbConstants.INBOX_COLUMNS, // Select columns
                 DbConstants.INBOX_MASTER_OWNER + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId() }, // user id
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID) }, // user id
                 null, // group by
                 null, // having
                 DbConstants.INBOX_CREATION_DATE + " DESC ", // order by
@@ -61,7 +62,7 @@ public class NotificationDAO {
                 DbConstants.TABLE_INBOX, // Table Name
                 DbConstants.INBOX_COLUMNS, // Select columns
                 DbConstants.INBOX_MASTER_OWNER + "=? AND " + DbConstants.INBOX_READ_FLAG + "=?", // where
-                new String[]{ Vmr.getLoggedInUserInfo().getLoggedinUserId(), String.valueOf(0) }, // user id
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), String.valueOf(0) }, // user id
                 null, // group by
                 null, // having
                 DbConstants.INBOX_CREATION_DATE + " DESC ", // order by
@@ -156,7 +157,7 @@ public class NotificationDAO {
                 new String[]{DbConstants.INBOX_ID},
                 DbConstants.INBOX_MASTER_OWNER + "=? AND "
                         + DbConstants.INBOX_ID + "=?",
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID),
                         inboxId},
                 null, null, null, null, null);
         if(c != null && c.moveToFirst()){
@@ -171,7 +172,7 @@ public class NotificationDAO {
         return db.delete(DbConstants.TABLE_INBOX,
                 DbConstants.INBOX_MASTER_OWNER + "=? AND "
                         + DbConstants.INBOX_ID + "=?",
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID),
                         inboxId}) > 0;
     }
 
@@ -186,7 +187,7 @@ public class NotificationDAO {
                 contentValues,
                 DbConstants.INBOX_MASTER_OWNER + "=? AND "
                         + DbConstants.INBOX_ID + "=?",
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID),
                         inboxId}) > 0;
     }
 
@@ -200,12 +201,12 @@ public class NotificationDAO {
                 contentValues,
                 DbConstants.INBOX_MASTER_OWNER + "=? AND "
                         + DbConstants.INBOX_ID + "=?",
-                new String[]{Vmr.getLoggedInUserInfo().getLoggedinUserId(),
+                new String[]{PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID),
                         inboxId}) > 0;
     }
 
     public void removeAllNotifications(){
-        String owner = Vmr.getLoggedInUserInfo().getLoggedinUserId();
+        String owner = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID);
         int result = db.delete( DbConstants.TABLE_INBOX ,
                 DbConstants.INBOX_MASTER_OWNER + "=?" ,
                 new String[]{ owner });
@@ -214,7 +215,7 @@ public class NotificationDAO {
 
     public void removeAllNotifications(List<Notification> notifications){
 
-        String owner = Vmr.getLoggedInUserInfo().getLoggedinUserId();
+        String owner = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID);
 
         StringBuilder inQuery = new StringBuilder();
 

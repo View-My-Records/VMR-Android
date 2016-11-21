@@ -315,6 +315,6 @@ public class InboxActivity extends AppCompatActivity
     @Override
     public void onFetchNotificationsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 }

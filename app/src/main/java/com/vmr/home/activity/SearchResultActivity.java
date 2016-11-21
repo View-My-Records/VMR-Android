@@ -26,7 +26,6 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
-import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.ResultAdapter;
 import com.vmr.home.controller.DownloadController;
@@ -35,6 +34,8 @@ import com.vmr.home.request.DownloadRequest;
 import com.vmr.model.Classification;
 import com.vmr.model.SearchResult;
 import com.vmr.utils.FileUtils;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -188,12 +189,7 @@ public class SearchResultActivity
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         searchView.setOnQueryTextListener(this);
         searchView.setSubmitButtonEnabled(true);
-//        SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
-//        if(null!=searchManager ) {
-//            searchView.setSearchableInfo(searchManager.getSearchableInfo(
-//                    new ComponentName(this, SearchResultActivity.class))
-//            );
-//        }
+
         searchView.setIconifiedByDefault(true);
         if(queryString != null) {
             searchView.setQuery(queryString, false);
@@ -315,73 +311,13 @@ public class SearchResultActivity
             if(docType == null || docType.isEmpty()){
                 Toast.makeText(this, "Please select document type", Toast.LENGTH_SHORT).show();
             } else {
-                searchController.fetchResults(queryString, Vmr.getLoggedInUserInfo().getRootNodref(), docType, true);
+                searchController.fetchResults(queryString, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF), docType, true);
                 mSwipeRefreshLayout.setRefreshing(true);
             }
         } else {
-            searchController.fetchResults(queryString, Vmr.getLoggedInUserInfo().getRootNodref(), "vmr_doc", true);
+            searchController.fetchResults(queryString, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF), "vmr_doc", true);
             mSwipeRefreshLayout.setRefreshing(true);
         }
 
     }
-
-//    public void getRecord() {
-//        final ProgressDialog progressDialog = new ProgressDialog(this);
-//        progressDialog.setMessage("Receiving file...");
-//        progressDialog.show();
-//
-//        switch (location){
-//            case "records":
-//                final Record record = Vmr.getDbManager().getRecord(nodeRef);
-//                HomeController controller = new HomeController(new VmrResponseListener.OnFileDownload() {
-//                    @Override
-//                    public void onFileDownloadSuccess(File file) {
-//                        progressDialog.dismiss();
-//                        try {
-//                            if (file != null) {
-//                                final File tempFile = new File(SearchResultActivity.this.getExternalCacheDir(), record.getRecordName());
-//                                if (tempFile.exists() && tempFile.delete()) {
-//                                    FileUtils.copyFile(file, tempFile);
-//
-//                                    Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-//                                    openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-//                                    Uri fileUri = Uri.fromFile(tempFile);
-//                                    openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-//                                    try {
-//                                        startActivity(openFileIntent);
-//                                        SearchResultActivity.this.finish();
-//                                    } catch (ActivityNotFoundException e) {
-//                                        Toast.makeText(SearchResultActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }
-//                            } else {
-//                                VmrDebug.printLogI(SearchResultActivity.this.getClass(), "null file");
-//                                SearchResultActivity.this.finish();
-//                            }
-//                        } catch (Exception e) {
-//                            VmrDebug.printLogI(this.getClass(), "File download failed");
-//                            e.printStackTrace();
-//                            SearchResultActivity.this.finish();
-//                        }
-//
-//                    }
-//
-//                    @Override
-//                    public void onFileDownloadFailure(VolleyError error) {
-//                        Toast.makeText(SearchResultActivity.this, "Couldn't download the file.", Toast.LENGTH_LONG).show();
-//                        SearchResultActivity.this.finish();
-//                    }
-//                });
-//
-//                controller.downloadFile(record);
-//                break;
-//            case "trash":
-//                TrashRecord trashRecord = Vmr.getDbManager().getTrashRecord(nodeRef);
-//                break;
-//            case "shared":
-//                SharedRecord sharedRecord = Vmr.getDbManager().getSharedRecord(nodeRef);
-//                break;
-//            default:
-//        }
-//    }
 }

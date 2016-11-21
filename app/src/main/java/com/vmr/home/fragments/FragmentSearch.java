@@ -35,6 +35,8 @@ import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -84,7 +86,7 @@ public class FragmentSearch extends Fragment
 
         dbManager = Vmr.getDbManager();
         recordStack = new Stack<>();
-        recordStack.push(Vmr.getVmrRootFolder().getSharedFolder());
+        recordStack.push(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_SHARED_NODE_REF));
     }
 
     @Override
@@ -141,7 +143,7 @@ public class FragmentSearch extends Fragment
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -201,7 +203,7 @@ public class FragmentSearch extends Fragment
                                 VmrDebug.printLogI(this.getClass(), jsonObject.toString() );
                                 try {
                                     if (jsonObject.has("Response") && jsonObject.getString("Response").equals("success")) {
-                                        Toast.makeText(Vmr.getVMRContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(Vmr.getContext(), "vmrItem renamed", Toast.LENGTH_SHORT).show();
                                         refreshFolder();
                                     }
                                 } catch (JSONException e) {
@@ -211,7 +213,7 @@ public class FragmentSearch extends Fragment
 
                             @Override
                             public void onRenameItemFailure(VolleyError error) {
-                                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                             }
 
                         });
@@ -303,7 +305,7 @@ public class FragmentSearch extends Fragment
 
             @Override
             public void onMoveToTrashFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -338,7 +340,7 @@ public class FragmentSearch extends Fragment
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                    if (!recordStack.peek().equals(Vmr.getLoggedInUserInfo().getRootNodref())) {
+                    if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
                         recordStack.pop();
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);

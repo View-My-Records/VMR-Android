@@ -1,22 +1,27 @@
 package com.vmr.login.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.Vmr;
 import com.vmr.db.user.DbUser;
+import com.vmr.login.LoginActivity;
 import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
@@ -44,9 +49,9 @@ public class FragmentLoginIndividual extends Fragment {
         final AutoCompleteTextView etUsername = (AutoCompleteTextView) rootView.findViewById(R.id.etIndividualUsername);
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etIndividualPassword);
         final CheckBox cbRememberMe = (CheckBox) rootView.findViewById(R.id.cbIndividualRememberPassword);
-        Button buttonSignIn = (Button) rootView.findViewById(R.id.btnIndividualSignIn);
+        final Button buttonSignIn = (Button) rootView.findViewById(R.id.btnIndividualSignIn);
 
-        List<DbUser> userList = Vmr.getDbManager().getAllIndividualUsers();
+        List<DbUser> userList = ((LoginActivity)getActivity()).getDbManager().getAllIndividualUsers();
 
         ArrayList<String> users =  new ArrayList<>();
 
@@ -58,6 +63,19 @@ public class FragmentLoginIndividual extends Fragment {
                 new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, users);
 
         etUsername.setAdapter(adapter);
+
+        etPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                    buttonSignIn.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override

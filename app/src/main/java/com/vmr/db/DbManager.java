@@ -2,7 +2,6 @@ package com.vmr.db;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import com.vmr.app.Vmr;
 import com.vmr.db.notification.Notification;
 import com.vmr.db.notification.NotificationDAO;
 import com.vmr.db.recently_accessed.Recent;
@@ -22,6 +21,8 @@ import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.utils.Constants;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ import java.util.List;
 
 public class DbManager {
 
+    private SQLiteDatabase database;
+
     private UserDAO userDAO;
     private RecordDAO recordDAO;
     private RecentDAO recentDAO;
@@ -45,7 +48,7 @@ public class DbManager {
 
     public DbManager() {
         DbHelper dbHelper = new DbHelper();
-        SQLiteDatabase database = dbHelper.getWritableDatabase();
+        database = dbHelper.getWritableDatabase();
         userDAO = new UserDAO(database);
         recordDAO = new RecordDAO(database);
         recentDAO = new RecentDAO(database);
@@ -186,7 +189,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(record.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_RECORD);
         recent.setLastAccess(new Date());
@@ -202,7 +205,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(record.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_SHARED);
         recent.setLastAccess(new Date());
@@ -218,7 +221,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(record.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_TRASH);
         recent.setLastAccess(new Date());
@@ -238,7 +241,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(record.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_RECORD);
         recent.setLastAccess(new Date());
@@ -250,7 +253,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(sharedRecord.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(sharedRecord.getRecordName());
         recent.setLocation(DbConstants.TABLE_SHARED);
         recent.setLastAccess(new Date());
@@ -262,7 +265,7 @@ public class DbManager {
 
         Recent recent = new Recent();
         recent.setNodeRef(trashRecord.getNodeRef());
-        recent.setMasterRecordOwner(Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(trashRecord.getRecordName());
         recent.setLocation(DbConstants.TABLE_TRASH);
         recent.setLastAccess(new Date());
@@ -344,5 +347,9 @@ public class DbManager {
 
     public void removeAllNotifications(List<Notification> notificationItemList) {
         this.notificationDAO.removeAllNotifications(notificationItemList);
+    }
+
+    public void closeConnection() {
+        database.releaseReference();
     }
 }

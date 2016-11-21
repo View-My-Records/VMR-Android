@@ -5,18 +5,21 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.Vmr;
 import com.vmr.db.user.DbUser;
+import com.vmr.login.LoginActivity;
 import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
@@ -46,9 +49,9 @@ public class FragmentLoginFamily extends Fragment {
         final EditText etPassword = (EditText) rootView.findViewById(R.id.etFamilyPassword);
         final EditText etFamilyId = (EditText) rootView.findViewById(R.id.etFamilyID);
         final CheckBox cbRememberMe = (CheckBox) rootView.findViewById(R.id.cbFamilyRememberPassword);
-        Button buttonSignIn = (Button) rootView.findViewById(R.id.btnFamilySignIn);
+        final Button buttonSignIn = (Button) rootView.findViewById(R.id.btnFamilySignIn);
 
-        List<DbUser> userList = Vmr.getDbManager().getAllFamilyUsers();
+        List<DbUser> userList = ((LoginActivity)getActivity()).getDbManager().getAllFamilyUsers();
 
         ArrayList<String> users =  new ArrayList<>();
 
@@ -60,6 +63,17 @@ public class FragmentLoginFamily extends Fragment {
                 new ArrayAdapter<>(this.getActivity(), android.R.layout.simple_list_item_1, users);
 
         etUsername.setAdapter(adapter);
+
+        etPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    buttonSignIn.performClick();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override

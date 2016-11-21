@@ -26,9 +26,9 @@ public class LoginController {
     private VmrResponseListener.OnFetchTicketListener onFetchTicketListener;
     private VmrResponseListener.OnCheckUrlResponse onCheckUrlResponse;
 
-    public LoginController(VmrResponseListener.OnLoginListener onLoginListener, VmrResponseListener.OnFetchTicketListener onFetchTicketListener) {
+    public LoginController(VmrResponseListener.OnLoginListener onLoginListener) {
         this.onLoginListener = onLoginListener;
-        this.onFetchTicketListener = onFetchTicketListener;
+//        this.onFetchTicketListener = onFetchTicketListener;
     }
 
     public LoginController(VmrResponseListener.OnCheckUrlResponse onCheckUrlResponse){

@@ -53,14 +53,14 @@ public class UploadController {
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
-//                                Vmr.getVMRContext().unregisterReceiver(cancelUploadReceiver);
+//                                Vmr.getContext().unregisterReceiver(cancelUploadReceiver);
                                 onFileUpload.onFileUploadSuccess(jsonObject);
                             }
                         },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-//                                Vmr.getVMRContext().unregisterReceiver(cancelUploadReceiver);
+//                                Vmr.getContext().unregisterReceiver(cancelUploadReceiver);
                                 onFileUpload.onFileUploadFailure(error);
                             }
                         },
@@ -69,7 +69,7 @@ public class UploadController {
 
         uploadRequest.setTag(requestTag);
 
-        LocalBroadcastManager.getInstance(Vmr.getVMRContext()).registerReceiver(new BroadcastReceiver() {
+        LocalBroadcastManager.getInstance(Vmr.getContext()).registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (intent.getAction().equals("CancelUpload")) {

@@ -150,7 +150,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 
             BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
-            byte dataBuffer[] = new byte[1024];
+            byte dataBuffer[] = new byte[1024*1024];
 
             long copied = 0;
             int count;

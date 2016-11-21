@@ -120,7 +120,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.UPLOAD_DATE             + " DATETIME );";
 
     DbHelper() {
-        super(Vmr.getVMRContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
+        super(Vmr.getContext(), DbConstants.DATABASE_NAME, null, DbConstants.VERSION);
     }
 
     @Override

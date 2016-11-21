@@ -7,8 +7,6 @@ import android.util.Pair;
 
 import com.vmr.db.DbManager;
 import com.vmr.db.record.Record;
-import com.vmr.model.UserInfo;
-import com.vmr.model.VmrFolder;
 
 import java.util.Map;
 
@@ -18,47 +16,50 @@ import java.util.Map;
 
 public class Vmr extends Application {
 
-    private static Context appContext;
-    private static String AlfrescoTicket;
-    private static VmrFolder vmrRootFolder;
-    private static VmrFolder vmrSharedWithMeRootFolder;
-    private static VmrFolder vmrSharedByMeRootFolder;
+    private static Vmr vmrInstance;
+//    private static Context appContext;
     private static Pair<Record, Integer> clipBoard;
-    private static UserInfo loggedInUserInfo;
+
+//    private static String AlfrescoTicket;
+//    private static VmrFolder vmrRootFolder;
+//    private static VmrFolder vmrSharedWithMeRootFolder;
+//    private static VmrFolder vmrSharedByMeRootFolder;
+//    private static UserInfo loggedInUserInfo;
+
     private static DbManager dbManager;
     private static Map<String, String > userMap;
 
-    public static UserInfo getLoggedInUserInfo() {
-        return loggedInUserInfo;
-    }
-
-    public static void setLoggedInUserInfo(UserInfo loggedInUserInfo) {
-        Vmr.loggedInUserInfo = loggedInUserInfo;
-    }
-
-    public static VmrFolder getVmrRootFolder() {
-        return vmrRootFolder;
-    }
-
-    public static void setVmrRootFolder(VmrFolder vmrRootFolder) {
-        Vmr.vmrRootFolder = vmrRootFolder;
-    }
-
-    public static VmrFolder getVmrSharedWithMeRootFolder() {
-        return vmrSharedWithMeRootFolder;
-    }
-
-    public static void setVmrSharedWithMeRootFolder(VmrFolder vmrSharedWithMeRootFolder) {
-        Vmr.vmrSharedWithMeRootFolder = vmrSharedWithMeRootFolder;
-    }
-
-    public static VmrFolder getVmrSharedByMeRootFolder() {
-        return vmrSharedByMeRootFolder;
-    }
-
-    public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
-        Vmr.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
-    }
+//    public static UserInfo getLoggedInUserInfo() {
+//        return loggedInUserInfo;
+//    }
+//
+//    public static void setLoggedInUserInfo(UserInfo loggedInUserInfo) {
+//        Vmr.loggedInUserInfo = loggedInUserInfo;
+//    }
+//
+//    public static VmrFolder getVmrRootFolder() {
+//        return vmrRootFolder;
+//    }
+//
+//    public static void setVmrRootFolder(VmrFolder vmrRootFolder) {
+//        Vmr.vmrRootFolder = vmrRootFolder;
+//    }
+//
+//    public static VmrFolder getVmrSharedWithMeRootFolder() {
+//        return vmrSharedWithMeRootFolder;
+//    }
+//
+//    public static void setVmrSharedWithMeRootFolder(VmrFolder vmrSharedWithMeRootFolder) {
+//        Vmr.vmrSharedWithMeRootFolder = vmrSharedWithMeRootFolder;
+//    }
+//
+//    public static VmrFolder getVmrSharedByMeRootFolder() {
+//        return vmrSharedByMeRootFolder;
+//    }
+//
+//    public static void setVmrSharedByMeRootFolder(VmrFolder vmrSharedByMeRootFolder) {
+//        Vmr.vmrSharedByMeRootFolder = vmrSharedByMeRootFolder;
+//    }
 
     public static Pair<Record, Integer>  getClipBoard() {
         return clipBoard;
@@ -81,8 +82,8 @@ public class Vmr extends Application {
         userMap = map;
     }
 
-    public static Context getVMRContext(){
-        return Vmr.appContext;
+    public static Context getContext(){
+        return vmrInstance.getApplicationContext();
     }
 
     public static DbManager getDbManager() {
@@ -93,23 +94,23 @@ public class Vmr extends Application {
         Vmr.dbManager = dbManager;
     }
 
-    public static String getAlfrescoTicket() {
-        return AlfrescoTicket;
-    }
+//    public static String getAlfrescoTicket() {
+//        return AlfrescoTicket;
+//    }
+//
+//    public static void setAlfrescoTicket(String alfrescoTicket) {
+//        AlfrescoTicket = alfrescoTicket;
+//    }
 
-    public static void setAlfrescoTicket(String alfrescoTicket) {
-        AlfrescoTicket = alfrescoTicket;
-    }
-
-    public static void resetApp(){
+//    public static void resetApp(){
 //        Vmr.setAlfrescoTicket(null);
-        Vmr.setLoggedInUserInfo(null);
-        Vmr.setDbManager(null);
-        Vmr.setUserMap(null);
-        Vmr.setVmrRootFolder(null);
-        Vmr.setVmrSharedByMeRootFolder(null);
-        Vmr.setVmrSharedWithMeRootFolder(null);
-    }
+//        Vmr.setLoggedInUserInfo(null);
+//        Vmr.setDbManager(null);
+//        Vmr.setUserMap(null);
+//        Vmr.setVmrRootFolder(null);
+//        Vmr.setVmrSharedByMeRootFolder(null);
+//        Vmr.setVmrSharedWithMeRootFolder(null);
+//    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -118,8 +119,8 @@ public class Vmr extends Application {
 
     @Override
     public void onCreate() {
+        vmrInstance = this;
         super.onCreate();
-        Vmr.appContext = getApplicationContext();
     }
 
     @Override

@@ -49,6 +49,8 @@ import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -102,7 +104,7 @@ public class FragmentSharedWithMe extends Fragment
         dbManager = Vmr.getDbManager();
 
         recordStack = new Stack<>();
-        recordStack.push(Vmr.getVmrRootFolder().getSharedFolder());
+        recordStack.push(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_SHARED_NODE_REF));
     }
 
     @Override
@@ -159,7 +161,7 @@ public class FragmentSharedWithMe extends Fragment
     @Override
     public void onFetchRecordsFailure(VolleyError error) {
         mSwipeRefreshLayout.setRefreshing(false);
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -236,7 +238,7 @@ public class FragmentSharedWithMe extends Fragment
 
             @Override
             public void onRenameItemFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -302,7 +304,7 @@ public class FragmentSharedWithMe extends Fragment
 
         if(record.getRecordOwner().equalsIgnoreCase("admin") ) {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Can not modify system folders", Snackbar.LENGTH_SHORT).show();
-        } else if(!record.getRecordOwner().equalsIgnoreCase(Vmr.getLoggedInUserInfo().getLoggedinUserId())) {
+        } else if(!record.getRecordOwner().equalsIgnoreCase(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID))) {
             Snackbar.make(getActivity().findViewById(android.R.id.content), "This folder belongs to someone else", Snackbar.LENGTH_SHORT).show();
         } else {
             alertDialog.show();
@@ -452,7 +454,7 @@ public class FragmentSharedWithMe extends Fragment
 
             @Override
             public void onMoveToTrashFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -492,7 +494,7 @@ public class FragmentSharedWithMe extends Fragment
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
                     VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                    if (!recordStack.peek().equals(Vmr.getVmrRootFolder().getSharedFolder())) {
+                    if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_SHARED_NODE_REF))) {
                         recordStack.pop();
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
                         recordsAdapter.updateDataset(records);

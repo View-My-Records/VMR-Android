@@ -341,7 +341,7 @@ public class IndexDialog extends DialogFragment
 
             @Override
             public void onSaveIndexFailure(VolleyError error) {
-                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 saveIndexProgress.dismiss();
             }
         });
@@ -415,7 +415,7 @@ public class IndexDialog extends DialogFragment
 
     @Override
     public void onFetchClassificationsFailure(VolleyError error) {
-        Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+        Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -462,7 +462,7 @@ public class IndexDialog extends DialogFragment
                 @Override
                 public void onFetchPropertiesFailure(VolleyError error) {
                     progressDialog.dismiss();
-                    Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 }
             });
             requestController.fetchProperties(recordDocType, recordNodeRef, recordProgramName + "");

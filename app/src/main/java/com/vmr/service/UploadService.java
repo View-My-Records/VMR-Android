@@ -48,16 +48,16 @@ public class UploadService extends IntentService {
                         if (jsonObject.has("files")) {
                             UploadService.this.currentUpload = true;
                             Vmr.getDbManager().updateUploadSuccess(upload.getId());
-                            Toast.makeText(Vmr.getVMRContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(Vmr.getContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                             Notification uploadCompleteNotification =
-                                    new Notification.Builder(Vmr.getVMRContext())
+                                    new Notification.Builder(Vmr.getContext())
                                             .setContentTitle(upload.getFileName())
                                             .setContentText("Upload complete")
                                             .setSmallIcon(android.R.drawable.stat_sys_upload_done)
                                             .setAutoCancel(true)
                                             .build();
 
-                            NotificationManager nm = (NotificationManager)Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
+                            NotificationManager nm = (NotificationManager)Vmr.getContext().getSystemService(NOTIFICATION_SERVICE);
                             nm.cancel(upload.getFileName(), notificationId);
                             nm.notify(notificationId, uploadCompleteNotification);
                             UploadService.this.sendBroadcast(new Intent().setAction("upload_complete"));
@@ -66,37 +66,37 @@ public class UploadService extends IntentService {
 
                     @Override
                     public void onFileUploadFailure(VolleyError error) {
-//                Toast.makeText(Vmr.getVMRContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(Vmr.getVMRContext(), "File upload failed", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Vmr.getContext(), "File upload failed", Toast.LENGTH_SHORT).show();
                         UploadService.this.currentUpload = true;
                         Vmr.getDbManager().updateUploadFailure(upload.getId());
                         Notification uploadFailedNotification =
-                                new Notification.Builder(Vmr.getVMRContext())
+                                new Notification.Builder(Vmr.getContext())
                                         .setContentTitle(upload.getFileName())
                                         .setContentText("Upload failed")
                                         .setSmallIcon(android.R.drawable.stat_notify_error)
                                         .setAutoCancel(true)
                                         .build();
 
-                        NotificationManager nm = (NotificationManager) Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
+                        NotificationManager nm = (NotificationManager) Vmr.getContext().getSystemService(NOTIFICATION_SERVICE);
                         nm.cancel(upload.getFileName(), notificationId);
                         nm.notify(notificationId, uploadFailedNotification);
                     }
 
                     @Override
                     public void onFileUploadCancel(VolleyError error) {
-                        Toast.makeText(Vmr.getVMRContext(), "File upload canceled", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Vmr.getContext(), "File upload canceled", Toast.LENGTH_SHORT).show();
                         UploadService.this.currentUpload = true;
                         Vmr.getDbManager().updateUploadFailure(upload.getId());
                         Notification uploadFailedNotification =
-                                new Notification.Builder(Vmr.getVMRContext())
+                                new Notification.Builder(Vmr.getContext())
                                         .setContentTitle(upload.getFileName())
                                         .setContentText("Upload canceled")
                                         .setSmallIcon(android.R.drawable.stat_notify_error)
                                         .setAutoCancel(true)
                                         .build();
 
-                        NotificationManager nm = (NotificationManager) Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
+                        NotificationManager nm = (NotificationManager) Vmr.getContext().getSystemService(NOTIFICATION_SERVICE);
                         nm.cancel(upload.getFileName(), notificationId);
                         nm.notify(notificationId, uploadFailedNotification);
                     }
@@ -109,7 +109,7 @@ public class UploadService extends IntentService {
                 PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, cancelUploadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
                 final Notification.Builder downloadingNotification =
-                        new Notification.Builder(Vmr.getVMRContext())
+                        new Notification.Builder(Vmr.getContext())
                                 .setContentTitle(upload.getFileName())
                                 .setContentText("Uploading...")
                                 .setSmallIcon(android.R.drawable.stat_sys_upload)
@@ -122,7 +122,7 @@ public class UploadService extends IntentService {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                     downloadingNotification.setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG);
                 }
-                final NotificationManager nm = (NotificationManager) Vmr.getVMRContext().getSystemService(NOTIFICATION_SERVICE);
+                final NotificationManager nm = (NotificationManager) Vmr.getContext().getSystemService(NOTIFICATION_SERVICE);
 
                 UploadRequest.UploadProgressListener progressListener = new UploadRequest.UploadProgressListener() {
                     @Override
@@ -145,7 +145,7 @@ public class UploadService extends IntentService {
                 nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
             }
         } else {
-            Toast.makeText(Vmr.getVMRContext(), "Upload queue empty", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Vmr.getContext(), "Upload queue empty", Toast.LENGTH_SHORT).show();
         }
 
     }

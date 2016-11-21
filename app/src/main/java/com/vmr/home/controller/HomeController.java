@@ -28,6 +28,8 @@ import com.vmr.model.VmrTrashItem;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
+import com.vmr.utils.PrefConstants;
+import com.vmr.utils.PrefUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -527,7 +529,7 @@ public class HomeController {
         Map<String, String> formData = Vmr.getUserMap();
         formData.remove(Constants.Request.Alfresco.ALFRESCO_NODE_REFERENCE);
         formData.put(Constants.Request.FolderNavigation.ListSharedByMe.PAGE_MODE, Constants.Request.FolderNavigation.PageMode.LIST_SHARED_BY_ME);
-        formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, Vmr.getLoggedInUserInfo().getLoggedinUserId());
+        formData.put(Constants.Request.FolderNavigation.ListSharedByMe.LOGGED_IN_USER_ID, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
 //        formData.put(Constants.Request.Alfresco.ALFRESCO_TICKET, Vmr.getAlfrescoTicket());
 
         SharedByMeRequest sharedByMeRequest =

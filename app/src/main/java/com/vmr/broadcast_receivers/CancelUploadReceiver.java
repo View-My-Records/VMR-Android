@@ -23,7 +23,7 @@ public class CancelUploadReceiver extends BroadcastReceiver {
 //        Intent cancelIntent = new Intent(Constants.Request.FolderNavigation.UploadFile.TAG);
         cancelIntent.putExtra(Constants.Request.FolderNavigation.UploadFile.TAG, uploadTag);
         LocalBroadcastManager.getInstance(context).sendBroadcast(cancelIntent);
-//        Vmr.getVMRContext().sendBroadcast(cancelIntent);
+//        Vmr.getContext().sendBroadcast(cancelIntent);
         VmrDebug.printLogI(this.getClass(), "Upload Canceled ->" +  uploadTag);
     }
 }
