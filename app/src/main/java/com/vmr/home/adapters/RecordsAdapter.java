@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.db.record.Record;
+import com.vmr.utils.FileUtils;
 
 import java.text.DecimalFormat;
 import java.util.List;
@@ -93,6 +94,29 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String recordName = records.get(position).getRecordName();
 
         if(recordName.contains(".")) {
+            String extension = (recordName.substring(recordName.lastIndexOf('.') + 1)).toLowerCase();
+            String mimeType = FileUtils.getMimeTypeFromExtension(extension);
+
+            if(mimeType!=null) {
+                if (mimeType.contains("image")) {
+                    fileViewHolder.setItemIcon(R.drawable.ic_file_image);
+                } else if (mimeType.contains("video")) {
+                    fileViewHolder.setItemIcon(R.drawable.ic_file_video);
+                } else {
+                    switch (extension) {
+                        case "pdf":
+                            fileViewHolder.setItemIcon(R.drawable.ic_file_pdf);
+                            break;
+                        case "xml":
+                            fileViewHolder.setItemIcon(R.drawable.ic_file_xml);
+                            break;
+                        default:
+                            fileViewHolder.setItemIcon(R.drawable.ic_file);
+                            break;
+                    }
+                }
+            }
+
             fileViewHolder.setItemName(recordName.substring(0, recordName.lastIndexOf('.')));
         }
 
@@ -149,7 +173,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         void onItemOptionsClick(Record record, View view);
     }
 
-    public class FileViewHolder extends RecyclerView.ViewHolder {
+    private class FileViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemIcon;
         private ImageView itemIndexed;
         private TextView itemName ;
@@ -157,7 +181,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView itemTimeStamp;
         private ImageView itemOptions;
 
-        public FileViewHolder(View itemView) {
+        FileViewHolder(View itemView) {
             super(itemView);
             this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemIndexed = (ImageView) itemView.findViewById(R.id.ivIndexed);
@@ -167,15 +191,15 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
-        public void setItemIcon(int itemIcon) {
+        void setItemIcon(int itemIcon) {
             this.itemIcon.setImageResource(itemIcon);
         }
 
-        public void setItemIndexed(int visibility) {
+        void setItemIndexed(int visibility) {
             this.itemIndexed.setVisibility(visibility);
         }
 
-        public void setItemName(String itemName) {
+        void setItemName(String itemName) {
             this.itemName.setText(itemName);
         }
 
@@ -183,19 +207,15 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemSize.setText(String.valueOf(itemSize));
         }
 
-        public void setItemSize(String itemSize) {
+        void setItemSize(String itemSize) {
             this.itemSize.setText(itemSize);
         }
 
-        public void setItemTimeStamp(String itemTimeStamp) {
+        void setItemTimeStamp(String itemTimeStamp) {
             this.itemTimeStamp.setText(itemTimeStamp);
         }
 
-        public void setItemImage(ImageView itemImage) {
-            this.itemIcon = itemImage;
-        }
-
-        public void bind(final Record record, final OnItemClickListener listener) {
+        void bind(final Record record, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(record);
@@ -203,7 +223,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
         }
 
-        public void bind(final Record record, final OnItemOptionsClickListener listener) {
+        void bind(final Record record, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(record, v);
@@ -212,7 +232,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
-    public class FolderViewHolder extends RecyclerView.ViewHolder {
+    private class FolderViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemIcon;
         private ImageView itemIndexed;
         private TextView itemName ;
@@ -220,7 +240,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView itemTimeStamp;
         private ImageView itemOptions;
 
-        public FolderViewHolder(View itemView) {
+        FolderViewHolder(View itemView) {
             super(itemView);
             this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
@@ -236,7 +256,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemIndexed.setVisibility(visibility);
         }
 
-        public void setItemName(String itemName) {
+        void setItemName(String itemName) {
             this.itemName.setText(itemName);
         }
 
@@ -248,7 +268,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemSize.setText(itemSize);
         }
 
-        public void setItemTimeStamp(String itemTimeStamp) {
+        void setItemTimeStamp(String itemTimeStamp) {
             this.itemTimeStamp.setVisibility(View.GONE);
             this.itemTimeStamp.setText(itemTimeStamp);
         }
@@ -257,7 +277,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemIcon = itemImage;
         }
 
-        public void bind(final Record record, final OnItemClickListener listener) {
+        void bind(final Record record, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(record);
@@ -265,7 +285,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             });
         }
 
-        public void bind(final Record record, final OnItemOptionsClickListener listener) {
+        void bind(final Record record, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(record, v);

@@ -65,6 +65,12 @@ public class FileUtils {
         }
     }
 
+    public static String getMimeTypeFromExtension(String extension){
+        String mimeType;
+        mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        return mimeType;
+    }
+
     public static String getMimeType(String filePath) {
         String type;
         String extension = MimeTypeMap.getFileExtensionFromUrl(filePath).toLowerCase();
