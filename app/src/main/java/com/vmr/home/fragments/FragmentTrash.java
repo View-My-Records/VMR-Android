@@ -40,9 +40,7 @@ public class FragmentTrash extends Fragment
         VmrResponseListener.OnFetchTrashListener,
         TrashAdapter.OnItemClickListener,
         TrashAdapter.OnItemOptionsClickListener,
-        TrashOptionsMenu.OnOptionClickListener
-
-{
+        TrashOptionsMenu.OnOptionClickListener {
 
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
@@ -109,13 +107,13 @@ public class FragmentTrash extends Fragment
     }
 
     @Override
-    public void onItemClick(TrashRecord record) {
+    public void onItemClick(final TrashRecord record) {
         if(record.isFolder()){
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListTrashBin.TAG);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
-            dbManager.addNewRecent(record);
+            Snackbar.make(getActivity().findViewById(android.R.id.content), "Can't view deleted files", Snackbar.LENGTH_SHORT).show();
         }
     }
 
@@ -174,22 +172,22 @@ public class FragmentTrash extends Fragment
         homeController.fetchTrash();
     }
 
-    @Override
-    public void onOpenClicked(TrashRecord record) {
-        VmrDebug.printLine(record.getRecordName() + " open clicked");
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-    }
+//    @Override
+//    public void onOpenClicked(TrashRecord record) {
+//        VmrDebug.printLine(record.getRecordName() + " open clicked");
+//        Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+//    }
 
     @Override
     public void onRestoreClicked(TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " restore clicked");
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPropertiesClicked(TrashRecord record) {
         VmrDebug.printLine(record.getRecordName() + " properties clicked");
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
     }
 
     @Override

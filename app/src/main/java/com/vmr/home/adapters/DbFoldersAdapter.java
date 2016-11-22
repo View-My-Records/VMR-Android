@@ -15,7 +15,6 @@ import com.vmr.R;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 

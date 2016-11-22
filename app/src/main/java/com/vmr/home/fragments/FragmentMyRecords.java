@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.FragmentManager;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
@@ -12,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -53,12 +55,10 @@ import com.vmr.home.activity.IndexActivity;
 import com.vmr.home.adapters.RecordsAdapter;
 import com.vmr.home.context_menu.AddItemMenu;
 import com.vmr.home.context_menu.RecordOptionsMenu;
-import com.vmr.home.controller.DownloadController;
 import com.vmr.home.controller.DownloadTaskController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
-import com.vmr.home.request.DownloadRequest;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
@@ -304,64 +304,90 @@ public class FragmentMyRecords extends Fragment
         } else {
             if(DEBUG) VmrDebug.printLogI(record.getRecordName() + " File clicked");
             dbManager.addNewRecent(record);
-//            startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                final DownloadTaskController downloadTaskController;
+
                 final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
-                DownloadController dlController = new DownloadController(new DownloadController.OnFileDownload() {
-                    @Override
-                    public void onFileDownloadSuccess(File file) {
-                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download complete");
-                        downloadProgress.dismiss();
-                        try {
-                            if (file != null) {
-                                final File tempFile = new File(getActivity().getExternalCacheDir(), record.getRecordName());
-                                if (tempFile.exists())
-                                    tempFile.delete();
-                                FileUtils.copyFile(file, tempFile);
+                downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                 downloadProgress.setMessage("Downloading " + record.getRecordName());
+                downloadProgress.setCancelable(true);
+                downloadProgress.setCanceledOnTouchOutside(true);
+                downloadProgress.setMax(100);
+                downloadProgress.setIndeterminate(true);
 
-                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
-                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                Uri fileUri = Uri.fromFile(tempFile);
-                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                                try {
-                                    startActivity(openFileIntent);
-                                } catch (ActivityNotFoundException e) {
-                                    Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
-                                }
-                            } else VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "null file");
-                        } catch (Exception e) {
-                            VmrDebug.printLogI(this.getClass(), "File download failed");
-                            e.printStackTrace();
-                        }
-                    }
-
+                DownloadTask.DownloadProgressListener progressListener
+                        = new DownloadTask.DownloadProgressListener() {
                     @Override
-                    public void onFileDownloadFailure(VolleyError error) {
-                        VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File download failed");
-                    }
-                });
-                DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
-                    @Override
-                    public void onDownloadProgress(long fileLength, long transferred, final int progressPercent) {
+                    public void onDownloadStarted() {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                if(progressPercent > 0) {
-                                    downloadProgress.setIndeterminate(false);
-                                    downloadProgress.setMessage("Receiving file...");
-                                    downloadProgress.setProgress(progressPercent);
-                                }
+                                downloadProgress.setIndeterminate(false);
+                                downloadProgress.setMessage("Downloading " + record.getRecordName());
                             }
                         });
                     }
+
+                    @Override
+                    public void onDownloadFailed() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadProgress.setMessage("Downloading failed");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDownloadCanceled() {
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                downloadProgress.setMessage("Downloading canceled");
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                        downloadProgress.setProgress(progressPercent);
+                    }
+
+                    @Override
+                    public void onDownloadFinish(File file) {
+                        downloadProgress.dismiss();
+                        Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                        openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        Uri fileUri = Uri.fromFile(file);
+                        openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(file.getAbsolutePath()));
+                        try {
+                            startActivity(openFileIntent);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(getActivity(), "No application to view this file", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 };
-                dlController.downloadFile(record, progressListener);
-                VmrDebug.printLogI(this.getClass(), "Downloading...");
-                downloadProgress.setMessage("Requesting file...");
-                downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                downloadProgress.setCanceledOnTouchOutside(false);
-                downloadProgress.setIndeterminate(true);
+
+                downloadTaskController = new DownloadTaskController(record,progressListener);
+
+                downloadProgress.setButton(DialogInterface.BUTTON_NEGATIVE,
+                        getResources().getString(android.R.string.cancel),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                downloadTaskController.cancelFileDownload();
+                            }
+                        });
+
+                downloadProgress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                        downloadTaskController.cancelFileDownload();
+                    }
+                });
+
                 downloadProgress.show();
+                downloadTaskController.downloadFile();
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {
@@ -972,17 +998,31 @@ public class FragmentMyRecords extends Fragment
 
                                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "File saved");
                                 Snackbar.make(getActivity().findViewById(R.id.clayout), newFile.getName() + " downloaded", Snackbar.LENGTH_SHORT).show();
-                                Notification downloadCompleteNotification =
+
+                                Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                                openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                Uri fileUri = Uri.fromFile(file);
+                                openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(file.getAbsolutePath()));
+
+                                PendingIntent pendingIntent
+                                        = PendingIntent.getActivity(Vmr.getContext(), notificationId, openFileIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+                                Notification.Builder downloadCompleteNotification =
                                         new Notification.Builder(getActivity())
                                                 .setContentTitle(fileName)
                                                 .setContentText("Download complete")
                                                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
-                                                .setAutoCancel(true)
-                                                .build();
+                                                .setAutoCancel(true);
+
+                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
+                                    downloadCompleteNotification.addAction(new Notification.Action(0, "View", pendingIntent));
+                                } else {
+                                    downloadCompleteNotification.setContentIntent(pendingIntent);
+                                }
 
                                 NotificationManager nm = (NotificationManager) getActivity().getSystemService(NOTIFICATION_SERVICE);
                                 nm.cancel(record.getRecordId(), notificationId);
-                                nm.notify(notificationId, downloadCompleteNotification);
+                                nm.notify(notificationId, downloadCompleteNotification.build());
                                 getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.parse("file://" + Environment.getExternalStorageDirectory())));
                             } catch (IOException e) {
                                 e.printStackTrace();

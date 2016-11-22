@@ -21,14 +21,14 @@ public class DownloadPacket {
         setFileSelectedNodeRef(record.getNodeRef());
         setFileName(record.getRecordName());
         setFileLength(record.getFileSize());
-        setMimeType(Uri.encode("application/octet-stream"));
+        setMimeType("application/octet-stream");
     }
 
     public DownloadPacket(TrashRecord record) {
         setFileSelectedNodeRef(record.getNodeRef());
         setFileName(record.getRecordName());
         setFileLength(0);
-        setMimeType(Uri.encode("application/octet-stream"));
+        setMimeType("application/octet-stream");
     }
 
     public DownloadPacket(SharedRecord record) {

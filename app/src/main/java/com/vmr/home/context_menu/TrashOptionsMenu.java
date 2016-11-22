@@ -31,13 +31,13 @@ public class TrashOptionsMenu extends BottomSheetDialogFragment {
 
         ((TextView)contentView.findViewById(R.id.tvItemName)).setText(record.getRecordName());
 
-        contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onOpenClicked(record);
-                dismiss();
-            }
-        });
+//        contentView.findViewById(R.id.btnOpen).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+////                optionClickListener.onOpenClicked(record);
+//                dismiss();
+//            }
+//        });
         contentView.findViewById(R.id.btnRestore).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,7 +74,7 @@ public class TrashOptionsMenu extends BottomSheetDialogFragment {
 
 
     public interface OnOptionClickListener{
-        void onOpenClicked(TrashRecord record);
+//        void onOpenClicked(TrashRecord record);
         void onRestoreClicked(TrashRecord record);
         void onPropertiesClicked(TrashRecord record);
         void onDeleteClicked(TrashRecord record);

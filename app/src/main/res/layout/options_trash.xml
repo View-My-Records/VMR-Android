@@ -49,7 +49,7 @@
             android:clickable="false"
             android:contentDescription="Info"
             android:longClickable="false"
-            android:src="@drawable/ic_info_black_24dp" />
+            app:srcCompat="@drawable/ic_info_black_24dp" />
     </RelativeLayout>
     <View
         android:layout_width="fill_parent"
@@ -68,45 +68,45 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <RelativeLayout
-                android:id="@+id/btnOpen"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginBottom="2dp"
-                android:layout_marginTop="2dp"
-                android:background="@android:drawable/menuitem_background"
-                android:clickable="true"
-                android:longClickable="true">
+            <!--<RelativeLayout-->
+                <!--android:id="@+id/btnOpen"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="56dp"-->
+                <!--android:layout_marginBottom="2dp"-->
+                <!--android:layout_marginTop="2dp"-->
+                <!--android:background="@android:drawable/menuitem_background"-->
+                <!--android:clickable="true"-->
+                <!--android:longClickable="true">-->
 
-                <ImageView
-                    android:id="@+id/openImageView"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_centerVertical="true"
-                    android:layout_margin="6dp"
-                    android:clickable="false"
-                    android:contentDescription="Open"
-                    android:longClickable="false"
-                    android:src="@drawable/ic_open_black_24dp"
-                    android:tint="@android:color/darker_gray" />
+                <!--<ImageView-->
+                    <!--android:id="@+id/openImageView"-->
+                    <!--android:layout_width="32dp"-->
+                    <!--android:layout_height="32dp"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_margin="6dp"-->
+                    <!--android:clickable="false"-->
+                    <!--android:contentDescription="Open"-->
+                    <!--android:longClickable="false"-->
+                    <!--app:srcCompat="@drawable/ic_open_black_24dp"-->
+                    <!--android:tint="@android:color/darker_gray" />-->
 
-                <TextView
-                    android:layout_width="212dp"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/openImageView"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginBottom="6dp"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginTop="6dp"
-                    android:layout_toRightOf="@+id/openImageView"
-                    android:clickable="false"
-                    android:longClickable="false"
-                    android:text="Open"
-                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                <!--<TextView-->
+                    <!--android:layout_width="212dp"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_alignBottom="@+id/openImageView"-->
+                    <!--android:layout_alignParentEnd="true"-->
+                    <!--android:layout_alignParentRight="true"-->
+                    <!--android:layout_centerVertical="true"-->
+                    <!--android:layout_marginBottom="6dp"-->
+                    <!--android:layout_marginLeft="6dp"-->
+                    <!--android:layout_marginTop="6dp"-->
+                    <!--android:layout_toRightOf="@+id/openImageView"-->
+                    <!--android:clickable="false"-->
+                    <!--android:longClickable="false"-->
+                    <!--android:text="Open"-->
+                    <!--android:textAppearance="?android:attr/textAppearanceMedium" />-->
 
-            </RelativeLayout>
+            <!--</RelativeLayout>-->
 
             <RelativeLayout
                 android:id="@+id/btnRestore"
@@ -162,8 +162,8 @@
                     android:clickable="false"
                     android:contentDescription="Properties"
                     android:longClickable="false"
-                    android:src="@drawable/ic_info_black_24dp"
-                    android:tint="@android:color/darker_gray" />
+                    android:tint="@android:color/darker_gray"
+                    app:srcCompat="@drawable/ic_info_black_24dp" />
 
                 <TextView
                     android:layout_width="212dp"

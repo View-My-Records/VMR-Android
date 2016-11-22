@@ -1,5 +1,6 @@
 package com.vmr.home.request;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -29,7 +30,6 @@ public class DownloadTask extends AsyncTask<String, String, String> {
 
     private DownloadProgressListener progressListener;
     private DownloadPacket downloadPacket;
-    private String authenticationParams;
 
     private HttpURLConnection urlConnection;
 
@@ -38,7 +38,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
         this.progressListener = progressListener;
     }
 
-    public static void removeUnwantedParams(){
+    private static void removeUnwantedParams(){
         List<String> list = new ArrayList<>();
         list.add(Constants.Request.Login.DOMAIN);
         list.add(Constants.Request.Login.Individual.EMAIL_ID);
@@ -85,7 +85,6 @@ public class DownloadTask extends AsyncTask<String, String, String> {
     @Override
     protected String doInBackground(String... strings) {
         try {
-//            String urlString = "http://vmrdev.cloudapp.net:8080/vmr/mlogin.do";
             String urlString = VmrURL.getFolderNavigationUrl();
 
             URL url = new URL(urlString);
@@ -94,6 +93,7 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             // Request method
             urlConnection.setRequestMethod("POST");
 
+            // Request Headers
             urlConnection.setRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01" );
             urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate" );
             urlConnection.setRequestProperty("Accept-Language", "en-US,en;q=0.8" );
@@ -103,14 +103,12 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             urlConnection.setRequestProperty("Referer", "http://vmrdev.cloudapp.net:8080/vmr/main.do" );
             urlConnection.setRequestProperty("X-Requested-With", "XMLHttpRequest" );
 
+            // Post parameters
             StringBuilder postParameters
                     = new StringBuilder()
-//                    .append("emailID=" + "induser" + "&")
-//                    .append("password=" + "Qwer!234" + "&")
-//                    .append("domain=" + "IND" + "&")
                     .append("pageMode=" + "DOWNLOAD_FILE_STREAM" + "&")
-                    .append("fileSelectedNodeRef=" + downloadPacket.getFileSelectedNodeRef() + "&")
-                    .append("fileName=" + downloadPacket.getFileName() + "&")
+                    .append("fileSelectedNodeRef=").append(downloadPacket.getFileSelectedNodeRef()).append("&")
+                    .append("fileName=").append(Uri.encode(downloadPacket.getFileName())).append("&")
                     .append("mimeType=").append(downloadPacket.getMimeType());
 
             removeUnwantedParams();
@@ -121,7 +119,6 @@ public class DownloadTask extends AsyncTask<String, String, String> {
                         .append(entry.getKey())
                         .append("=")
                         .append(entry.getValue());
-//                System.out.println(entry.getKey() + "/" + entry.getValue());
             }
 
             VmrDebug.printLogI(this.getClass(), postParameters.toString());
@@ -160,10 +157,14 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             while ((count = bufferedInputStream.read(dataBuffer)) != -1) {
                 copied += count;
                 bufferedOutputStream.write(dataBuffer, 0, count);
-                int progress = (int) ( copied * 100 / downloadPacket.getFileLength());
-                Log.i(this.getClass().getName(), "Copied : " + copied + " bytes");
-                Log.i(this.getClass().getName(), "Progress : " + progress + "%");
-                progressListener.onDownloadProgress(downloadPacket.getFileLength(), copied, progress);
+                if(downloadPacket.getFileLength() != 0) {
+                    int progress = (int) (copied * 100 / downloadPacket.getFileLength());
+                    Log.i(this.getClass().getName(), "Copied : " + copied + " bytes");
+                    Log.i(this.getClass().getName(), "Progress : " + progress + "%");
+                    progressListener.onDownloadProgress(downloadPacket.getFileLength(), copied, progress);
+                } else {
+                    progressListener.onDownloadProgress(downloadPacket.getFileLength(), copied, 0);
+                }
             }
 
             progressListener.onDownloadProgress(downloadPacket.getFileLength(), downloadPacket.getFileLength(), 100);
@@ -176,7 +177,8 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             progressListener.onDownloadFinish(tempFile);
 
         } catch (Exception e) {
-            Log.e("Error: ", e.getMessage());
+            e.printStackTrace();
+            Log.e("DownloadTask Error :", "Download failed");
             progressListener.onDownloadFailed();
         }
         return "Done";

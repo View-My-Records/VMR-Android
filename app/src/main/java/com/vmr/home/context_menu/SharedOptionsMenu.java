@@ -39,7 +39,6 @@ public class SharedOptionsMenu extends BottomSheetDialogFragment {
             }
         });
 
-
         contentView.findViewById(R.id.btnDownload).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
