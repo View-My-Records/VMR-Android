@@ -1354,7 +1354,7 @@ public class FragmentMyRecords extends Fragment
             }
             return true;
         } else {
-            return false;
+            return true;
         }
     }
 

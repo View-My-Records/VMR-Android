@@ -21,6 +21,6 @@
         android:id="@+id/action_search"
         android:icon="@android:drawable/ic_menu_search"
         android:title="Search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="com.vmr.custom_view.CustomSearchView"
         app:showAsAction="ifRoom|collapseActionView" />
 </menu>

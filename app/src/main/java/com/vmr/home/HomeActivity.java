@@ -21,7 +21,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,11 +32,13 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
+import com.vmr.custom_view.CustomSearchView;
 import com.vmr.db.DbManager;
 import com.vmr.db.notification.Notification;
 import com.vmr.db.record.Record;
 import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.trash.TrashRecord;
+import com.vmr.debug.VmrDebug;
 import com.vmr.home.activity.SearchResultActivity;
 import com.vmr.home.controller.DownloadTaskController;
 import com.vmr.home.controller.HomeController;
@@ -95,7 +96,7 @@ public class HomeActivity extends AppCompatActivity
     // Views
     private MenuItem mMenuItemToBeIndexed;
     private ImageButton mButtonNotification;
-    private SearchView mSearchView;
+    private CustomSearchView mSearchView;
     private MenuItem mSearchItem;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mActionBarDrawerToggle;
@@ -274,6 +275,8 @@ public class HomeActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+
+        VmrDebug.printLogI(this.getClass(), "Back pressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
 
         assert drawer != null;
@@ -281,7 +284,11 @@ public class HomeActivity extends AppCompatActivity
             drawer.closeDrawer(GravityCompat.START);
             return;
         } else if(!mSearchView.isIconified()){
+            VmrDebug.printLogI(this.getClass(), "Back pressed");
             mSearchView.setIconified(true);
+            MenuItemCompat.collapseActionView(mSearchItem);
+            mSearchItem.collapseActionView();
+            mSearchView.onActionViewCollapsed();
         } else if (backPressedOnce) {
             super.onBackPressed();
             finish();
@@ -314,7 +321,7 @@ public class HomeActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home_actionbar_menu, menu);
         mSearchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        mSearchView = (CustomSearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
         SearchManager searchManager = (SearchManager) getSystemService(SEARCH_SERVICE);
         if(null!=searchManager ) {
             mSearchView.setSearchableInfo(searchManager.getSearchableInfo(
@@ -489,8 +496,9 @@ public class HomeActivity extends AppCompatActivity
                 getFile(record);
                 break;
             case "trash":
-                TrashRecord trashRecord = dbManager.getTrashRecord(nodeRef);
-                getFile(trashRecord);
+//                TrashRecord trashRecord = dbManager.getTrashRecord(nodeRef);
+//                getFile(trashRecord);
+                Toast.makeText(this, "Can't open the files from trash", Toast.LENGTH_LONG).show();
                 break;
             case "shared":
                 SharedRecord sharedRecord = dbManager.getSharedRecord(nodeRef);
