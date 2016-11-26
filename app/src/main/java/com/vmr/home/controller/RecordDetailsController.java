@@ -3,7 +3,7 @@ package com.vmr.home.controller;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
-import com.vmr.home.request.RecordExpiryRequest;
+import com.vmr.home.request.RecordDetailsRequest;
 import com.vmr.network.VmrRequestQueue;
 import com.vmr.utils.Constants;
 
@@ -15,11 +15,11 @@ import java.util.Map;
  * Created by abhijit on 10/4/16.
  */
 
-public class RecordExpiryController {
+public class RecordDetailsController {
 
-    private OnFetchRecordExpiryListener fetchRecordExpiryListener;
+    private OnFetchRecordDetailsListener fetchRecordExpiryListener;
 
-    public RecordExpiryController(OnFetchRecordExpiryListener fetchRecordExpiryListener) {
+    public RecordDetailsController(OnFetchRecordDetailsListener fetchRecordExpiryListener) {
         this.fetchRecordExpiryListener = fetchRecordExpiryListener;
     }
 
@@ -30,27 +30,27 @@ public class RecordExpiryController {
         formData.put(Constants.Request.Share.RecordLifespanCheck.SHARE_EMAILS, emails );
         formData.put(Constants.Request.Share.RecordLifespanCheck.RECORD_ID, recordId );
 
-        RecordExpiryRequest request =
-                new RecordExpiryRequest(
+        RecordDetailsRequest request =
+                new RecordDetailsRequest(
                         formData,
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject jsonObject) {
-                                fetchRecordExpiryListener.onFetchRecordExpirySuccess(jsonObject);
+                                fetchRecordExpiryListener.onFetchRecordDetailsSuccess(jsonObject);
                             }
                         },
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                fetchRecordExpiryListener.onFetchRecordExpiryFailure(error);
+                                fetchRecordExpiryListener.onFetchRecordDetailsFailure(error);
                             }
                         }
                 );
         VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.Share.TAG);
     }
 
-    public interface OnFetchRecordExpiryListener {
-        void onFetchRecordExpirySuccess(JSONObject jsonObject);
-        void onFetchRecordExpiryFailure(VolleyError error);
+    public interface OnFetchRecordDetailsListener {
+        void onFetchRecordDetailsSuccess(JSONObject jsonObject);
+        void onFetchRecordDetailsFailure(VolleyError error);
     }
 }

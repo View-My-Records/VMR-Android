@@ -1,4 +1,4 @@
-package com.vmr.login;
+package com.vmr.login.controller;
 
 import android.net.Uri;
 
@@ -35,7 +35,7 @@ public class LoginController {
         this.onCheckUrlResponse = onCheckUrlResponse;
     }
 
-    void fetchIndividualDetail(String email, String password, String domain){
+    public void fetchIndividualDetail(String email, String password, String domain){
         final Map<String,String> formData = new HashMap<>(3) ;
 
         formData.put(Constants.Request.Login.Individual.EMAIL_ID, Uri.encode(email, "UTF-8") );
@@ -46,7 +46,7 @@ public class LoginController {
 
     }
 
-    void fetchFamilyDetail(String email, String password, String accountId, String domain){
+    public void fetchFamilyDetail(String email, String password, String accountId, String domain){
 
         final Map<String,String> formData = new HashMap<>(4) ;
 
@@ -58,7 +58,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchProfessionalDetail(String email, String password, String accountId, String domain){
+    public void fetchProfessionalDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
         formData.put(Uri.encode(Constants.Request.Login.Professional.EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
@@ -69,7 +69,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchCorporateDetail(String email, String password, String accountId, String domain){
+    public void fetchCorporateDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
         formData.put(Uri.encode(Constants.Request.Login.Corporate.EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
@@ -80,7 +80,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchCustomIndividualDetail(String email, String password, String domain){
+    public void fetchCustomIndividualDetail(String email, String password, String domain){
 
         final Map<String,String> formData = new HashMap<>(3) ;
 
@@ -91,7 +91,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchCustomFamilyDetail(String email, String password, String accountId, String domain){
+    public void fetchCustomFamilyDetail(String email, String password, String accountId, String domain){
 
         final Map<String,String> formData = new HashMap<>(4) ;
 
@@ -104,7 +104,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchCustomProfessionalDetail(String email, String password, String accountId, String domain){
+    public void fetchCustomProfessionalDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
         formData.put(Uri.encode(Constants.Request.Login.Professional.EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
@@ -115,7 +115,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchCustomCorporateDetail(String email, String password, String accountId, String domain){
+    public void fetchCustomCorporateDetail(String email, String password, String accountId, String domain){
         final Map<String,String> formData = new HashMap<>(4) ;
 
         formData.put(Uri.encode(Constants.Request.Login.Corporate.EMAIL_ID, "UTF-8"), Uri.encode(email, "UTF-8") );
@@ -126,7 +126,7 @@ public class LoginController {
         dispatchRequest(formData);
     }
 
-    void fetchAlfrescoTicket(){
+    public void fetchAlfrescoTicket(){
         AlfrescoTicketRequest ticketRequest =
                 new AlfrescoTicketRequest(
                         new Response.Listener<String>() {

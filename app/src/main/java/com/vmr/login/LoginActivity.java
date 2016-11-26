@@ -23,6 +23,7 @@ import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
+import com.vmr.login.controller.LoginController;
 import com.vmr.login.fragment.dialog.LoginSettingsDialog;
 import com.vmr.login.interfaces.OnLoginClickListener;
 import com.vmr.model.UserInfo;
@@ -54,8 +55,6 @@ public class LoginActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-//        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
         loginController = new LoginController(this);
         dbManager = new DbManager();
         Vmr.setDbManager(dbManager);
@@ -69,7 +68,7 @@ public class LoginActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapterLogin adapter = new PagerAdapterLogin(getSupportFragmentManager(), this);
+        final LoginPagerAdapter adapter = new LoginPagerAdapter(getSupportFragmentManager(), this);
         assert viewPager != null;
         viewPager.setAdapter(adapter);
 
@@ -132,7 +131,7 @@ public class LoginActivity extends AppCompatActivity
         } else if(userInfo.getResult().contains("locked")) {
             new AlertDialog.Builder(this)
                 .setTitle("Locked")
-                .setMessage("The account you are tring to log in is locked. Please contact VMR admin.")
+                .setMessage("The account you are trying to log in is locked. Please contact VMR admin.")
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.dismiss();

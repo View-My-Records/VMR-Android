@@ -28,7 +28,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/etCorpPassword" />
+                android:nextFocusForward="@+id/etCorpPassword"
+                android:text="admin" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -66,7 +67,8 @@
                 android:hint="@string/login_hint_corporate_id"
                 android:imeOptions="actionDone"
                 android:inputType="text|textNoSuggestions"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:text="corpid" />
         </android.support.design.widget.TextInputLayout>
 
 

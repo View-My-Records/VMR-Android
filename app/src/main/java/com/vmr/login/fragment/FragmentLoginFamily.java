@@ -1,6 +1,7 @@
 package com.vmr.login.fragment;
 
 import android.Manifest;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -28,7 +30,6 @@ import com.vmr.utils.PermissionHandler;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FragmentLoginFamily extends Fragment {
 
     private OnLoginClickListener onLoginClickListener;
@@ -40,8 +41,10 @@ public class FragmentLoginFamily extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_family, container, false);
 
@@ -64,10 +67,12 @@ public class FragmentLoginFamily extends Fragment {
 
         etUsername.setAdapter(adapter);
 
-        etPassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        etFamilyId.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
                     buttonSignIn.performClick();
                     return true;
                 }
@@ -78,6 +83,9 @@ public class FragmentLoginFamily extends Fragment {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
 
                 if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
                     if(ConnectionDetector.isOnline()) {
@@ -102,6 +110,8 @@ public class FragmentLoginFamily extends Fragment {
                 }
             }
         });
+
+        etUsername.setSelection(etUsername.getText().length());
         return rootView;
     }
 

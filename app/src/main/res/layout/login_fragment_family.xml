@@ -23,7 +23,8 @@
                 android:hint="@string/login_hint_username"
                 android:imeOptions="actionNext"
                 android:inputType="text|textNoSuggestions"
-                android:nextFocusForward="@+id/etFamilyPassword" />
+                android:nextFocusForward="@+id/etFamilyPassword"
+                android:text="admin" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -61,7 +62,8 @@
                 android:hint="@string/login_hint_family_id"
                 android:imeOptions="actionDone"
                 android:inputType="text|textNoSuggestions"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:text="familyid" />
         </android.support.design.widget.TextInputLayout>
 
 

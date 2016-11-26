@@ -41,7 +41,9 @@ public class FragmentLoginIndividual extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_individual, container, false);
@@ -80,8 +82,12 @@ public class FragmentLoginIndividual extends Fragment {
         buttonSignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                final InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+
                 if(PermissionHandler.checkPermission(Manifest.permission.INTERNET)) {
-                    if (ConnectionDetector.isOnline()) {
+                    if(ConnectionDetector.isOnline()) {
                         onLoginClickListener.onIndividualLoginClick(
                                 etUsername.getText().toString(),
                                 etPassword.getText().toString(),
@@ -110,7 +116,4 @@ public class FragmentLoginIndividual extends Fragment {
     public void setCallbackInterface(OnLoginClickListener onLoginClickListener){
         this.onLoginClickListener = onLoginClickListener;
     }
-
-
-
 }

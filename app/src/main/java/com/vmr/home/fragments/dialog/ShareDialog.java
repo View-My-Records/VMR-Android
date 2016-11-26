@@ -30,7 +30,7 @@ import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
-import com.vmr.home.controller.RecordExpiryController;
+import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.controller.ShareRecordController;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PermissionHandler;
@@ -232,10 +232,10 @@ public class ShareDialog extends DialogFragment
                     }
                 });
 
-        RecordExpiryController recordExpiryController =
-                new RecordExpiryController(new RecordExpiryController.OnFetchRecordExpiryListener() {
+        RecordDetailsController recordDetailsController =
+                new RecordDetailsController(new RecordDetailsController.OnFetchRecordDetailsListener() {
             @Override
-            public void onFetchRecordExpirySuccess(JSONObject jsonObject) {
+            public void onFetchRecordDetailsSuccess(JSONObject jsonObject) {
                 VmrDebug.printLogI(ShareDialog.this.getClass(), "Record details");
                 progressDialog.dismiss();
                 VmrDebug.printLogI(ShareDialog.this.getClass(), jsonObject.toString());
@@ -268,7 +268,7 @@ public class ShareDialog extends DialogFragment
                                 shareJson,
                                 1,
                                 1,
-                                record.getRecordName() );
+                                record.getRecordName());
                     } else {
                         tvRecordExpiry.setError("Expiry date should be before record expiry date");
                     }
@@ -279,13 +279,13 @@ public class ShareDialog extends DialogFragment
             }
 
             @Override
-            public void onFetchRecordExpiryFailure(VolleyError error) {
+            public void onFetchRecordDetailsFailure(VolleyError error) {
                 Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
                 progressDialog.dismiss();
             }
         });
 
-        recordExpiryController.fetchRecordDetails(recordNodeRef, emails.toString(), recordNodeRef);
+        recordDetailsController.fetchRecordDetails(recordNodeRef, emails.toString(), recordNodeRef);
         progressDialog.show();
     }
 

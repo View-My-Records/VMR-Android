@@ -57,6 +57,7 @@ import com.vmr.home.context_menu.AddItemMenu;
 import com.vmr.home.context_menu.RecordOptionsMenu;
 import com.vmr.home.controller.DownloadTaskController;
 import com.vmr.home.controller.HomeController;
+import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.request.DownloadTask;
@@ -104,7 +105,7 @@ public class FragmentMyRecords extends Fragment
     private static int FILE_PICKER_INTENT = 100;
     private static int REQUEST_IMAGE_CAPTURE = 101;
     private static int REQUEST_INDEX_FILE = 102;
-    File photoFile;
+
     private boolean DEBUG = true;
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
@@ -412,17 +413,13 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onScanClick() {
         if(DEBUG) VmrDebug.printLogI(this.getClass(), "Camera button clicked" );
-//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
         if(PermissionHandler.checkPermission(Manifest.permission.CAMERA)) {
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    photoFile = createImageFile();
-//                    Uri photoURI = FileProvider.getUriForFile(getActivity(),
-//                            "com.vmr.android.files",
-//                            photoFile);
+                    File photoFile = createImageFile();
+
                     assert photoFile != null;
-//                    Uri photoUri = Uri.fromFile(photoFile);
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
                     startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
                 } else {
@@ -650,6 +647,7 @@ public class FragmentMyRecords extends Fragment
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
 
         if(record.isFolder()){
+            VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
             VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
@@ -1230,7 +1228,41 @@ public class FragmentMyRecords extends Fragment
     @Override
     public void onPropertiesClicked(Record vmrItem) {
         VmrDebug.printLogI(this.getClass(), "Properties button clicked" );
-        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+//        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
+
+        final ProgressDialog progressDialog = new ProgressDialog(getActivity());
+
+        final RecordDetailsController recordDetailsController = new RecordDetailsController(new RecordDetailsController.OnFetchRecordDetailsListener() {
+            @Override
+            public void onFetchRecordDetailsSuccess(JSONObject jsonObject) {
+                progressDialog.dismiss();
+                new AlertDialog
+                    .Builder(getActivity())
+                    .setMessage(jsonObject.toString())
+                    .show();
+            }
+
+            @Override
+            public void onFetchRecordDetailsFailure(VolleyError error) {
+                Toast.makeText(getContext(), "Failed to process request", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        recordDetailsController.fetchRecordDetails(
+                vmrItem.getNodeRef(),
+                PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL),
+                vmrItem.getRecordId());
+
+        progressDialog.setMessage("Loading...");
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
+            }
+        });
+        progressDialog.show();
+
     }
 
     @Override
@@ -1354,7 +1386,7 @@ public class FragmentMyRecords extends Fragment
             }
             return true;
         } else {
-            return true;
+            return false;
         }
     }
 

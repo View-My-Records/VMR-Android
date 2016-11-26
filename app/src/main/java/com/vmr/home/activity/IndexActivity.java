@@ -115,6 +115,15 @@ public class IndexActivity extends AppCompatActivity
         return intent;
     }
 
+    private static String getKeyFromValue(Map<String, String> map, String value) {
+        for (String o : map.keySet()) {
+            if (map.get(o).equals(value)) {
+                return o;
+            }
+        }
+        return null;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -302,15 +311,6 @@ public class IndexActivity extends AppCompatActivity
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getKeyFromValue(Map<String, String> hm, String value) {
-        for (String o : hm.keySet()) {
-            if (hm.get(o).equals(value)) {
-                return o;
-            }
-        }
-        return null;
     }
 
     @Override

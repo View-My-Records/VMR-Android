@@ -15,11 +15,11 @@ import java.util.Map;
 /*
  * Created by abhijit on 8/29/16.
  */
-public class RecordExpiryRequest extends PostLoginRequest<JSONObject> {
+public class RecordDetailsRequest extends PostLoginRequest<JSONObject> {
 
     private Map<String, String> formData;
 
-    public RecordExpiryRequest(
+    public RecordDetailsRequest(
             Map<String, String> formData,
             Response.Listener<JSONObject> successListener,
             Response.ErrorListener errorListener) {

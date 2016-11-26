@@ -16,6 +16,7 @@ public class VmrRequestQueue {
 
     private VmrRequestQueue() {
         requestQueue = getRequestQueue();
+        // TODO: 11/22/16 Increase volley queue size
     }
 
     public static synchronized VmrRequestQueue getInstance() {
@@ -25,7 +26,7 @@ public class VmrRequestQueue {
         return vmrRequestQueue;
     }
 
-    public RequestQueue getRequestQueue() {
+    private RequestQueue getRequestQueue() {
         if (requestQueue == null) {
             // getApplicationContext() is key, it keeps you from leaking the
             // Activity or BroadcastReceiver if someone passes one in.

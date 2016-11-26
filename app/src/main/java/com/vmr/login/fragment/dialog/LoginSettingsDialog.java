@@ -19,7 +19,7 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.debug.VmrDebug;
-import com.vmr.login.LoginController;
+import com.vmr.login.controller.LoginController;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;

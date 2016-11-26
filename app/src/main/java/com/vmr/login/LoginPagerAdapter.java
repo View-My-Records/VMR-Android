@@ -14,14 +14,14 @@ import com.vmr.login.interfaces.OnLoginClickListener;
 /*
  * Created by abhijit on 6/10/16.
  */
-class PagerAdapterLogin extends FragmentPagerAdapter {
+class LoginPagerAdapter extends FragmentPagerAdapter {
 
     private int numberOfPages;
     private String[] pages = { "Individual", "Family", "Professional", "Corporate" };
 
     private OnLoginClickListener onLoginClickListener;
 
-    PagerAdapterLogin(FragmentManager fm, OnLoginClickListener onLoginClickListener) {
+    LoginPagerAdapter(FragmentManager fm, OnLoginClickListener onLoginClickListener) {
         super(fm);
         this.numberOfPages = pages.length;
         this.onLoginClickListener = onLoginClickListener;

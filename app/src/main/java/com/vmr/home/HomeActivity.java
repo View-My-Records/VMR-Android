@@ -269,11 +269,6 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
     public void onBackPressed() {
 
         VmrDebug.printLogI(this.getClass(), "Back pressed");
@@ -283,12 +278,6 @@ public class HomeActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
             return;
-        } else if(!mSearchView.isIconified()){
-            VmrDebug.printLogI(this.getClass(), "Back pressed");
-            mSearchView.setIconified(true);
-            MenuItemCompat.collapseActionView(mSearchItem);
-            mSearchItem.collapseActionView();
-            mSearchView.onActionViewCollapsed();
         } else if (backPressedOnce) {
             super.onBackPressed();
             finish();
@@ -328,9 +317,7 @@ public class HomeActivity extends AppCompatActivity
                             new ComponentName(this, HomeActivity.class))
                     );
         }
-
         mSearchView.setIconifiedByDefault(true);
-
         return true;
     }
 

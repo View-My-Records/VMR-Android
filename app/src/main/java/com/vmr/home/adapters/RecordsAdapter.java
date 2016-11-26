@@ -1,11 +1,13 @@
 package com.vmr.home.adapters;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.vmr.R;
@@ -38,7 +40,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
 
         RecyclerView.ViewHolder viewHolder;
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         switch (viewType) {
             case FOLDER:
@@ -179,7 +181,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView itemName ;
         private TextView itemSize ;
         private TextView itemTimeStamp;
-        private ImageView itemOptions;
+        private LinearLayout itemOptions;
 
         FileViewHolder(View itemView) {
             super(itemView);
@@ -188,7 +190,7 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemSize = (TextView) itemView.findViewById(R.id.tvFileSize);
             this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
-            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
+            this.itemOptions = (LinearLayout) itemView.findViewById(R.id.ivOverflow);
         }
 
         void setItemIcon(int itemIcon) {
@@ -238,14 +240,14 @@ public class RecordsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private TextView itemName ;
         private TextView itemSize ;
         private TextView itemTimeStamp;
-        private ImageView itemOptions;
+        private LinearLayout itemOptions;
 
         FolderViewHolder(View itemView) {
             super(itemView);
             this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
-            this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
+            this.itemOptions = (LinearLayout) itemView.findViewById(R.id.ivOverflow);
         }
 
         public void setItemIcon(int itemIcon) {

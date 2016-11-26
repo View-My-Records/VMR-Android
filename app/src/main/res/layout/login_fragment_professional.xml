@@ -25,7 +25,8 @@
                 android:imeOptions="actionNext"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/etProfessionalPassword" />
+                android:nextFocusForward="@+id/etProfessionalPassword"
+                android:text="admin" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -62,7 +63,8 @@
                 android:ems="15"
                 android:hint="@string/login_hint_professional_id"
                 android:imeOptions="actionDone"
-                android:inputType="text|textNoSuggestions" />
+                android:inputType="text|textNoSuggestions"
+                android:text="proid" />
         </android.support.design.widget.TextInputLayout>
 
 
