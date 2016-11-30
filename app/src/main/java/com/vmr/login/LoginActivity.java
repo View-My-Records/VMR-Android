@@ -73,6 +73,11 @@ public class LoginActivity extends AppCompatActivity
         loginProgress = new ProgressDialog(this);
         loginProgress.setMessage("Logging in...");
         loginProgress.setCanceledOnTouchOutside(false);
+
+
+        // FireBase Test
+//        Exception exception = new Exception("Oops! FireBase non-fatal error!");
+//        FirebaseCrash.report(exception);
     }
 
     @Override
