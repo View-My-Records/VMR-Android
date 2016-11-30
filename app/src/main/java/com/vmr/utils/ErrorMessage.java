@@ -24,7 +24,8 @@ public class ErrorMessage {
         } else if(error instanceof ParseError){
             return "Failed to parse response";
         } else {
-            return "Something went wrong.";
+//            return "Something went wrong.";
+            return error.getMessage();
         }
     }
 }

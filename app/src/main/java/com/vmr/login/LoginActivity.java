@@ -177,6 +177,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoginSuccess(UserInfo userInfo) {
+        VmrDebug.printLogI(this.getClass(), "Login success");
         loginProgress.dismiss();
         if(userInfo.getResult().equals("success")) {
             onLoginComplete(userInfo);
@@ -191,6 +192,10 @@ public class LoginActivity extends AppCompatActivity
                 })
                 .setIcon(android.R.drawable.ic_dialog_alert)
                 .show();
+        } else if(userInfo.getResult().equals("login")){
+            Toast.makeText(this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
+        } else if(userInfo.getResult().equals("IND_Invalid Login ID / Password. Please try again.")){
+            Toast.makeText(this, "Invalid Username or Password", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -200,6 +205,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     public void onLoginFailure(VolleyError error) {
+        VmrDebug.printLogI(this.getClass(), "Login Failed");
         loginProgress.dismiss();
         Toast.makeText(this, ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
     }
