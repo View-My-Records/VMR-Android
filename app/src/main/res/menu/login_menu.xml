@@ -7,10 +7,20 @@
         android:orderInCategory="100"
         android:title="Settings"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_forgot_username"
+        android:orderInCategory="101"
+        android:title="Forgot Username"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_forgot_password"
+        android:orderInCategory="102"
+        android:title="Forgot Password"
+        app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_about"
-        android:orderInCategory="101"
+        android:orderInCategory="103"
         android:title="About"
         app:showAsAction="never"/>
 </menu>

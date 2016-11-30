@@ -192,6 +192,8 @@ public class DbManager {
         recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_RECORD);
+        boolean indexed = !record.getRecordDocType().equals("vmr:unindexed");
+        recent.setIndexed(indexed);
         recent.setLastAccess(new Date());
 
         if(this.recentDAO.checkRecord(record.getNodeRef())){
@@ -208,6 +210,7 @@ public class DbManager {
         recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
         recent.setName(record.getRecordName());
         recent.setLocation(DbConstants.TABLE_SHARED);
+        recent.setIndexed(false);
         recent.setLastAccess(new Date());
 
         if(this.recentDAO.checkRecord(record.getNodeRef())){
@@ -217,21 +220,21 @@ public class DbManager {
         }
     }
 
-    public void addNewRecent(TrashRecord record){
-
-        Recent recent = new Recent();
-        recent.setNodeRef(record.getNodeRef());
-        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
-        recent.setName(record.getRecordName());
-        recent.setLocation(DbConstants.TABLE_TRASH);
-        recent.setLastAccess(new Date());
-
-        if(this.recentDAO.checkRecord(record.getNodeRef())) {
-            this.recentDAO.updateRecord(recent);
-        } else {
-            this.recentDAO.addRecent(recent);
-        }
-    }
+//    public void addNewRecent(TrashRecord record){
+//
+//        Recent recent = new Recent();
+//        recent.setNodeRef(record.getNodeRef());
+//        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
+//        recent.setName(record.getRecordName());
+//        recent.setLocation(DbConstants.TABLE_TRASH);
+//        recent.setLastAccess(new Date());
+//
+//        if(this.recentDAO.checkRecord(record.getNodeRef())) {
+//            this.recentDAO.updateRecord(recent);
+//        } else {
+//            this.recentDAO.addRecent(recent);
+//        }
+//    }
 
     public void deleteRecent(Recent recent){
         this.recentDAO.deleteRecord(recent);
@@ -261,17 +264,17 @@ public class DbManager {
         this.recentDAO.deleteRecord(recent);
     }
 
-    public void deleteRecent(TrashRecord trashRecord){
-
-        Recent recent = new Recent();
-        recent.setNodeRef(trashRecord.getNodeRef());
-        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
-        recent.setName(trashRecord.getRecordName());
-        recent.setLocation(DbConstants.TABLE_TRASH);
-        recent.setLastAccess(new Date());
-
-        this.recentDAO.deleteRecord(recent);
-    }
+//    public void deleteRecent(TrashRecord trashRecord){
+//
+//        Recent recent = new Recent();
+//        recent.setNodeRef(trashRecord.getNodeRef());
+//        recent.setMasterRecordOwner(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID));
+//        recent.setName(trashRecord.getRecordName());
+//        recent.setLocation(DbConstants.TABLE_TRASH);
+//        recent.setLastAccess(new Date());
+//
+//        this.recentDAO.deleteRecord(recent);
+//    }
 
     public List<SearchSuggestion> getSuggestions(String searchTerm){
         List<SearchSuggestion> suggestionList =  new ArrayList<>();

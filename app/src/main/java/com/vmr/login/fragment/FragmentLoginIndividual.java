@@ -22,7 +22,7 @@ import android.widget.TextView;
 import com.vmr.R;
 import com.vmr.db.user.DbUser;
 import com.vmr.login.LoginActivity;
-import com.vmr.login.interfaces.OnLoginClickListener;
+import com.vmr.login.LoginPagerAdapter;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PermissionHandler;
@@ -32,7 +32,7 @@ import java.util.List;
 
 public class FragmentLoginIndividual extends Fragment {
 
-    private OnLoginClickListener onLoginClickListener;
+    private LoginPagerAdapter.OnLoginClickListener onLoginClickListener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,7 +113,7 @@ public class FragmentLoginIndividual extends Fragment {
         return rootView;
     }
 
-    public void setCallbackInterface(OnLoginClickListener onLoginClickListener){
+    public void setCallbackInterface(LoginPagerAdapter.OnLoginClickListener onLoginClickListener){
         this.onLoginClickListener = onLoginClickListener;
     }
 }

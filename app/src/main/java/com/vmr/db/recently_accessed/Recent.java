@@ -7,10 +7,12 @@ import java.util.Date;
  */
 
 public class Recent {
+
     private long id;
     private String masterRecordOwner;
     private String nodeRef;
     private String name;
+    private boolean indexed;
     private String location;
     private Date lastAccess;
 
@@ -44,6 +46,14 @@ public class Recent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isIndexed() {
+        return indexed;
+    }
+
+    public void setIndexed(boolean indexed) {
+        this.indexed = indexed;
     }
 
     public String getLocation() {

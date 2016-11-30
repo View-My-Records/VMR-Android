@@ -2,7 +2,6 @@ package com.vmr.response_listener;
 
 import com.android.volley.VolleyError;
 import com.vmr.model.DeleteMessage;
-import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.model.VmrTrashItem;
@@ -66,11 +65,6 @@ public abstract class VmrResponseListener {
     public interface OnDeleteFromTrashListener {
         void onDeleteFromTrashSuccess(List<DeleteMessage> jsonObject);
         void onDeleteFromTrashFailure(VolleyError error);
-    }
-
-    public interface OnLoginListener {
-        void onLoginSuccess(UserInfo userInfo);
-        void onLoginFailure(VolleyError error);
     }
 
     public interface OnCheckUrlResponse {

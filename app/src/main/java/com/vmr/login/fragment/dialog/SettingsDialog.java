@@ -31,7 +31,7 @@ import static org.apache.http.HttpStatus.SC_OK;
  * Created by abhijit on 9/22/16.
  */
 
-public class LoginSettingsDialog extends DialogFragment {
+public class SettingsDialog extends DialogFragment {
 
     AlertDialog dialog;
 
@@ -206,7 +206,7 @@ public class LoginSettingsDialog extends DialogFragment {
 //                    }
 //                }
                 buttonPositive.setEnabled(true);
-                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.APPLICATION_MODE));
+                VmrDebug.printLogI(SettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.APPLICATION_MODE));
             }
         });
 
@@ -229,7 +229,7 @@ public class LoginSettingsDialog extends DialogFragment {
                     buttonPositive.setEnabled(true);
                 }
 
-                VmrDebug.printLogI(LoginSettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.BASE_URL));
+                VmrDebug.printLogI(SettingsDialog.this.getClass(), PrefUtils.getSharedPreference(PrefConstants.BASE_URL));
             }
         });
 

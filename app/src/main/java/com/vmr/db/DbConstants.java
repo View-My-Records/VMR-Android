@@ -149,6 +149,7 @@ public class DbConstants {
     public static final String RECENT_MASTER_OWNER    = "MASTER_OWNER";
     public static final String RECENT_NODE_REF        = "NODE_REF";
     public static final String RECENT_NAME            = "NAME";
+    public static final String RECENT_IS_INDEXED = "INDEXED";
     public static final String RECENT_LOCATION        = "LOCATION";
     public static final String RECENT_LAST_ACCESSED   = "LAST_ACCESSED";
     //All Columns
@@ -158,6 +159,7 @@ public class DbConstants {
             RECENT_MASTER_OWNER,
             RECENT_NODE_REF,
             RECENT_NAME,
+            RECENT_IS_INDEXED,
             RECENT_LOCATION,
             RECENT_LAST_ACCESSED
     };
@@ -221,5 +223,5 @@ public class DbConstants {
 
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 21;
+    static final int VERSION = 22;
 }

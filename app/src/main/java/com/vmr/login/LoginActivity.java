@@ -24,10 +24,8 @@ import com.vmr.db.DbManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
 import com.vmr.login.controller.LoginController;
-import com.vmr.login.fragment.dialog.LoginSettingsDialog;
-import com.vmr.login.interfaces.OnLoginClickListener;
+import com.vmr.login.fragment.dialog.SettingsDialog;
 import com.vmr.model.UserInfo;
-import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -41,8 +39,8 @@ import java.util.Locale;
 
 public class LoginActivity extends AppCompatActivity
         implements
-        VmrResponseListener.OnLoginListener,
-        OnLoginClickListener {
+        LoginController.OnLoginListener,
+        LoginPagerAdapter.OnLoginClickListener {
 
     ProgressDialog loginProgress;
     DbManager dbManager;
@@ -89,17 +87,66 @@ public class LoginActivity extends AppCompatActivity
 
         if (id == R.id.action_settings) {
             FragmentManager fm = getFragmentManager();
-            LoginSettingsDialog settingsDialog = new  LoginSettingsDialog();
+            SettingsDialog settingsDialog = new SettingsDialog();
             settingsDialog.show(fm, "Settings");
             return true;
         } else if (id == R.id.action_about) {
             new AlertDialog.Builder(this)
                     .setTitle("About")
-                    .setMessage("Version Code: \n\t" + BuildConfig.VERSION_CODE + "\n\n" + "Commit hash: \n\t" + BuildConfig.VERSION_NAME)
+                    .setMessage("Version Code: \n\t" + BuildConfig.VERSION_CODE + "\n\n"
+                            + "Commit hash: \n\t" + BuildConfig.VERSION_NAME + "\n\n"
+                            + "Description:  \n\t")
                     .show();
+        } else if (id == R.id.action_forgot_password) {
+            forgotPasswordHandler();
+        } else if (id == R.id.action_forgot_username) {
+            forgotUsernameHandler();
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void forgotUsernameHandler() {
+        AlertDialog.Builder forgotUsername
+                = new AlertDialog.Builder(this)
+                .setTitle("Forgot Password")
+                .setView(getLayoutInflater().inflate(R.layout.alert_dialog_forgot_username, null))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+
+        forgotUsername.show();
+    }
+
+    private void forgotPasswordHandler() {
+        AlertDialog.Builder forgotPassword
+                = new AlertDialog.Builder(this)
+                .setTitle("Forgot Password")
+                .setView(getLayoutInflater().inflate(R.layout.alert_dialog_forgot_password, null))
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+
+        forgotPassword.show();
+
     }
 
     @Override

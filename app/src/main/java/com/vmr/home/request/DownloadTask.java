@@ -133,9 +133,9 @@ public class DownloadTask extends AsyncTask<String, String, String> {
             urlConnection.connect();
 
             int responseCode = urlConnection.getResponseCode();
-            Log.i( this.getClass().getName(), "Response Code : " + responseCode);
+//            Log.i( this.getClass().getName(), "Response Code : " + responseCode);
 
-            Log.i( this.getClass().getName(), "Response Content Length : " + downloadPacket.getFileLength());
+//            Log.i( this.getClass().getName(), "Response Content Length : " + downloadPacket.getFileLength());
 
 
             InputStream inputStream = new BufferedInputStream(urlConnection.getInputStream());
@@ -159,8 +159,8 @@ public class DownloadTask extends AsyncTask<String, String, String> {
                 bufferedOutputStream.write(dataBuffer, 0, count);
                 if(downloadPacket.getFileLength() != 0) {
                     int progress = (int) (copied * 100 / downloadPacket.getFileLength());
-                    Log.i(this.getClass().getName(), "Copied : " + copied + " bytes");
-                    Log.i(this.getClass().getName(), "Progress : " + progress + "%");
+//                    Log.i(this.getClass().getName(), "Copied : " + copied + " bytes");
+//                    Log.i(this.getClass().getName(), "Progress : " + progress + "%");
                     progressListener.onDownloadProgress(downloadPacket.getFileLength(), copied, progress);
                 } else {
                     progressListener.onDownloadProgress(downloadPacket.getFileLength(), copied, 0);

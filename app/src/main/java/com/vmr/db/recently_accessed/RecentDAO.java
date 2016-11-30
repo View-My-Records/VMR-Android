@@ -76,6 +76,7 @@ public class RecentDAO {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String date = sdf.format(record.getLastAccess());
         contentValues.put(DbConstants.RECENT_LAST_ACCESSED, date);
+        contentValues.put(DbConstants.RECENT_IS_INDEXED, record.isIndexed());
 
         VmrDebug.printLogI(this.getClass(), record.getName() + " updated");
 
@@ -93,6 +94,7 @@ public class RecentDAO {
         contentValues.put(DbConstants.RECENT_NODE_REF, record.getNodeRef());
         contentValues.put(DbConstants.RECENT_MASTER_OWNER, record.getMasterRecordOwner());
         contentValues.put(DbConstants.RECENT_NAME, record.getName());
+        contentValues.put(DbConstants.RECENT_IS_INDEXED, record.isIndexed());
         contentValues.put(DbConstants.RECENT_LOCATION, record.getLocation());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String date = sdf.format(record.getLastAccess());
@@ -119,6 +121,7 @@ public class RecentDAO {
             record.setMasterRecordOwner(c.getString( c.getColumnIndex(DbConstants.RECENT_MASTER_OWNER)));
             record.setNodeRef(          c.getString( c.getColumnIndex(DbConstants.RECENT_NODE_REF)));
             record.setName(             c.getString( c.getColumnIndex(DbConstants.RECENT_NAME)));
+            record.setIndexed(          c.getInt(    c.getColumnIndex(DbConstants.RECENT_IS_INDEXED)) > 0);
             record.setLocation(         c.getString( c.getColumnIndex(DbConstants.RECENT_LOCATION)));
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             Date date = null;

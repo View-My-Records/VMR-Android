@@ -86,6 +86,7 @@ class DbHelper extends SQLiteOpenHelper {
             DbConstants.RECENT_MASTER_OWNER     + " TEXT, " +
             DbConstants.RECENT_NODE_REF         + " TEXT, " +
             DbConstants.RECENT_NAME             + " TEXT, " +
+            DbConstants.RECENT_IS_INDEXED       + " NUMERIC, " +
             DbConstants.RECENT_LOCATION         + " TEXT, " +
             DbConstants.RECENT_LAST_ACCESSED    + " DATETIME );" ;
 

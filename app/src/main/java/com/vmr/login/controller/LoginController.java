@@ -22,11 +22,11 @@ import java.util.Map;
 
 public class LoginController {
 
-    private VmrResponseListener.OnLoginListener onLoginListener;
+    private OnLoginListener onLoginListener;
     private VmrResponseListener.OnFetchTicketListener onFetchTicketListener;
     private VmrResponseListener.OnCheckUrlResponse onCheckUrlResponse;
 
-    public LoginController(VmrResponseListener.OnLoginListener onLoginListener) {
+    public LoginController(OnLoginListener onLoginListener) {
         this.onLoginListener = onLoginListener;
 //        this.onFetchTicketListener = onFetchTicketListener;
     }
@@ -185,4 +185,8 @@ public class LoginController {
         VmrRequestQueue.getInstance().addToRequestQueue(checkUrlRequest, Constants.VMR_LOGIN_REQUEST_TAG);
     }
 
+    public interface OnLoginListener {
+        void onLoginSuccess(UserInfo userInfo);
+        void onLoginFailure(VolleyError error);
+    }
 }

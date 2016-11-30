@@ -20,6 +20,7 @@
         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
         android:inputType="text"
         android:maxLength="30"
-        android:maxLines="1" />
+        android:maxLines="1"
+        android:text="file/folder name" />
 
 </LinearLayout>

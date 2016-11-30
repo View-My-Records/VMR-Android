@@ -331,8 +331,12 @@ public class HomeActivity extends AppCompatActivity
             pasteClickListener.onPasteClick();
             return true;
         } else if (id == R.id.action_layout) {
+            Toast.makeText(this, "This feature is not available yet.", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
+            settingsIntent.setAction(Intent.ACTION_VIEW);
+            startActivity(settingsIntent);
             return true;
         }
 

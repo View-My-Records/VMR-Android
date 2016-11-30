@@ -1,0 +1,85 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory     android:key="pref_key_general"
+                            android:title="Account Information" >
+        <Preference
+                        android:defaultValue="true"
+                        android:key="account_name"
+                        android:summary="John Smith"
+                        android:title="Name" />
+        <Preference
+                        android:key="account_usage"
+                        android:summary="34 Pages"
+                        android:title="Account Usage" />
+
+        <Preference
+                        android:key="plan_details"
+                        android:summary="Yearly subscription."
+                        android:title="Plan details" />
+
+        <Preference
+                        android:dialogMessage="Dialog message (replace this with actual msg)"
+                        android:dialogTitle="Dialog title"
+                        android:key="upgrade"
+                        android:summary="Upgrade existing plan"
+                        android:title="Upgrade"/>
+
+        <Preference
+                        android:key="account_details"
+                        android:title="Additional details" />
+    </PreferenceCategory>
+
+
+    <PreferenceCategory     android:title="Notifications" >
+        <SwitchPreference
+                        android:checked="true"
+                        android:key="notification"
+                        android:summary="Show notifications for shared files and uploads"
+                        android:title="Notify me" />
+    </PreferenceCategory>
+
+    <PreferenceCategory     android:title="Data Usage" >
+        <SwitchPreference
+                        android:checked="false"
+                        android:key="sp_wifi"
+                        android:title="Transfer files only over Wi-Fi" />
+    </PreferenceCategory>
+
+    <PreferenceCategory     android:title="Encryption" >
+        <SwitchPreference
+                        android:checked="true"
+                        android:key="sp_encryption"
+                        android:title="Enable encryption" />
+    </PreferenceCategory>
+
+    <PreferenceCategory     android:title="Cache Options" >
+        <Preference
+                        android:key="cache"
+                        android:summary="100 MB"
+                        android:title="Cache size" />
+
+        <Preference
+                        android:key="clear"
+                        android:title="Clear" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:key="clear"
+                        android:title="Other" >
+        <Preference
+                    android:key="about"
+                    android:title="About" />
+
+        <Preference
+                    android:key="help"
+                    android:title="Help" />
+
+        <Preference
+            android:key="libraries"
+            android:title="Libraries" />
+
+        <Preference
+            android:key="terms_and_conditions"
+            android:title="Terms and Conditions" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

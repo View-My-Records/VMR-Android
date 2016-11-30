@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.db.recently_accessed.Recent;
+import com.vmr.utils.FileUtils;
 
 import java.util.List;
 
@@ -39,13 +40,47 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
     @Override
     public void onBindViewHolder(RecentViewHolder holder, int position) {
         Recent recent = this.itemsList.get(position);
-        holder.setItemName(recent.getName().replaceAll("[^A-Za-z0-9( _.)\\[\\]]", ""));
+        String recordName = recent.getName();
+
+        if(recordName.contains(".")) {
+            String extension = (recordName.substring(recordName.lastIndexOf('.') + 1)).toLowerCase();
+            String mimeType = FileUtils.getMimeTypeFromExtension(extension);
+
+            if(mimeType!=null) {
+                if (mimeType.contains("image")) {
+                    holder.setItemIcon(R.drawable.ic_file_image);
+                } else if (mimeType.contains("video")) {
+                    holder.setItemIcon(R.drawable.ic_file_video);
+                } else {
+                    switch (extension) {
+                        case "pdf":
+                            holder.setItemIcon(R.drawable.ic_file_pdf);
+                            break;
+                        case "xml":
+                            holder.setItemIcon(R.drawable.ic_file_xml);
+                            break;
+                        default:
+                            holder.setItemIcon(R.drawable.ic_file);
+                            break;
+                    }
+                }
+            }
+
+            holder.setItemName(recordName.substring(0, recordName.lastIndexOf('.')));
+        } else {
+            holder.setItemName(recordName);
+        }
 
         holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(recent.getLastAccess().getTime()).toString());
 
-        holder.setItemImage(R.drawable.ic_file);
-        holder.bind(itemsList.get(position), itemClickListener);
-        holder.bind(itemsList.get(position), optionsClickListener);
+        if (recent.isIndexed()) {
+            holder.setItemIndexed(View.VISIBLE);
+        } else {
+            holder.setItemIndexed(View.GONE);
+        }
+
+        holder.bind(recent, itemClickListener);
+        holder.bind(recent, optionsClickListener);
     }
 
     @Override
@@ -76,21 +111,27 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
     }
 
     public class RecentViewHolder extends RecyclerView.ViewHolder {
-        private ImageView itemImage ;
+        private ImageView itemIcon;
+        private ImageView itemIndexed;
         private TextView itemName ;
         private TextView itemTimeStamp ;
         private ImageView itemOptions;
 
         public RecentViewHolder(View itemView) {
             super(itemView);
-            this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemIcon = (ImageView) itemView.findViewById(R.id.ivFileIcon);
+            this.itemIndexed = (ImageView) itemView.findViewById(R.id.ivIndexed);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
-        public void setItemImage(int itemImage) {
-            this.itemImage.setImageResource(itemImage);
+        public void setItemIcon(int itemImage) {
+            this.itemIcon.setImageResource(itemImage);
+        }
+
+        void setItemIndexed(int visibility) {
+            this.itemIndexed.setVisibility(visibility);
         }
 
         public void setItemName(String itemName) {

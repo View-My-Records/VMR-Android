@@ -1,7 +1,9 @@
 package com.vmr.settings;
 
 import android.os.Bundle;
+import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.widget.Toast;
 
 import com.vmr.R;
 
@@ -23,6 +25,16 @@ public class PrefFragment extends PreferenceFragment {
     public void onCreate(Bundle savedInstances){
         super.onCreate(savedInstances);
         /* Load preferences from an XML resource */
-        addPreferencesFromResource(R.xml.pref_general);
+        addPreferencesFromResource(R.xml.general_settings);
+
+        Preference accountDetails = getPreferenceManager().findPreference("account_details");
+
+        accountDetails.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+                Toast.makeText(getActivity(), "accountDetails clicked", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
     }
 }

@@ -30,6 +30,20 @@ def getVersionName = { ->
     }
 }
 
+def getDescription = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'log', '-1', '--pretty=%B'
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        return null;
+    }
+}
+
 android {
     compileSdkVersion 25
     buildToolsVersion '25.0.1'
@@ -39,6 +53,7 @@ android {
         targetSdkVersion 25
         versionName getVersionName()
         versionCode getVersionCode()
+        description getDescription()
         vectorDrawables.useSupportLibrary = true
     }
     buildTypes {

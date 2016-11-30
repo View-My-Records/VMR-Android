@@ -8,13 +8,12 @@ import com.vmr.login.fragment.FragmentLoginCorporate;
 import com.vmr.login.fragment.FragmentLoginFamily;
 import com.vmr.login.fragment.FragmentLoginIndividual;
 import com.vmr.login.fragment.FragmentLoginProfessional;
-import com.vmr.login.interfaces.OnLoginClickListener;
 
 
 /*
  * Created by abhijit on 6/10/16.
  */
-class LoginPagerAdapter extends FragmentPagerAdapter {
+public class LoginPagerAdapter extends FragmentPagerAdapter {
 
     private int numberOfPages;
     private String[] pages = { "Individual", "Family", "Professional", "Corporate" };
@@ -72,4 +71,15 @@ class LoginPagerAdapter extends FragmentPagerAdapter {
         }
     }
 
+
+    public interface OnLoginClickListener {
+
+        void onIndividualLoginClick(String email, String password, String domain, boolean remember);
+
+        void onFamilyLoginClick(String email, String password, String name, String domain, boolean remember);
+
+        void onProfessionalLoginClick(String email, String password, String name, String domain, boolean remember);
+
+        void onCorporateLoginClick(String email, String password, String name, String domain, boolean remember);
+    }
 }
