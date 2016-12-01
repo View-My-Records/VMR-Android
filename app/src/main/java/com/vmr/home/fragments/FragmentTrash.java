@@ -121,7 +121,9 @@ public class FragmentTrash extends Fragment
     public void onFetchTrashSuccess( List<VmrTrashItem> vmrTrashItems ) {
         VmrDebug.printLine("Trash folder retrieved.");
 
-        dbManager.updateAllTrash(TrashRecord.getTrashRecordList(vmrTrashItems, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)));
+        List<TrashRecord> trashRecords = TrashRecord.getTrashRecordList(vmrTrashItems, PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
+
+        dbManager.updateAllTrash(trashRecords);
         trashRecords = dbManager.getAllTrash();
         trashAdapter.updateDataset(trashRecords);
 
@@ -171,12 +173,6 @@ public class FragmentTrash extends Fragment
     private void refreshFolder(){
         homeController.fetchTrash();
     }
-
-//    @Override
-//    public void onOpenClicked(TrashRecord record) {
-//        VmrDebug.printLine(record.getRecordName() + " open clicked");
-//        Snackbar.make(getActivity().findViewById(android.R.id.content), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
-//    }
 
     @Override
     public void onRestoreClicked(TrashRecord record) {

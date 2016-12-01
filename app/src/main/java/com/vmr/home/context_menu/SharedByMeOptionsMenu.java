@@ -13,7 +13,7 @@ import com.vmr.db.shared.SharedRecord;
 /*
  * Created by abhijit on 8/31/16.
  */
-public class SharedOptionsMenu extends BottomSheetDialogFragment {
+public class SharedByMeOptionsMenu extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
     private SharedRecord record;
@@ -72,7 +72,7 @@ public class SharedOptionsMenu extends BottomSheetDialogFragment {
         optionClickListener.onOptionsMenuDismiss();
     }
 
-    public void setOptionClickListener(SharedOptionsMenu.OnOptionClickListener optionClickListener) {
+    public void setOptionClickListener(SharedByMeOptionsMenu.OnOptionClickListener optionClickListener) {
         this.optionClickListener = optionClickListener;
     }
 

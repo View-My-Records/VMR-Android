@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class SharedRecord {
 
-    private int id;
+    private String id;
     private String masterRecordOwner;
     private String nodeRef;
     private String ownerName;
@@ -47,11 +47,11 @@ public class SharedRecord {
         return recordList;
     }
 
-    public int getId() {
+    public String getRecordId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

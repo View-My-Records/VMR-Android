@@ -58,13 +58,23 @@
         android:textStyle="bold" />
 
     <TextView
+        android:id="@+id/tvLocation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@+id/ivFileIcon"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:gravity="center_horizontal|end"
+        android:text="Location"
+        android:textAppearance="@android:style/TextAppearance.Small" />
+
+    <TextView
         android:id="@+id/tvTimeStamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
         android:layout_toLeftOf="@+id/ivOverflow"
+        android:layout_toStartOf="@+id/ivOverflow"
         android:gravity="center_horizontal|end"
         android:text="Timestamp"
         android:textAppearance="@android:style/TextAppearance.Small" />

@@ -310,7 +310,7 @@ public abstract class Constants {
             public final static class RecordLifespanCheck {
                 public static final String PAGE_MODE        = "pageMode";
                 public static final String RECORD_NODE_REF  = "fileSelectedNodeRef";
-                public static final String SHARE_EMAILS = "shareEmail";
+                public static final String SHARE_EMAILS     = "shareEmail";
                 public static final String RECORD_ID        = "selectedRecordId";
             }
 

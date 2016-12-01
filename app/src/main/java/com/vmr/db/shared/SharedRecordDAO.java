@@ -104,7 +104,7 @@ public class SharedRecordDAO {
                     DbConstants.TABLE_SHARED,
                     contentValues,
                     DbConstants.SHARED_RECORD_ID + "=?",
-                    new String[]{record.getId() + ""}) > 0;
+                    new String[]{record.getRecordId() + ""}) > 0;
         }
     }
 
@@ -131,7 +131,7 @@ public class SharedRecordDAO {
         return db.delete(
                 DbConstants.TABLE_SHARED,
                 DbConstants.SHARED_RECORD_ID + "=?",
-                new String[]{record.getId() + ""}) > 0;
+                new String[]{record.getRecordId() + ""}) > 0;
 
     }
 
@@ -139,7 +139,7 @@ public class SharedRecordDAO {
         SharedRecord record = null;
         if (c != null) {
             record = new SharedRecord();
-            record.setId(               c.getInt(       c.getColumnIndex(DbConstants.SHARED_RECORD_ID)));
+            record.setId(               c.getString(    c.getColumnIndex(DbConstants.SHARED_RECORD_ID)));
             record.setMasterRecordOwner(c.getString(    c.getColumnIndex(DbConstants.SHARED_MASTER_OWNER)));
             record.setOwnerName(        c.getString(    c.getColumnIndex(DbConstants.SHARED_OWNER_NAME)));
             record.setIsFolder(         c.getInt(       c.getColumnIndex(DbConstants.SHARED_IS_FOLDER)) > 0);

@@ -420,6 +420,25 @@ public class HomeActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Snackbar.make(findViewById(R.id.clayout),
+                            "Logged in as " + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL), Snackbar.LENGTH_SHORT).
+                            show();
+                } catch (Exception e) {
+                    Snackbar.make(findViewById(android.R.id.content),
+                            "Logged in as " + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL), Snackbar.LENGTH_SHORT).
+                            show();
+                }
+            }
+        }, 3000);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if(mSearchView != null) {

@@ -10,19 +10,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.vmr.R;
-import com.vmr.app.Vmr;
-import com.vmr.db.DbConstants;
-import com.vmr.db.recently_accessed.Recent;
 import com.vmr.db.record.Record;
-import com.vmr.db.shared.SharedRecord;
+import com.vmr.model.VmrSharedItem;
 
 /*
  * Created by abhijit on 8/31/16.
  */
-public class RecentOptionsMenu extends BottomSheetDialogFragment {
+public class SharedWithMeOptionsMenu extends BottomSheetDialogFragment {
 
     private OnOptionClickListener optionClickListener;
-    private Recent recent;
+    private Record record;
+    private VmrSharedItem vmrSharedItem;
 
     private ImageView ivInfo;
     private TextView tvRecordName;
@@ -52,7 +50,7 @@ public class RecentOptionsMenu extends BottomSheetDialogFragment {
 
         setupViews(contentView);
         setupListeners();
-        setupOptions(recent);
+        setupOptions(record);
     }
 
     @Override
@@ -65,8 +63,8 @@ public class RecentOptionsMenu extends BottomSheetDialogFragment {
         this.optionClickListener = optionClickListener;
     }
 
-    public void setRecent(Recent recent) {
-        this.recent = recent;
+    public void setRecord(Record record) {
+        this.record = record;
     }
 
     private void setupViews(View contentView){
@@ -85,129 +83,112 @@ public class RecentOptionsMenu extends BottomSheetDialogFragment {
         optionDelete = (RelativeLayout) contentView.findViewById(R.id.btnDelete);
     }
 
-    private void setupOptions(Recent recent) {
-        if(recent.getLocation().equals(DbConstants.TABLE_RECORD)) {
-            Record record = Vmr.getDbManager().getRecord(recent.getNodeRef());
+    private void setupOptions(Record record) {
 
+        optionOpen.setVisibility(View.VISIBLE);
+        optionIndex.setVisibility(View.GONE);
+        optionShare.setVisibility(View.GONE);
+        optionRename.setVisibility(View.GONE);
+        optionMove.setVisibility(View.GONE);
+        optionCopy.setVisibility(View.GONE);
+        optionDuplicate.setVisibility(View.GONE);
+        optionPaste.setVisibility(View.GONE);
+        optionProperties.setVisibility(View.VISIBLE);
+        optionDelete.setVisibility(View.GONE);
+
+        if(record.isFolder()) {
+            ivInfo.setImageResource(R.drawable.ic_folder);
+            optionDownload.setVisibility(View.GONE);
+        } else {
             ivInfo.setImageResource(R.drawable.ic_file);
-
-            tvRecordName.setText(record.getRecordName());
-
-            optionOpen.setVisibility(View.VISIBLE);
-            optionIndex.setVisibility(View.VISIBLE);
-            optionShare.setVisibility(View.VISIBLE);
-            optionRename.setVisibility(View.VISIBLE);
-            optionMove.setVisibility(View.GONE);
-            optionCopy.setVisibility(View.VISIBLE);
-            optionDuplicate.setVisibility(View.GONE);
-            optionPaste.setVisibility(View.GONE);
             optionDownload.setVisibility(View.VISIBLE);
-            optionProperties.setVisibility(View.VISIBLE);
-            optionDelete.setVisibility(View.VISIBLE);
-
-        } else if(recent.getLocation().equals(DbConstants.TABLE_SHARED)) {
-            SharedRecord record = Vmr.getDbManager().getSharedRecord(recent.getNodeRef());
-
-            ivInfo.setImageResource(R.drawable.ic_file);
-
-            tvRecordName.setText(record.getRecordName());
-
-            optionOpen.setVisibility(View.VISIBLE);
-            optionIndex.setVisibility(View.GONE);
-            optionShare.setVisibility(View.GONE);
-            optionRename.setVisibility(View.GONE);
-            optionMove.setVisibility(View.GONE);
-            optionCopy.setVisibility(View.GONE);
-            optionDuplicate.setVisibility(View.GONE);
-            optionPaste.setVisibility(View.GONE);
-            optionDownload.setVisibility(View.VISIBLE);
-            optionProperties.setVisibility(View.VISIBLE);
-            optionDelete.setVisibility(View.VISIBLE);
         }
+
+        tvRecordName.setText(record.getRecordName());
     }
 
     private void setupListeners(){
         optionOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onOpenClicked(recent);
+                optionClickListener.onOpenClicked(record);
                 dismiss();
             }
         });
-        optionIndex.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onIndexClicked(recent);  dismiss();
-            }
-        });
-        optionShare.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onShareClicked(recent);  dismiss();
-            }
-        });
-        optionRename.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onRenameClicked(recent);  dismiss();
-            }
-        });
+//        optionIndex.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                optionClickListener.onIndexClicked(record);  dismiss();
+//            }
+//        });
+//        optionShare.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                optionClickListener.onShareClicked(record);  dismiss();
+//            }
+//        });
+//        optionRename.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                optionClickListener.onRenameClicked(record);  dismiss();
+//            }
+//        });
 //        optionMove.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                optionClickListener.onMoveClicked(recent);  dismiss();
+//                optionClickListener.onMoveClicked(record);  dismiss();
 //            }
 //        });
-        optionCopy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onCopyClicked(recent);  dismiss();
-            }
-        });
+//        optionCopy.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                optionClickListener.onCopyClicked(record);  dismiss();
+//            }
+//        });
 //        optionDuplicate.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                optionClickListener.onDuplicateClicked(recent);  dismiss();
+//                optionClickListener.onDuplicateClicked(record);  dismiss();
 //            }
 //        });
 //        optionPaste.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                optionClickListener.onPasteClicked(recent);  dismiss();
+//                optionClickListener.onPasteClicked(record);  dismiss();
 //            }
 //        });
         optionDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onDownloadClicked(recent);  dismiss();
+                optionClickListener.onDownloadClicked(record);  dismiss();
             }
         });
-        optionProperties.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                optionClickListener.onPropertiesClicked(recent);  dismiss();
-            }
-        });
+//        optionProperties.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                optionClickListener.onPropertiesClicked(record);  dismiss();
+//            }
+//        });
         optionDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                optionClickListener.onMoveToTrashClicked(recent);  dismiss();
+                optionClickListener.onMoveToTrashClicked(record);  dismiss();
             }
         });
     }
 
     public interface OnOptionClickListener{
-        void onOpenClicked(Recent record);
-        void onIndexClicked(Recent record);
-        void onShareClicked(Recent record);
-        void onRenameClicked(Recent record);
-//        void onMoveClicked(Recent record);
-        void onCopyClicked(Recent record);
-//        void onDuplicateClicked(Recent record);
-//        void onPasteClicked(Recent record);
-        void onDownloadClicked(Recent record);
-        void onPropertiesClicked(Recent record);
-        void onMoveToTrashClicked(Recent record);
+        void onOpenClicked(Record record);
+//        void onIndexClicked(Record record);
+//        void onShareClicked(Record record);
+//        void onRenameClicked(Record record);
+//        void onMoveClicked(Record record);
+//        void onCopyClicked(Record record);
+//        void onDuplicateClicked(Record record);
+//        void onPasteClicked(Record record);
+        void onDownloadClicked(Record record);
+//        void onPropertiesClicked(Record record);
+        void onMoveToTrashClicked(Record record);
         void onOptionsMenuDismiss();
     }
 }

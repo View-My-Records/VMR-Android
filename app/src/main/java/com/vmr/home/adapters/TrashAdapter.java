@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.vmr.R;
 import com.vmr.db.trash.TrashRecord;
+import com.vmr.utils.FileUtils;
 
 import java.util.List;
 
@@ -37,12 +38,39 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
 
     @Override
     public void onBindViewHolder(TrashViewHolder holder, int position) {
-        TrashRecord item = this.itemsList.get(position);
-        holder.setItemName(item.getRecordName().replaceAll("[^A-Za-z0-9( _)\\[\\]]", ""));
-        if (item.isFolder()) {
-            holder.setItemImage(R.drawable.ic_folder);
-        } else {
-            holder.setItemImage(R.drawable.ic_file);
+        TrashRecord record = this.itemsList.get(position);
+        holder.setItemName(record.getRecordName().replaceAll("[^A-Za-z0-9( _)\\[\\]]", ""));
+        if (record.isFolder()) {
+            holder.setItemIcon(R.drawable.ic_folder);
+        } else if(!record.isFolder()) {
+            String recordName = record.getRecordName();
+
+            if(recordName.contains(".")) {
+                String extension = (recordName.substring(recordName.lastIndexOf('.') + 1)).toLowerCase();
+                String mimeType = FileUtils.getMimeTypeFromExtension(extension);
+
+                if(mimeType!=null) {
+                    if (mimeType.contains("image")) {
+                        holder.setItemIcon(R.drawable.ic_file_image);
+                    } else if (mimeType.contains("video")) {
+                        holder.setItemIcon(R.drawable.ic_file_video);
+                    } else {
+                        switch (extension) {
+                            case "pdf":
+                                holder.setItemIcon(R.drawable.ic_file_pdf);
+                                break;
+                            case "xml":
+                                holder.setItemIcon(R.drawable.ic_file_xml);
+                                break;
+                            default:
+                                holder.setItemIcon(R.drawable.ic_file);
+                                break;
+                        }
+                    }
+                }
+
+                holder.setItemName(recordName.substring(0, recordName.lastIndexOf('.')));
+            }
         }
         holder.bind(itemsList.get(position), itemClickListener);
         holder.bind(itemsList.get(position), optionsClickListener);
@@ -51,14 +79,6 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
     @Override
     public int getItemCount() {
         return this.itemsList.size();
-    }
-
-    public List<TrashRecord> getItemsList() {
-        return itemsList;
-    }
-
-    public void setItemsList(List<TrashRecord> itemsList) {
-        this.itemsList = itemsList;
     }
 
     public void updateDataset(List<TrashRecord> newList){
@@ -75,31 +95,27 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
         void onItemOptionsClick(TrashRecord item, View view);
     }
 
-    public class TrashViewHolder extends RecyclerView.ViewHolder {
+    class TrashViewHolder extends RecyclerView.ViewHolder {
         private ImageView itemImage ;
         private TextView itemName ;
         private ImageView itemOptions;
 
-        public TrashViewHolder(View itemView) {
+        TrashViewHolder(View itemView) {
             super(itemView);
             this.itemImage = (ImageView) itemView.findViewById(R.id.ivFileIcon);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
-        public void setItemImage(int itemImage) {
+        void setItemIcon(int itemImage) {
             this.itemImage.setImageResource(itemImage);
         }
 
-        public void setItemName(String itemName) {
+        void setItemName(String itemName) {
             this.itemName.setText(itemName);
         }
 
-        public void setItemOptions(ImageView itemOptions) {
-            this.itemOptions = itemOptions;
-        }
-
-        public void bind(final TrashRecord item, final OnItemClickListener listener) {
+        void bind(final TrashRecord item, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -107,7 +123,7 @@ public class TrashAdapter extends RecyclerView.Adapter<TrashAdapter.TrashViewHol
             });
         }
 
-        public void bind(final TrashRecord item, final OnItemOptionsClickListener listener) {
+        void bind(final TrashRecord item, final OnItemOptionsClickListener listener) {
             itemOptions.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemOptionsClick(item, v);

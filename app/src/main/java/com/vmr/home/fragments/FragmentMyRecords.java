@@ -174,14 +174,6 @@ public class FragmentMyRecords extends Fragment
         setupFab(fragmentView);
         setOnBackPress(fragmentView);
 
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Snackbar.make(getActivity().findViewById(R.id.clayout),
-                        "Logged in as " + PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL), Snackbar.LENGTH_SHORT).show();
-            }
-        }, 2000);
-
         return fragmentView;
     }
 
@@ -303,14 +295,14 @@ public class FragmentMyRecords extends Fragment
                 VmrDebug.printLogI(FragmentMyRecords.this.getClass(), "Folder refreshed.");
             }
         } else {
-            if(DEBUG) VmrDebug.printLogI(record.getRecordName() + " File clicked");
+            if (DEBUG) VmrDebug.printLogI(record.getRecordName() + " File clicked");
             dbManager.addNewRecent(record);
             if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 final DownloadTaskController downloadTaskController;
 
                 final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
                 downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-                 downloadProgress.setMessage("Downloading " + record.getRecordName());
+                downloadProgress.setMessage("Downloading " + record.getRecordName());
                 downloadProgress.setCancelable(true);
                 downloadProgress.setCanceledOnTouchOutside(true);
                 downloadProgress.setMax(100);
@@ -369,7 +361,7 @@ public class FragmentMyRecords extends Fragment
                     }
                 };
 
-                downloadTaskController = new DownloadTaskController(record,progressListener);
+                downloadTaskController = new DownloadTaskController(record, progressListener);
 
                 downloadProgress.setButton(DialogInterface.BUTTON_NEGATIVE,
                         getResources().getString(android.R.string.cancel),
@@ -394,7 +386,7 @@ public class FragmentMyRecords extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
                             }
                         })
                         .show();
@@ -499,8 +491,6 @@ public class FragmentMyRecords extends Fragment
         final File file = new File(filePath);
 
         dbManager.queueUpload(file, recordStack.peek());
-
-        // TODO: 10/12/16 Receive Id from dbManager and send to service
 
         Intent uploadIntent = new Intent(getActivity(), UploadService.class);
         getActivity().startService(uploadIntent);
@@ -680,9 +670,7 @@ public class FragmentMyRecords extends Fragment
         } else {
             VmrDebug.printLogI(record.getRecordName() + " File clicked");
             dbManager.addNewRecent(record);
-            // startActivity(ViewActivity.getLauncherIntent(getActivity(), record));
-            if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-
+            if (PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
                 final DownloadTaskController downloadTaskController;
 
                 final ProgressDialog downloadProgress = new ProgressDialog(getActivity());
@@ -740,7 +728,7 @@ public class FragmentMyRecords extends Fragment
                     }
                 };
 
-                downloadTaskController = new DownloadTaskController(record,progressListener);
+                downloadTaskController = new DownloadTaskController(record, progressListener);
 
                 downloadProgress.setButton(DialogInterface.BUTTON_NEGATIVE,
                         getResources().getString(android.R.string.cancel),
@@ -775,13 +763,12 @@ public class FragmentMyRecords extends Fragment
                         });
                 downloadProgress.show();
                 downloadTaskController.downloadFile();
-
             } else {
                 Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
                             }
                         })
                         .show();
@@ -1226,7 +1213,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onPropertiesClicked(Record vmrItem) {
+    public void onPropertiesClicked(Record record) {
         VmrDebug.printLogI(this.getClass(), "Properties button clicked" );
 //        Snackbar.make(getActivity().findViewById(R.id.clayout), "This feature is not available.", Snackbar.LENGTH_SHORT).show();
 
@@ -1249,9 +1236,9 @@ public class FragmentMyRecords extends Fragment
         });
 
         recordDetailsController.fetchRecordDetails(
-                vmrItem.getNodeRef(),
+                record.getNodeRef(),
                 PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_EMAIL),
-                vmrItem.getRecordId());
+                record.getRecordId());
 
         progressDialog.setMessage("Loading...");
         progressDialog.setCancelable(true);
@@ -1399,7 +1386,7 @@ public class FragmentMyRecords extends Fragment
             @Override
             public void onRefresh() {
                 VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
-                homeController.fetchAllFilesAndFolders(recordStack.peek());
+                refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
         });

@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.db.DbConstants;
 import com.vmr.db.recently_accessed.Recent;
 import com.vmr.utils.FileUtils;
 
@@ -71,6 +72,12 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
             holder.setItemName(recordName);
         }
 
+        if(recent.getLocation().equals(DbConstants.TABLE_RECORD)) {
+            holder.setItemLocation("My Records");
+        } else if(recent.getLocation().equals(DbConstants.TABLE_SHARED)){
+            holder.setItemLocation("Shared By Me");
+        }
+
         holder.setItemTimeStamp(DateUtils.getRelativeTimeSpanString(recent.getLastAccess().getTime()).toString());
 
         if (recent.isIndexed()) {
@@ -115,6 +122,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
         private ImageView itemIndexed;
         private TextView itemName ;
         private TextView itemTimeStamp ;
+        private TextView itemLocation ;
         private ImageView itemOptions;
 
         public RecentViewHolder(View itemView) {
@@ -123,6 +131,7 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
             this.itemIndexed = (ImageView) itemView.findViewById(R.id.ivIndexed);
             this.itemName = (TextView) itemView.findViewById(R.id.tvFileName);
             this.itemTimeStamp = (TextView) itemView.findViewById(R.id.tvTimeStamp);
+            this.itemLocation = (TextView) itemView.findViewById(R.id.tvLocation);
             this.itemOptions = (ImageView) itemView.findViewById(R.id.ivOverflow);
         }
 
@@ -140,6 +149,10 @@ public class RecentAdapter extends RecyclerView.Adapter<RecentAdapter.RecentView
 
         public void setItemTimeStamp(String itemTimeStamp) {
             this.itemTimeStamp.setText(itemTimeStamp);
+        }
+
+        public void setItemLocation(String itemLocation) {
+            this.itemLocation.setText(itemLocation);
         }
 
         public void setItemOptions(ImageView itemOptions) {

@@ -29,6 +29,7 @@ import com.android.volley.VolleyError;
 import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
+import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.controller.ShareRecordController;
@@ -68,6 +69,17 @@ public class ShareDialog extends DialogFragment
     private TextView btnSetRecordExpiry;
 
     public static ShareDialog newInstance(Record record) {
+        ShareDialog newDialog = new ShareDialog();
+
+        Bundle arguments = new Bundle();
+        arguments.putString( NODE_REF, record.getNodeRef());
+
+        newDialog.setArguments(arguments);
+
+        return newDialog;
+    }
+
+    public static ShareDialog newInstance(SharedRecord record) {
         ShareDialog newDialog = new ShareDialog();
 
         Bundle arguments = new Bundle();
