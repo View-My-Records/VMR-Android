@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.NetworkImageView;
 import com.vmr.R;
 import com.vmr.app.Vmr;
 import com.vmr.custom_view.CustomSearchView;
@@ -58,6 +59,7 @@ import com.vmr.inbox.InboxActivity;
 import com.vmr.inbox.controller.InboxController;
 import com.vmr.model.NotificationItem;
 import com.vmr.model.VmrFolder;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.settings.SettingsActivity;
 import com.vmr.utils.Constants;
@@ -65,6 +67,7 @@ import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+import com.vmr.utils.VmrURL;
 
 import java.io.File;
 import java.util.List;
@@ -228,6 +231,7 @@ public class HomeActivity extends AppCompatActivity
         mMenuItemToBeIndexed = navigationView.getMenu().findItem(R.id.to_be_indexed);
         View headerView = navigationView.getHeaderView(0);
 
+        NetworkImageView accountLogo = (NetworkImageView) headerView.findViewById(R.id.accountLogo);
         TextView accountName = (TextView) headerView.findViewById(R.id.accountName);
         TextView accountEmail = (TextView) headerView.findViewById(R.id.accountEmail);
         TextView lastLogin = (TextView) headerView.findViewById(R.id.accountLastAccessed);
@@ -253,6 +257,15 @@ public class HomeActivity extends AppCompatActivity
                 startActivity(settingsIntent);
             }
         });
+
+        if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)) {
+            String newUrl = VmrURL.getImageUrl();
+            accountLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
+            accountLogo.setErrorImageResId(R.drawable.default_logo);
+        } else {
+            accountLogo.setDefaultImageResId(R.drawable.default_logo);
+        }
+
 
         if (PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_MEMBERSHIP_TYPE).equals(Constants.Request.Login.Domain.INDIVIDUAL)) {
             accountName.setText(

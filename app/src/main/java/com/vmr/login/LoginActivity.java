@@ -68,11 +68,7 @@ public class LoginActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
         ivLogo = (NetworkImageView) toolbar.findViewById(R.id.VMRLogo);
-
-        if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)) {
-            String newUrl = VmrURL.getImageUrl();
-            ivLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
-        }
+        updateLogo();
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
 
@@ -91,6 +87,16 @@ public class LoginActivity extends AppCompatActivity
 //        FirebaseCrash.report(exception);
     }
 
+    private void updateLogo() {
+        if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)) {
+            String newUrl = VmrURL.getImageUrl();
+            ivLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
+            ivLogo.setErrorImageResId(R.drawable.default_logo);
+        } else {
+            ivLogo.setDefaultImageResId(R.drawable.default_logo);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.login_menu, menu);
@@ -107,14 +113,7 @@ public class LoginActivity extends AppCompatActivity
             settingsDialog.setOnDismissListener(new SettingsDialog.OnDismissListener() {
                 @Override
                 public void onDismiss() {
-                    if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)){
-                        String newUrl = VmrURL.getImageUrl();
-                        VmrDebug.printLogI(LoginActivity.this.getClass(), "Updating image resource from url: " + newUrl);
-                        ivLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
-                        ivLogo.setErrorImageResId(R.drawable.default_logo);
-                    } else {
-                        ivLogo.setDefaultImageResId(R.drawable.default_logo);
-                    }
+                    updateLogo();
                 }
             });
             settingsDialog.show(fm, "Settings");

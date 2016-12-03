@@ -219,6 +219,7 @@ public class SettingsDialog extends DialogFragment {
 //                    spUrlType.setVisibility(View.VISIBLE);
 //                    etCustomUrl.setVisibility(View.VISIBLE);
                     spUrlType.setEnabled(true);
+                    spUrlType.setSelection(1);
                     etCustomUrl.setEnabled(true);
                     buttonCheck.setEnabled(true);
                     buttonPositive.setEnabled(false);
@@ -226,6 +227,7 @@ public class SettingsDialog extends DialogFragment {
 //                    spUrlType.setVisibility(View.GONE);
 //                    etCustomUrl.setVisibility(View.GONE);
                     spUrlType.setEnabled(false);
+                    spUrlType.setSelection(0);
                     etCustomUrl.setEnabled(false);
                     buttonCheck.setEnabled(false);
                     buttonPositive.setEnabled(true);
