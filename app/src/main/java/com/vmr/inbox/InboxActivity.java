@@ -108,22 +108,23 @@ public class InboxActivity extends AppCompatActivity
                     if(jsonObject.has("mailBody")) {
                         dbManager.updateNotification(notification.getInboxId(), jsonObject.getString("mailBody"));
 
-                        final AlertDialog.Builder alert = new AlertDialog.Builder(InboxActivity.this);
-                        alert.setTitle("Message Details");
+                        View promptsView = View.inflate(InboxActivity.this, R.layout.alert_dialog_message_details, null);
 
-                        WebView wv = new WebView(InboxActivity.this);
-                        wv.loadData(jsonObject.getString("mailBody"), "text/html", "utf-8");
+                        WebView webView = (WebView) promptsView.findViewById(R.id.webView);
+                        webView.loadData(jsonObject.getString("mailBody"), "text/html", "utf-8");
 
-                        alert.setView(wv);
+                        final AlertDialog.Builder messageDetailsDialog = new AlertDialog.Builder(InboxActivity.this);
+                        messageDetailsDialog.setTitle("Message Details");
+                        messageDetailsDialog.setView(promptsView);
 
                         if (notification.getType() == 4) {
-                            alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.dismiss();
                                 }
                             });
-                            alert.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(final DialogInterface dialogInterface, int i) {
                                     VmrDebug.printLogI(InboxActivity.this.getClass(), "Accept clicked");
@@ -144,7 +145,7 @@ public class InboxActivity extends AppCompatActivity
                                     acceptController.accept(notification.getInboxId(), notification.getSenderId(), notification.getInboxId(), notification.getReferenceId());
                                 }
                             });
-                            alert.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setNegativeButton("Reject", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(final DialogInterface dialogInterface, int i) {
                                     VmrDebug.printLogI(InboxActivity.this.getClass(), "Reject clicked");
@@ -190,7 +191,7 @@ public class InboxActivity extends AppCompatActivity
                                 }
                             });
                         } else if (notification.getType() == 5 || notification.getType() == 6) {
-                            alert.setPositiveButton("View", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setPositiveButton("View", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(final DialogInterface dialogInterface, int i) {
                                     VmrDebug.printLogI(InboxActivity.this.getClass(), "View clicked");
@@ -251,21 +252,21 @@ public class InboxActivity extends AppCompatActivity
                                     viewController.viewMessage(notification.getDocumentId(), notification.getSenderId(), notification.getToUserId(), notification.getReferenceId());
                                 }
                             });
-                            alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.dismiss();
                                 }
                             });
                         } else {
-                            alert.setNeutralButton("Close", new DialogInterface.OnClickListener() {
+                            messageDetailsDialog.setNeutralButton("Close", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int id) {
                                     dialog.dismiss();
                                 }
                             });
                         }
-                        alert.show();
+                        messageDetailsDialog.show();
                     } else {
                         dbManager.updateNotificationReadFlag(notification.getInboxId());
                     }
