@@ -5,7 +5,7 @@ import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
 import com.vmr.inbox.request.ViewRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -60,7 +60,7 @@ public class ViewController {
                         }
                 );
         VmrDebug.printLogI(this.getClass(), formData.toString());
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.Share.ViewRecord.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.Share.ViewRecord.TAG);
     }
 
     public interface OnViewListener {

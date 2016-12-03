@@ -17,6 +17,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.NetworkImageView;
 import com.vmr.BuildConfig;
 import com.vmr.R;
 import com.vmr.app.Vmr;
@@ -26,12 +27,14 @@ import com.vmr.home.HomeActivity;
 import com.vmr.login.controller.LoginController;
 import com.vmr.login.fragment.dialog.SettingsDialog;
 import com.vmr.model.UserInfo;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.ConnectionDetector;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+import com.vmr.utils.VmrURL;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,6 +44,8 @@ public class LoginActivity extends AppCompatActivity
         implements
         LoginController.OnLoginListener,
         LoginPagerAdapter.OnLoginClickListener {
+
+    NetworkImageView ivLogo;
 
     ProgressDialog loginProgress;
     DbManager dbManager;
@@ -62,6 +67,12 @@ public class LoginActivity extends AppCompatActivity
         }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_login);
+        ivLogo = (NetworkImageView) toolbar.findViewById(R.id.VMRLogo);
+
+        if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)) {
+            String newUrl = VmrURL.getImageUrl();
+            ivLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
+        }
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
 
@@ -93,6 +104,19 @@ public class LoginActivity extends AppCompatActivity
         if (id == R.id.action_settings) {
             FragmentManager fm = getFragmentManager();
             SettingsDialog settingsDialog = new SettingsDialog();
+            settingsDialog.setOnDismissListener(new SettingsDialog.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    if(PrefUtils.getSharedPreference(PrefConstants.URL_TYPE).equals(PrefConstants.URLType.CUSTOM)){
+                        String newUrl = VmrURL.getImageUrl();
+                        VmrDebug.printLogI(LoginActivity.this.getClass(), "Updating image resource from url: " + newUrl);
+                        ivLogo.setImageUrl(newUrl, VolleySingleton.getInstance().getImageLoader());
+                        ivLogo.setErrorImageResId(R.drawable.default_logo);
+                    } else {
+                        ivLogo.setDefaultImageResId(R.drawable.default_logo);
+                    }
+                }
+            });
             settingsDialog.show(fm, "Settings");
             return true;
         } else if (id == R.id.action_about) {

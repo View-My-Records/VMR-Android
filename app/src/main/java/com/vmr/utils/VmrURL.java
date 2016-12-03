@@ -29,4 +29,8 @@ public class VmrURL {
     public static String getAccountSetupUrl(){
         return PrefUtils.getSharedPreference(PrefConstants.BASE_URL) + Constants.Url.ACCOUNT_SETUP;
     }
+
+    public static String getImageUrl(){
+        return PrefUtils.getSharedPreference(PrefConstants.BASE_URL) + Constants.Url.IMAGE;
+    }
 }

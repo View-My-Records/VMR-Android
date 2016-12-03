@@ -25,7 +25,7 @@ import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.model.VmrTrashItem;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;
@@ -173,7 +173,7 @@ public class HomeController {
                                 onFetchRecordsListener.onFetchRecordsFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
     }
 
     public void fetchUnIndexed(String nodeRef){
@@ -198,7 +198,7 @@ public class HomeController {
                                 onFetchRecordsListener.onFetchRecordsFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(recordsRequest, Constants.Request.FolderNavigation.ListUnIndexed.TAG);
     }
 
     public void fetchTrash(){
@@ -223,7 +223,7 @@ public class HomeController {
                                 onFetchTrashListener.onFetchTrashFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(trashRequest, Constants.Request.FolderNavigation.ListTrashBin.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(trashRequest, Constants.Request.FolderNavigation.ListTrashBin.TAG);
     }
 
     public void createFolder(String folderName, String parentNodeRef){
@@ -258,7 +258,7 @@ public class HomeController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(createFolderRequest, Constants.Request.FolderNavigation.CreateFolder.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(createFolderRequest, Constants.Request.FolderNavigation.CreateFolder.TAG);
     }
 
     public void renameItem(Record record, String newName){
@@ -296,7 +296,7 @@ public class HomeController {
             authFailureError.printStackTrace();
         }
 
-        VmrRequestQueue.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(renameItemRequest, Constants.Request.FolderNavigation.RenameFileFolder.TAG);
     }
 
     public void moveItem(Record srcRecord, Record dstRecord){
@@ -336,7 +336,7 @@ public class HomeController {
                             }
                     );
 
-            VmrRequestQueue.getInstance().addToRequestQueue(moveRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
+            VolleySingleton.getInstance().addToRequestQueue(moveRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -378,7 +378,7 @@ public class HomeController {
                             }
                     );
 
-            VmrRequestQueue.getInstance().addToRequestQueue(linkRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
+            VolleySingleton.getInstance().addToRequestQueue(linkRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -421,7 +421,7 @@ public class HomeController {
                             }
                     );
 
-            VmrRequestQueue.getInstance().addToRequestQueue(copyRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
+            VolleySingleton.getInstance().addToRequestQueue(copyRequest, Constants.Request.FolderNavigation.MoveCopyLink.TAG);
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -473,7 +473,7 @@ public class HomeController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
     }
 
     public void deleteFromTrash(TrashRecord record){
@@ -521,7 +521,7 @@ public class HomeController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(moveToTrashRequest, Constants.Request.FolderNavigation.DeleteFileFolder.TAG);
     }
 
     public void fetchSharedByMe(){
@@ -547,7 +547,7 @@ public class HomeController {
                                 onFetchSharedByMe.onFetchSharedByMeFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(sharedByMeRequest, Constants.Request.FolderNavigation.ListSharedByMe.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(sharedByMeRequest, Constants.Request.FolderNavigation.ListSharedByMe.TAG);
     }
 
     public void removeExpiredRecords(){
@@ -570,7 +570,7 @@ public class HomeController {
 
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.RemoveExpiredRecords.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.RemoveExpiredRecords.TAG);
     }
 
     public void fetchClassifications(){
@@ -594,7 +594,7 @@ public class HomeController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(classificationRequest, Constants.Request.FolderNavigation.Classification.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(classificationRequest, Constants.Request.FolderNavigation.Classification.TAG);
     }
 
     public void fetchProperties( String docType, String nodeRef,  String programName){
@@ -623,7 +623,7 @@ public class HomeController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(propertiesRequest, Constants.Request.FolderNavigation.Properties.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(propertiesRequest, Constants.Request.FolderNavigation.Properties.TAG);
     }
 
 //    public void downloadFile(Record record){
@@ -651,7 +651,7 @@ public class HomeController {
 //                            }
 //                        }
 //                );
-//        VmrRequestQueue.getInstance()
+//        VolleySingleton.getInstance()
 //                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
 //    }
 //
@@ -680,7 +680,7 @@ public class HomeController {
 //                            }
 //                        }
 //                );
-//        VmrRequestQueue.getInstance()
+//        VolleySingleton.getInstance()
 //                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
 //    }
 //
@@ -709,7 +709,7 @@ public class HomeController {
 //                            }
 //                        }
 //                );
-//        VmrRequestQueue.getInstance()
+//        VolleySingleton.getInstance()
 //                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
 //    }
 //
@@ -738,7 +738,7 @@ public class HomeController {
 //                            }
 //                        }
 //                );
-//        VmrRequestQueue.getInstance()
+//        VolleySingleton.getInstance()
 //                .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
 //    }
 
@@ -784,7 +784,7 @@ public class HomeController {
                         }
                 );
 
-        VmrRequestQueue.getInstance().addToRequestQueue(saveIndexRequest, Constants.Request.FolderNavigation.SaveIndex.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(saveIndexRequest, Constants.Request.FolderNavigation.SaveIndex.TAG);
     }
 
 }

@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.vmr.R;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.LocalStorageFileAdapter;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import java.io.File;
@@ -144,7 +144,7 @@ public class FilePicker extends DialogFragment {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                    VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if (!stack.peek().equals(ROOT_PATH)) {
                         stack.pop();
                         updateAdapter();

@@ -51,7 +51,7 @@ import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -201,7 +201,7 @@ public class FragmentToBeIndexed extends Fragment
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
 
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
 
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
 
@@ -342,7 +342,7 @@ public class FragmentToBeIndexed extends Fragment
         VmrDebug.printLogI(this.getClass(), "Open button clicked" );
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
 
@@ -607,7 +607,7 @@ public class FragmentToBeIndexed extends Fragment
         VmrDebug.printLogI(this.getClass(), "Download button clicked" );
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getNodeRef());
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
@@ -952,7 +952,7 @@ public class FragmentToBeIndexed extends Fragment
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
             }
         });
         progressDialog.show();
@@ -1027,7 +1027,7 @@ public class FragmentToBeIndexed extends Fragment
     }
 
     private boolean switchToParent() {
-        VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+        VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
         if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
             recordStack.pop();
             if (recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
@@ -1074,7 +1074,7 @@ public class FragmentToBeIndexed extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                 homeController.fetchAllFilesAndFolders(recordStack.peek());
                 mSwipeRefreshLayout.setRefreshing(true);
             }

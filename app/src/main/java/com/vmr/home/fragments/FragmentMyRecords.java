@@ -63,7 +63,7 @@ import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
@@ -264,7 +264,7 @@ public class FragmentMyRecords extends Fragment
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
 
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
             recordStack.push(record.getNodeRef());
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
@@ -638,7 +638,7 @@ public class FragmentMyRecords extends Fragment
 
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
 
             fragmentInteractionListener.onFragmentInteraction(record.getRecordName());
 
@@ -900,7 +900,7 @@ public class FragmentMyRecords extends Fragment
         VmrDebug.printLogI(this.getClass(), "Download button clicked" );
         if(record.isFolder()){
             VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getNodeRef());
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
@@ -1245,7 +1245,7 @@ public class FragmentMyRecords extends Fragment
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
             }
         });
         progressDialog.show();
@@ -1338,7 +1338,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     private boolean switchToParent() {
-        VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+        VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
         if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
             recordStack.pop();
             if (recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
@@ -1385,7 +1385,7 @@ public class FragmentMyRecords extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }

@@ -46,6 +46,8 @@ public class SettingsDialog extends DialogFragment {
 
     boolean urlValidFlag = false;
 
+    OnDismissListener onDismissListener;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -276,4 +278,19 @@ public class SettingsDialog extends DialogFragment {
             }
         });
     }
+
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        onDismissListener.onDismiss();
+    }
+
+    public void setOnDismissListener(OnDismissListener onDismissListener){
+        this.onDismissListener = onDismissListener;
+    }
+
+    public interface OnDismissListener {
+        void onDismiss();
+    }
+
 }

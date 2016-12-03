@@ -24,7 +24,7 @@ import com.vmr.home.context_menu.TrashOptionsMenu;
 import com.vmr.home.controller.HomeController;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrTrashItem;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -110,7 +110,7 @@ public class FragmentTrash extends Fragment
     public void onItemClick(final TrashRecord record) {
         if(record.isFolder()){
             VmrDebug.printLine(record.getRecordName() + " Folder clicked");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListTrashBin.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListTrashBin.TAG);
         } else {
             VmrDebug.printLine(record.getRecordName() + " File clicked");
             Snackbar.make(getActivity().findViewById(android.R.id.content), "Can't view deleted files", Snackbar.LENGTH_SHORT).show();
@@ -152,7 +152,7 @@ public class FragmentTrash extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                 refreshFolder();
             }
         });

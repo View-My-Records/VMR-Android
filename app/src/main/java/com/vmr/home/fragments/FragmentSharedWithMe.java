@@ -39,7 +39,7 @@ import com.vmr.home.controller.HomeController;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -280,7 +280,7 @@ public class FragmentSharedWithMe extends Fragment
         if (DEBUG) VmrDebug.printLogI(this.getClass(), "Open button clicked" );
         if(record.isFolder()){
           if (DEBUG) VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder opened");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getNodeRef());
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
@@ -398,7 +398,7 @@ public class FragmentSharedWithMe extends Fragment
       if (DEBUG) VmrDebug.printLogI(this.getClass(), "Download button clicked" );
         if(record.isFolder()){
           if (DEBUG) VmrDebug.printLogI(this.getClass(),record.getRecordName() + " Folder clicked");
-            VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+            VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
             recordStack.push(record.getNodeRef());
             refreshFolder();
             mSwipeRefreshLayout.setRefreshing(true);
@@ -595,7 +595,7 @@ public class FragmentSharedWithMe extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                    VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_SHARED_NODE_REF))) {
                         recordStack.pop();
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
@@ -621,7 +621,7 @@ public class FragmentSharedWithMe extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithMe.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithMe.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }

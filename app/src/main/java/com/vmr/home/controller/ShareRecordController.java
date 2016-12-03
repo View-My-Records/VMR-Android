@@ -4,7 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.home.request.ShareRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -47,7 +47,7 @@ public class ShareRecordController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Message.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Message.TAG);
     }
 
     public interface OnShareRecordListener {

@@ -17,7 +17,7 @@ import com.vmr.app.Vmr;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.request.UploadRequest;
 import com.vmr.model.UploadPacket;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.network.error.CancelError;
 import com.vmr.utils.Constants;
 
@@ -84,7 +84,7 @@ public class UploadController {
             }
         }, new IntentFilter("CancelUpload"));
 
-        VmrRequestQueue.getInstance()
+        VolleySingleton.getInstance()
                 .addToRequestQueue(uploadRequest, String.valueOf(uploadId));
     }
 

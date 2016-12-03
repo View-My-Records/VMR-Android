@@ -4,7 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.inbox.request.AcceptRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -57,7 +57,7 @@ public class AcceptController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.Inbox.Accept.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.Inbox.Accept.TAG);
     }
 
     public interface OnAcceptListener {

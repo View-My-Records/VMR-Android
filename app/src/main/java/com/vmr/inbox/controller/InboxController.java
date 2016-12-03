@@ -5,7 +5,7 @@ import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.inbox.request.InboxRequest;
 import com.vmr.model.NotificationItem;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public class InboxController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.Inbox.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.Inbox.TAG);
     }
 
     public interface OnFetchInboxListener {

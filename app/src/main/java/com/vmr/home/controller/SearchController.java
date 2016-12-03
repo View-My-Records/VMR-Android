@@ -5,7 +5,7 @@ import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.home.request.SearchRequest;
 import com.vmr.model.SearchResult;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import java.util.List;
@@ -52,7 +52,7 @@ public class SearchController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Search.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Search.TAG);
     }
 
     public interface OnFetchResultsListener {

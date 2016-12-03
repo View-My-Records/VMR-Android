@@ -5,7 +5,7 @@ import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.db.notification.Notification;
 import com.vmr.home.request.MessageRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -46,7 +46,7 @@ public class MessageController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Message.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.Message.TAG);
     }
 
     public interface OnFetchMessageListener {

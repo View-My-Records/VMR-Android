@@ -39,7 +39,7 @@ import com.vmr.home.controller.HomeController;
 import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.VmrSharedItem;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -552,7 +552,7 @@ public class FragmentSharedByMe extends Fragment
         progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.Share.TAG);
             }
         });
         progressDialog.show();
@@ -591,7 +591,7 @@ public class FragmentSharedByMe extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedByMe.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedByMe.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }

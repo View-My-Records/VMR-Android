@@ -10,7 +10,7 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.home.request.DownloadRequest;
 import com.vmr.model.SearchResult;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import java.io.File;
@@ -54,7 +54,7 @@ public class DownloadController {
                         },
                         progressListener
                 );
-        VmrRequestQueue.getInstance()
+        VolleySingleton.getInstance()
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
@@ -84,7 +84,7 @@ public class DownloadController {
                         },
                         progressListener
                 );
-        VmrRequestQueue.getInstance()
+        VolleySingleton.getInstance()
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
@@ -114,7 +114,7 @@ public class DownloadController {
                         },
                         progressListener
                 );
-        VmrRequestQueue.getInstance()
+        VolleySingleton.getInstance()
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 
@@ -144,7 +144,7 @@ public class DownloadController {
                         },
                         progressListener
                 );
-        VmrRequestQueue.getInstance()
+        VolleySingleton.getInstance()
                 .addToRequestQueue(downloadRequest, Constants.Request.FolderNavigation.DownloadFile.TAG);
     }
 

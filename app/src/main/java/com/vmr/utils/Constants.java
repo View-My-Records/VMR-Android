@@ -22,6 +22,7 @@ public abstract class Constants {
         public final static String REPORT_DATA         = "/vmr/reportData.do";
         public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
         public final static String INBOX               = "/vmr/indoxData.do";
+        public static final String IMAGE               = "/vmr/imageAction.do";
     }
 
     public final static class Request {

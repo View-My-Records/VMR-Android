@@ -4,7 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.home.request.RecordDetailsRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -46,7 +46,7 @@ public class RecordDetailsController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.Share.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.Share.TAG);
     }
 
     public interface OnFetchRecordDetailsListener {

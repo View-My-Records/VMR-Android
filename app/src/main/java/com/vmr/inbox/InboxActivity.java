@@ -28,7 +28,7 @@ import com.vmr.inbox.controller.InboxController;
 import com.vmr.inbox.controller.RejectController;
 import com.vmr.inbox.controller.ViewController;
 import com.vmr.model.NotificationItem;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
 
@@ -86,7 +86,7 @@ public class InboxActivity extends AppCompatActivity
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListUnIndexed.TAG);
                 inboxController.fetchNotifications();
             }
         });

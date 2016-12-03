@@ -9,7 +9,7 @@ import com.vmr.login.request.AlfrescoTicketRequest;
 import com.vmr.login.request.CheckUrlRequest;
 import com.vmr.login.request.LoginRequest;
 import com.vmr.model.UserInfo;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 
@@ -141,7 +141,7 @@ public class LoginController {
                                 onFetchTicketListener.onFetchTicketFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(ticketRequest, Constants.VMR_LOGIN_REQUEST_TAG);
+        VolleySingleton.getInstance().addToRequestQueue(ticketRequest, Constants.VMR_LOGIN_REQUEST_TAG);
     }
 
     private void dispatchRequest(final Map<String, String> formData){
@@ -161,7 +161,7 @@ public class LoginController {
                                 onLoginListener.onLoginFailure(error);
                             }
                         } );
-        VmrRequestQueue.getInstance().addToRequestQueue(loginRequest, Constants.VMR_LOGIN_REQUEST_TAG);
+        VolleySingleton.getInstance().addToRequestQueue(loginRequest, Constants.VMR_LOGIN_REQUEST_TAG);
     }
 
     public void checkUrl(String url){
@@ -182,7 +182,7 @@ public class LoginController {
                             }
                         });
 
-        VmrRequestQueue.getInstance().addToRequestQueue(checkUrlRequest, Constants.VMR_LOGIN_REQUEST_TAG);
+        VolleySingleton.getInstance().addToRequestQueue(checkUrlRequest, Constants.VMR_LOGIN_REQUEST_TAG);
     }
 
     public interface OnLoginListener {

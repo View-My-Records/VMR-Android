@@ -4,7 +4,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.home.request.FetchIndexRequest;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 
 import org.json.JSONObject;
@@ -47,7 +47,7 @@ public class FetchIndexController {
                             }
                         }
                 );
-        VmrRequestQueue.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.GetIndex.TAG);
+        VolleySingleton.getInstance().addToRequestQueue(request, Constants.Request.FolderNavigation.GetIndex.TAG);
     }
 
     public interface OnFetchIndicesListener {

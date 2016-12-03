@@ -18,7 +18,7 @@ import com.vmr.app.Vmr;
 import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.adapters.DbFoldersAdapter;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
@@ -145,7 +145,7 @@ public class FolderPicker extends DialogFragment {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                    VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if (!stack.peek().equals(ROOT_PATH)) {
                         stack.pop();
                         updateAdapter();

@@ -31,7 +31,7 @@ import com.vmr.home.context_menu.RecordOptionsMenu;
 import com.vmr.home.controller.HomeController;
 import com.vmr.model.DeleteMessage;
 import com.vmr.model.VmrFolder;
-import com.vmr.network.VmrRequestQueue;
+import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.utils.Constants;
 import com.vmr.utils.ErrorMessage;
@@ -339,7 +339,7 @@ public class FragmentSearch extends Fragment
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 if(i == KeyEvent.KEYCODE_BACK && keyEvent.getAction() == KeyEvent.ACTION_UP){
-                    VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
+                    VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListAllFileFolder.TAG);
                     if (!recordStack.peek().equals(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF))) {
                         recordStack.pop();
                         records = dbManager.getAllSharedWithMeRecords(recordStack.peek());
@@ -365,7 +365,7 @@ public class FragmentSearch extends Fragment
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                VmrRequestQueue.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithMe.TAG);
+                VolleySingleton.getInstance().cancelPendingRequest(Constants.Request.FolderNavigation.ListSharedWithMe.TAG);
                 refreshFolder();
                 mSwipeRefreshLayout.setRefreshing(true);
             }
