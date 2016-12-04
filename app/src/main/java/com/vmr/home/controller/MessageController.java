@@ -50,7 +50,7 @@ public class MessageController {
     }
 
     public interface OnFetchMessageListener {
-        void onFetchMessageSuccess(JSONObject jsonObject);
+        void onFetchMessageSuccess(JSONObject response);
         void onFetchMessageFailure(VolleyError error);
     }
 }

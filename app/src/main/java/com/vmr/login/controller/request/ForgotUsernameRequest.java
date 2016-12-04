@@ -1,6 +1,7 @@
-package com.vmr.login.request;
+package com.vmr.login.controller.request;
 
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -10,17 +11,27 @@ import com.vmr.utils.VmrURL;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 /*
  * Created by abhijit on 8/17/16.
  */
 
-public class ForgotPasswordRequest extends PreLoginRequest<JSONObject> {
+public class ForgotUsernameRequest extends PreLoginRequest<JSONObject> {
 
-    public ForgotPasswordRequest(
-            String url,
+    private Map<String, String> formData;
+
+    public ForgotUsernameRequest(
+            Map<String, String> formData,
             Response.Listener<JSONObject> successListener,
             Response.ErrorListener errorListener) {
-        super(Method.POST, VmrURL.getAccountSetupUrl(), successListener, errorListener);
+        super(Method.POST, VmrURL.getForgotUsernameUrl(), successListener, errorListener);
+        this.formData = formData;
+    }
+
+    @Override
+    protected Map<String, String> getParams() throws AuthFailureError {
+        return this.formData;
     }
 
     @Override
@@ -31,7 +42,7 @@ public class ForgotPasswordRequest extends PreLoginRequest<JSONObject> {
             jsonObject = new JSONObject(jsonString);
         } catch (JSONException e) {
             e.printStackTrace();
-            return Response.error(new VolleyError("Invalid Username or Email"));
+            return Response.error(new VolleyError("Invalid email address"));
         }
         return Response.success(jsonObject, getCacheEntry());
     }

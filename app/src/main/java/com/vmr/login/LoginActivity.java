@@ -13,7 +13,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.android.volley.VolleyError;
@@ -24,6 +29,8 @@ import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.HomeActivity;
+import com.vmr.login.controller.ForgotPasswordController;
+import com.vmr.login.controller.ForgotUsernameController;
 import com.vmr.login.controller.LoginController;
 import com.vmr.login.fragment.dialog.SettingsDialog;
 import com.vmr.model.UserInfo;
@@ -36,20 +43,26 @@ import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 import com.vmr.utils.VmrURL;
 
+import org.json.JSONObject;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity
         implements
         LoginController.OnLoginListener,
         LoginPagerAdapter.OnLoginClickListener {
 
-    NetworkImageView ivLogo;
-
-    ProgressDialog loginProgress;
-    DbManager dbManager;
-    // Controller for queuing requests
+    ViewPager viewPager;
+    private String domain;
+    private NetworkImageView ivLogo;
+    private ProgressDialog loginProgress;
+    private DbManager dbManager;
     private LoginController loginController;
     private boolean remember = false;
 
@@ -72,8 +85,9 @@ public class LoginActivity extends AppCompatActivity
         toolbar.showOverflowMenu();
         setSupportActionBar(toolbar);
 
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final LoginPagerAdapter adapter = new LoginPagerAdapter(getSupportFragmentManager(), this);
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        LoginPagerAdapter adapter = new LoginPagerAdapter(getSupportFragmentManager());
+        adapter.setOnLoginClickListener(this);
         assert viewPager != null;
         viewPager.setAdapter(adapter);
 
@@ -135,46 +149,202 @@ public class LoginActivity extends AppCompatActivity
     }
 
     private void forgotUsernameHandler() {
-        AlertDialog.Builder forgotUsername
+
+        VmrDebug.printLogI(this.getClass(), "Domain: " + this.viewPager.getCurrentItem());
+
+        View dialogView = View.inflate(LoginActivity.this, R.layout.alert_dialog_forgot_username, null);
+
+        final EditText etEmail = (EditText) dialogView.findViewById(R.id.etEmail);
+        final Spinner spAccountType = (Spinner) dialogView.findViewById(R.id.spDomain);
+
+        final Map<String, String > domainMap = new HashMap<>();
+        domainMap.put("Individual", "IND");
+        domainMap.put("Family", "FAM");
+        domainMap.put("Professional", "PROF");
+        domainMap.put("Corporate", "CORP");
+
+        final List<String> domainList = new ArrayList<>();
+        domainList.add(0, "Select Domain");
+        domainList.add(1, "Individual");
+        domainList.add(2, "Family");
+        domainList.add(3, "Professional");
+        domainList.add(4, "Corporate");
+
+        ArrayAdapter<String> domainAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, domainList);
+        domainAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spAccountType.setAdapter(domainAdapter);
+
+        final int selection = viewPager.getCurrentItem()+1;
+        spAccountType.setSelection(selection);
+
+        AlertDialog.Builder builder
                 = new AlertDialog.Builder(this)
                 .setTitle("Forgot Password")
-                .setView(getLayoutInflater().inflate(R.layout.alert_dialog_forgot_username, null))
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
 
-                    }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+        final AlertDialog dialog = builder.create();
+        dialog.show();
 
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ForgotUsernameController controller
+                            = new ForgotUsernameController(
+                                new ForgotUsernameController.OnForgotUsernameListener() {
+                                    @Override
+                                    public void onOnForgotUsernameSuccess(JSONObject response) {
+                                        VmrDebug.printLogI(LoginActivity.this.getClass(), response.toString());
+                                    }
+
+                                    @Override
+                                    public void onOnForgotUsernameFailure(VolleyError error) {
+                                        VmrDebug.printLogI(LoginActivity.this.getClass(), "Request failed");
+                                    }
+                                });
+
+                        String email = null;
+
+                        String accountType = domainList.get(spAccountType.getSelectedItemPosition());
+                        String accountDomain = domainMap.get(accountType);
+
+                        if(etEmail.getText().toString().equals("")){
+                            etEmail.setError("This field is mandatory");
+                        } else {
+                            email = etEmail.getText().toString();
+                        }
+
+//                        VmrDebug.printLogI(LoginActivity.this.getClass(), "Account type: " + accountType);
+
+                        if(email !=  null) {
+                            controller.sendRequest(accountDomain, accountType, email);
+                        }
                     }
                 });
 
-        forgotUsername.show();
     }
 
     private void forgotPasswordHandler() {
-        AlertDialog.Builder forgotPassword
+
+        VmrDebug.printLogI(this.getClass(), "Domain: " + this.viewPager.getCurrentItem());
+
+        View dialogView = View.inflate(LoginActivity.this, R.layout.alert_dialog_forgot_password, null);
+
+        final EditText etUsername = (EditText) dialogView.findViewById(R.id.etUsername);
+        final EditText etEmail = (EditText) dialogView.findViewById(R.id.etEmail);
+        final EditText etAccountId = (EditText) dialogView.findViewById(R.id.etAccountId);
+        final Spinner spAccountType = (Spinner) dialogView.findViewById(R.id.spDomain);
+
+        final Map<String, String > domainMap = new HashMap<>();
+        domainMap.put("Individual", "IND");
+        domainMap.put("Family", "FAM");
+        domainMap.put("Professional", "PROF");
+        domainMap.put("Corporate", "CORP");
+        final List<String> domainList = new ArrayList<>();
+        domainList.add(0, "Select Domain");
+        domainList.add(1, "Individual");
+        domainList.add(2, "Family");
+        domainList.add(3, "Professional");
+        domainList.add(4, "Corporate");
+
+        ArrayAdapter<String> domainAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, domainList);
+        domainAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spAccountType.setAdapter(domainAdapter);
+
+        final int selection = viewPager.getCurrentItem()+1;
+        spAccountType.setSelection(selection);
+
+        if(selection == 1){
+            etAccountId.setEnabled(false);
+            etAccountId.setText("(Disabled)");
+        } else {
+            etAccountId.setEnabled(true);
+        }
+
+        spAccountType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if(position != 1 && position != 0){
+                    etAccountId.setEnabled(true);
+                    etAccountId.setText("");
+                } else {
+                    etAccountId.setEnabled(false);
+                    etAccountId.setText("(Disabled)");
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        AlertDialog.Builder builder
                 = new AlertDialog.Builder(this)
                 .setTitle("Forgot Password")
-                .setView(getLayoutInflater().inflate(R.layout.alert_dialog_forgot_password, null))
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                .setView(dialogView)
+                .setPositiveButton(android.R.string.ok, null)
+                .setNegativeButton(android.R.string.cancel, null);
 
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                .setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ForgotPasswordController controller
+                        = new ForgotPasswordController(new ForgotPasswordController.OnForgotPasswordListener() {
+                    @Override
+                    public void onOnForgotPasswordSuccess(JSONObject response) {
+                        VmrDebug.printLogI(LoginActivity.this.getClass(), response.toString());
                     }
-                })
-                .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
 
+                    @Override
+                    public void onOnForgotPasswordFailure(VolleyError error) {
+                        VmrDebug.printLogI(LoginActivity.this.getClass(), "Request failed");
                     }
                 });
 
-        forgotPassword.show();
+                String accountType = domainList.get(spAccountType.getSelectedItemPosition());
+                String accountDomain = domainMap.get(accountType);
 
+//                VmrDebug.printLogI(LoginActivity.this.getClass(), "Account type: " + accountDomain);
+
+                String username = null, email = null, accountId = null;
+
+                if(etUsername.getText().toString().equals("")){
+                    etUsername.setError("This field is mandatory");
+                } else {
+                    username = etUsername.getText().toString();
+                }
+
+                if(etEmail.getText().toString().equals("")){
+                    etEmail.setError("This field is mandatory");
+                } else {
+                    email = etEmail.getText().toString();
+                }
+
+                if(etAccountId.isEnabled()) {
+                    if (etAccountId.getText().toString().equals("")) {
+                        etAccountId.setError("This field is mandatory");
+                    } else {
+                        accountId = etAccountId.getText().toString() + "";
+                    }
+                }
+
+                if(username != null && email !=  null && accountId != null) {
+                    controller.sendRequest(
+                            accountDomain,
+                            accountType,
+                            username,
+                            email,
+                            accountId);
+                }
+            }
+        });
     }
 
     @Override
@@ -305,5 +475,11 @@ public class LoginActivity extends AppCompatActivity
         }
         this.remember = remember;
         loginProgress.show();
+    }
+
+    @Override
+    public void onFragmentChanged(String domain) {
+//        this.domain = domain;
+//        VmrDebug.printLogI(this.getClass(), "Domain: " + this.viewPager.getCurrentItem());
     }
 }

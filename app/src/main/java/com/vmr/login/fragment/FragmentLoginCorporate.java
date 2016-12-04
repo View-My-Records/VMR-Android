@@ -45,6 +45,8 @@ public class FragmentLoginCorporate extends Fragment {
                              ViewGroup container,
                              Bundle savedInstanceState) {
 
+//        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.CORPORATE);
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_corporate, container, false);
 
@@ -115,7 +117,17 @@ public class FragmentLoginCorporate extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.CORPORATE);
+    }
+
     public void setCallbackInterface(LoginPagerAdapter.OnLoginClickListener onLoginClickListener){
         this.onLoginClickListener = onLoginClickListener;
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String title);
     }
 }

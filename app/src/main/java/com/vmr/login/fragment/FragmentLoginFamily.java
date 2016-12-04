@@ -44,6 +44,7 @@ public class FragmentLoginFamily extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
+//        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.FAMILY);
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_family, container, false);
@@ -113,6 +114,12 @@ public class FragmentLoginFamily extends Fragment {
 
         etUsername.setSelection(etUsername.getText().length());
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.FAMILY);
     }
 
     public void setCallbackInterface(LoginPagerAdapter.OnLoginClickListener onLoginClickListener){

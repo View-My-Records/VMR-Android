@@ -45,6 +45,8 @@ public class FragmentLoginProfessional extends Fragment {
                              ViewGroup container,
                              Bundle savedInstanceState) {
 
+//        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.PROFESSIONAL);
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_professional, container, false);
 
@@ -113,6 +115,13 @@ public class FragmentLoginProfessional extends Fragment {
 
         etUsername.setSelection(etUsername.getText().length());
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.PROFESSIONAL);
+
     }
 
     public void setCallbackInterface(LoginPagerAdapter.OnLoginClickListener onLoginClickListener){

@@ -20,9 +20,12 @@ public class LoginPagerAdapter extends FragmentPagerAdapter {
 
     private OnLoginClickListener onLoginClickListener;
 
-    LoginPagerAdapter(FragmentManager fm, OnLoginClickListener onLoginClickListener) {
+    LoginPagerAdapter(FragmentManager fm) {
         super(fm);
         this.numberOfPages = pages.length;
+    }
+
+    public void setOnLoginClickListener(OnLoginClickListener onLoginClickListener) {
         this.onLoginClickListener = onLoginClickListener;
     }
 
@@ -81,5 +84,11 @@ public class LoginPagerAdapter extends FragmentPagerAdapter {
         void onProfessionalLoginClick(String email, String password, String name, String domain, boolean remember);
 
         void onCorporateLoginClick(String email, String password, String name, String domain, boolean remember);
+
+        void onFragmentChanged(String domain);
+    }
+
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(String title);
     }
 }

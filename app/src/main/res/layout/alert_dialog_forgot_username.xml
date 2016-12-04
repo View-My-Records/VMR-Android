@@ -8,7 +8,8 @@
         android:id="@+id/tilEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true" >
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" >
         <AutoCompleteTextView
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/etEmail"
@@ -17,10 +18,21 @@
             android:layout_centerHorizontal="true"
             android:ems="15"
             android:hint="@string/email_address"
-            android:imeOptions="actionNext"
+            android:imeOptions="actionDone"
             android:inputType="text|textNoSuggestions"
-            android:maxLines="1"
-            android:text="Email" />
+            android:maxLines="1" />
     </android.support.design.widget.TextInputLayout>
+
+    <Spinner
+        android:id="@+id/spDomain"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignEnd="@+id/tilEmail"
+        android:layout_alignLeft="@+id/tilEmail"
+        android:layout_alignRight="@+id/tilEmail"
+        android:layout_alignStart="@+id/tilEmail"
+        android:layout_below="@+id/tilEmail"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp" />
 
 </RelativeLayout>

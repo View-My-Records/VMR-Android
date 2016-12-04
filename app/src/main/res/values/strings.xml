@@ -142,6 +142,7 @@
     <string-array name="multi_select_list_preference_default_value" />
     <string name="title_activity_index">Indexing</string>
     <string name="email_address">E-mail Address</string>
+    <string name="corporate_id">ID</string>
 
 
 </resources>

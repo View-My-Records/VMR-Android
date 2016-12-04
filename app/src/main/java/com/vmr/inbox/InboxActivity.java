@@ -102,16 +102,16 @@ public class InboxActivity extends AppCompatActivity
     public void onNotificationClick(final com.vmr.db.notification.Notification notification) {
         MessageController messageController = new MessageController(new MessageController.OnFetchMessageListener() {
             @Override
-            public void onFetchMessageSuccess(JSONObject jsonObject) {
+            public void onFetchMessageSuccess(JSONObject response) {
                 VmrDebug.printLogI(InboxActivity.this.getClass(), "Message received");
                 try {
-                    if(jsonObject.has("mailBody")) {
-                        dbManager.updateNotification(notification.getInboxId(), jsonObject.getString("mailBody"));
+                    if(response.has("mailBody")) {
+                        dbManager.updateNotification(notification.getInboxId(), response.getString("mailBody"));
 
                         View promptsView = View.inflate(InboxActivity.this, R.layout.alert_dialog_message_details, null);
 
                         WebView webView = (WebView) promptsView.findViewById(R.id.webView);
-                        webView.loadData(jsonObject.getString("mailBody"), "text/html", "utf-8");
+                        webView.loadData(response.getString("mailBody"), "text/html", "utf-8");
 
                         final AlertDialog.Builder messageDetailsDialog = new AlertDialog.Builder(InboxActivity.this);
                         messageDetailsDialog.setTitle("Message Details");

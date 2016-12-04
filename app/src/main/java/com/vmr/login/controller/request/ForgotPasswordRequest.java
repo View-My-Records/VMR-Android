@@ -1,11 +1,10 @@
-package com.vmr.login.request;
+package com.vmr.login.controller.request;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.vmr.debug.VmrDebug;
-import com.vmr.model.UserInfo;
 import com.vmr.network.PreLoginRequest;
 import com.vmr.utils.VmrURL;
 
@@ -15,18 +14,18 @@ import org.json.JSONObject;
 import java.util.Map;
 
 /*
- * Created by abhijit on 8/19/16.
+ * Created by abhijit on 8/17/16.
  */
 
-public class LoginRequest extends PreLoginRequest<UserInfo> {
+public class ForgotPasswordRequest extends PreLoginRequest<JSONObject> {
 
     private Map<String, String> formData;
 
-    public LoginRequest(
+    public ForgotPasswordRequest(
             Map<String, String> formData,
-            Response.Listener<UserInfo> successListener,
+            Response.Listener<JSONObject> successListener,
             Response.ErrorListener errorListener) {
-        super( Method.POST, VmrURL.getLoginUrl(), successListener, errorListener);
+        super(Method.POST, VmrURL.getForgotPasswordUrl(), successListener, errorListener);
         this.formData = formData;
     }
 
@@ -36,20 +35,16 @@ public class LoginRequest extends PreLoginRequest<UserInfo> {
     }
 
     @Override
-    protected Response<UserInfo> parseNetworkResponse(NetworkResponse response) {
-//        VmrDebug.printLogD(this.getClass(), response.headers.toString());
+    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
-//        VmrDebug.printLogD(this.getClass(), jsonString);
         JSONObject jsonObject;
-        UserInfo userInfo;
-        VmrDebug.printLogI(this.getClass(), jsonString);
         try {
             jsonObject = new JSONObject(jsonString);
-            userInfo = new UserInfo( jsonObject);
         } catch (JSONException e) {
             e.printStackTrace();
-            return Response.error(new VolleyError("Invalid Username or Password"));
+            return Response.error(new VolleyError("Invalid Username or Email"));
         }
-        return Response.success(userInfo, getCacheEntry());
+        return Response.success(jsonObject, getCacheEntry());
     }
+
 }

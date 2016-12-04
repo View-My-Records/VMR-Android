@@ -43,6 +43,6 @@ public class PrefConstants {
     public static class URLType {
         public final static String STANDARD         = "STANDARD";
         public final static String CUSTOM           = "CUSTOM";
-        public final static String VIEW_MY_RECORDS  = "VIEW_MY_RECORDS";
+        public final static String VIEW_MY_RECORDS  = "VMRPORTAL";
     }
 }

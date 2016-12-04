@@ -33,4 +33,12 @@ public class VmrURL {
     public static String getImageUrl(){
         return PrefUtils.getSharedPreference(PrefConstants.BASE_URL) + Constants.Url.IMAGE;
     }
+
+    public static String getForgotPasswordUrl(){
+        return PrefUtils.getSharedPreference(PrefConstants.BASE_URL) + Constants.Url.FORGOT_PASSWORD;
+    }
+
+    public static String getForgotUsernameUrl(){
+        return PrefUtils.getSharedPreference(PrefConstants.BASE_URL) + Constants.Url.FORGOT_USERNAME;
+    }
 }

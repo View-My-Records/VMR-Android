@@ -23,6 +23,8 @@ public abstract class Constants {
         public final static String ACCOUNT_SETUP       = "/vmr/accountSetup.do";
         public final static String INBOX               = "/vmr/indoxData.do";
         public static final String IMAGE               = "/vmr/imageAction.do";
+        public static final String FORGOT_PASSWORD     = "/vmr/emailPass.do";
+        public static final String FORGOT_USERNAME     = "/vmr/emailLoginId.do";
     }
 
     public final static class Request {
@@ -336,6 +338,40 @@ public abstract class Constants {
         public final static class Alfresco {
             public static final String ALFRESCO_NODE_REFERENCE = "alfNoderef";
             public static final String ALFRESCO_TICKET = "alf_ticket";
+        }
+
+        public final static class ForgotPassword{
+            public static final String TAG       = "VMR_FORGOT_PASSWORD";
+
+            /**
+             * UrlType=STANDARD
+             &accSelected=Individual
+             &corporateId=
+             &domain=STANDARD
+             &domainvalue=STANDARD
+             &emailid=abhijitpparate%40gmail.com
+             &lang=
+             &userDomaintype=IND
+             &userName=induser
+             */
+
+            public static final String URL_TYPE         = "UrlType"; // STANDARD
+            public static final String ACCOUNT_SELECTED = "accSelected"; // Individual
+            public static final String CORPORATE_ID     = "corporateId";
+            public static final String URL_TYPE1        = "domain"; // STANDARD
+            public static final String URL_TYPE2        = "domainvalue"; // STANDARD
+            public static final String EMAIL            = "emailid";
+            public static final String DOMAIN           = "userDomaintype";
+            public static final String USERNAME         = "userName";
+        }
+
+        public final static class ForgotUsername{
+            public static final String TAG       = "VMR_FORGOT_USERNAME";
+
+            public static final String ACCOUNT_TYPE = "accSelected";
+            public static final String URL_TYPE     = "domainvalue";
+            public static final String EMAIL        = "emailid";
+            public static final String DOMAIN       = "userDomaintype";
         }
 
     }

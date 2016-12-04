@@ -34,7 +34,6 @@ public class FragmentLoginIndividual extends Fragment {
 
     private LoginPagerAdapter.OnLoginClickListener onLoginClickListener;
 
-    @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
@@ -44,6 +43,8 @@ public class FragmentLoginIndividual extends Fragment {
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
+
+//        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.INDIVIDUAL);
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.login_fragment_individual, container, false);
@@ -111,6 +112,12 @@ public class FragmentLoginIndividual extends Fragment {
 
         etUsername.setSelection(etUsername.getText().length());
         return rootView;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        onLoginClickListener.onFragmentChanged(Constants.Request.Login.Domain.INDIVIDUAL);
     }
 
     public void setCallbackInterface(LoginPagerAdapter.OnLoginClickListener onLoginClickListener){
