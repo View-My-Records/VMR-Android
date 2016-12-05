@@ -223,5 +223,5 @@ public class DbConstants {
 
     //DB Constants
     static final String DATABASE_NAME = "vmr.db";
-    static final int VERSION = 22;
+    static final int VERSION = 23;
 }

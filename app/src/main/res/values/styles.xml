@@ -31,6 +31,5 @@
     <style name="AppTheme.ActionBar" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="actionMenuTextColor">@color/cardview_dark_background</item>
     </style>
-    `
 
 </resources>

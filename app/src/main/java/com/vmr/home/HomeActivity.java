@@ -57,6 +57,7 @@ import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.inbox.InboxActivity;
 import com.vmr.inbox.controller.InboxController;
+import com.vmr.login.LoginActivity;
 import com.vmr.model.NotificationItem;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VolleySingleton;
@@ -187,7 +188,6 @@ public class HomeActivity extends AppCompatActivity
         homeController.fetchAllFilesAndFolders(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
 
         inboxController = new InboxController(this);
-        updateNotifications();
     }
 
     public void updateNotifications(){
@@ -386,9 +386,7 @@ public class HomeActivity extends AppCompatActivity
             fragmentClass = FragmentHelp.class;
         } else if (id == R.id.log_out) {
             Intent restartApp
-                    = getBaseContext()
-                    .getPackageManager()
-                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
+                    = new Intent(this, LoginActivity.class);
             restartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(restartApp);
             finish();
@@ -463,6 +461,8 @@ public class HomeActivity extends AppCompatActivity
             mSearchView.setIconified(true);
             mSearchItem.collapseActionView();
         }
+
+        updateNotifications();
     }
 
     @Override

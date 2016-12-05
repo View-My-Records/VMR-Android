@@ -156,8 +156,6 @@ public class FragmentMyRecords extends Fragment
         recordStack = new Stack<>();
         recordStack.push(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
 
-
-
         if(DEBUG) VmrDebug.printLogI(this.getClass(), recordStack.peek());
         if(DEBUG) VmrDebug.printLogI(this.getClass(), PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
     }

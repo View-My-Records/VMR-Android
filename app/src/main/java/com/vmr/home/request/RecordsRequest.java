@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class RecordsRequest extends PostLoginRequest<VmrFolder> {
 
-    private boolean DEBUG = false;
+    private boolean DEBUG = true;
 
     private Map<String, String> formData;
 
@@ -38,10 +38,16 @@ public class RecordsRequest extends PostLoginRequest<VmrFolder> {
     }
 
     @Override
+    public Priority getPriority() {
+        return Priority.HIGH;
+    }
+
+    @Override
     protected Response<VmrFolder> parseNetworkResponse(NetworkResponse response) {
 
         String jsonString = new String(response.data);
 
+        if(DEBUG) VmrDebug.printLogI(this.getClass(), formData.toString());
         if(DEBUG) VmrDebug.printLogI(this.getClass(), jsonString);
 
         VmrFolder folder;

@@ -66,16 +66,4 @@ public class Vmr extends Application {
         vmrInstance = this;
         super.onCreate();
     }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-    }
-
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
-
-
 }
