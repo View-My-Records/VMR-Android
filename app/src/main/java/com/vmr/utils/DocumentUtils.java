@@ -1,6 +1,5 @@
 package com.vmr.utils;
 
-import android.annotation.TargetApi;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
@@ -23,7 +22,6 @@ public class DocumentUtils {
      * @param uri
      * @return path of the selected image file from gallery
      */
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     public static String getPath(final Context context, final Uri uri) {
 
         // check here to KITKAT or new version

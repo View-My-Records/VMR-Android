@@ -22,6 +22,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.FileProvider;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -67,12 +68,12 @@ import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
 import com.vmr.service.UploadService;
 import com.vmr.utils.Constants;
-import com.vmr.utils.DocumentUtils;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
+import com.vmr.utils.RealPathUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -131,6 +132,7 @@ public class FragmentMyRecords extends Fragment
             refreshFolder();
         }
     };
+    private String cameraImagePath;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -409,11 +411,23 @@ public class FragmentMyRecords extends Fragment
             Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                 if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                    File photoFile = createImageFile();
-
-                    assert photoFile != null;
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoFile);
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    File photoFile;
+                    try {
+                        photoFile = createImageFile();
+                        if (photoFile != null) {
+                            Uri photoURI = FileProvider.getUriForFile(getActivity(),
+                                    "com.vmr",
+                                    photoFile);
+                            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                            try {
+                                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                            } catch (ActivityNotFoundException e){
+                                Snackbar.make(getActivity().findViewById(R.id.clayout), "Couldn't find camera application", Snackbar.LENGTH_LONG).show();
+                            }
+                        }
+                    } catch (IOException e){
+                        Snackbar.make(getActivity().findViewById(R.id.clayout), "Couldn't create the file", Snackbar.LENGTH_LONG).show();
+                    }
                 } else {
                     Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
                             .setAction("OK", new View.OnClickListener() {
@@ -439,12 +453,32 @@ public class FragmentMyRecords extends Fragment
         }
     }
 
-    private File createImageFile() {
-        // Create an image file name
-        File mediaStorageDir = new File(getActivity().getFilesDir().getAbsolutePath());
-
+    private File createImageFile() throws IOException {
+        // Timestamp for image
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        return new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+
+        // File Directory
+        File mediaStorageDir = new File(getActivity().getCacheDir().getAbsolutePath()+"/temp");
+
+
+        // File name
+        String fileName = "IMG_"+ timeStamp;
+
+        boolean success = mediaStorageDir.mkdir();
+        if(success) {
+            // create temp file
+            File imageFile = File.createTempFile(
+                    fileName,       /* prefix */
+                    ".jpg",         /* suffix */
+                    mediaStorageDir /* directory */
+            );
+
+            cameraImagePath = imageFile.getAbsolutePath();
+
+            return imageFile;
+        } else {
+            throw new IOException("Couldn't create dir");
+        }
     }
 
     @Override
@@ -476,19 +510,49 @@ public class FragmentMyRecords extends Fragment
                 Uri uri = data.getData();
                 onFilePicked(uri);
             } else if(requestCode == REQUEST_IMAGE_CAPTURE){
-                Uri uri = data.getData();
-                onFilePicked(uri);
+                onFilePicked();
             } else if(requestCode == REQUEST_INDEX_FILE){
                 refreshFolder();
             }
         }
     }
 
-    private void onFilePicked(Uri uri){
+    private void onFilePicked(Uri selectedImageUri){
 
-        String filePath = DocumentUtils.getPath(getActivity(), uri);
-        assert filePath != null;
-        final File file = new File(filePath);
+        VmrDebug.printLogI(this.getClass(), "File URI :" + selectedImageUri);
+
+        String filePath;
+        // SDK < API11
+        if (Build.VERSION.SDK_INT < 11)
+            filePath = RealPathUtil.getRealPathFromURI_BelowAPI11(getActivity(), selectedImageUri);
+
+            // SDK >= 11 && SDK < 19
+        else if (Build.VERSION.SDK_INT < 19)
+            filePath = RealPathUtil.getRealPathFromURI_API11to18(getActivity(), selectedImageUri);
+
+            // SDK > 19 (Android 4.4)
+        else
+            filePath = RealPathUtil.getRealPathFromURI_API19(getActivity(), selectedImageUri);
+
+        VmrDebug.printLogI(this.getClass(), "File path :" + filePath);
+
+        if(filePath !=null) {
+            File file = new File(filePath);
+            dbManager.queueUpload(file, recordStack.peek());
+
+            Intent uploadIntent = new Intent(getActivity(), UploadService.class);
+            getActivity().startService(uploadIntent);
+        } else {
+            Snackbar.make(getActivity().findViewById(R.id.clayout)
+                            , "Couldn't create a local file"
+                            , Snackbar.LENGTH_LONG)
+                    .show();
+        }
+    }
+
+    private void onFilePicked(){
+        VmrDebug.printLogI(this.getClass(), "File path :" + cameraImagePath);
+        final File file = new File(cameraImagePath);
 
         dbManager.queueUpload(file, recordStack.peek());
 
