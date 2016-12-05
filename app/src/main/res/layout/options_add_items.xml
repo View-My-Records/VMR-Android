@@ -11,7 +11,8 @@
         android:layout_centerInParent="true"
         android:layout_margin="20dp"
         android:background="@android:color/transparent"
-        android:scaleType="fitXY"
+        android:padding="15dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/file"
         android:text="File" />
     <ImageButton
@@ -22,7 +23,8 @@
         android:layout_toLeftOf="@id/ibUpload"
         android:layout_toStartOf="@id/ibUpload"
         android:background="@android:color/transparent"
-        android:scaleType="fitXY"
+        android:padding="15dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/camera" />
     <ImageButton
         android:id="@+id/ibNewFolder"
@@ -32,7 +34,8 @@
         android:layout_toEndOf="@id/ibUpload"
         android:layout_toRightOf="@id/ibUpload"
         android:background="@android:color/transparent"
-        android:scaleType="fitXY"
+        android:padding="15dp"
+        android:scaleType="centerCrop"
         android:src="@drawable/ic_folder" />
 
 </RelativeLayout>

@@ -27,7 +27,8 @@
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
             android:name=".login.LoginActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -39,6 +40,7 @@
             android:configChanges="keyboard"
             android:label="@string/title_activity_home"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize|adjustPan">
             <intent-filter>
@@ -55,6 +57,7 @@
         <activity
             android:name=".home.activity.SearchResultActivity"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -106,19 +109,15 @@
 
         <receiver android:name=".broadcast_receivers.CancelDownloadReceiver" />
 
-        <!--
-     ATTENTION: This was auto-generated to add Google Play services to your project for
-     App Indexing.  See https://g.co/AppIndexing/AndroidStudio for more information.
-        -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".home.activity.ViewActivity" />
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".home.HomeActivity">
+            android:parentActivityName=".home.HomeActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vmr.home.HomeActivity" />
@@ -126,7 +125,8 @@
         <activity
             android:name=".inbox.InboxActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".home.HomeActivity">
+            android:parentActivityName=".home.HomeActivity"
+            android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vmr.home.HomeActivity" />
@@ -145,6 +145,7 @@
             android:name=".home.activity.IndexActivity"
             android:label="@string/title_activity_index"
             android:parentActivityName=".home.HomeActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan">
             <meta-data

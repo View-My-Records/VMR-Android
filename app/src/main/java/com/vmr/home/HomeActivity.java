@@ -158,7 +158,7 @@ public class HomeActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (savedInstanceState == null) {
+//        if (savedInstanceState == null) {
             Fragment fragment = null;
             Class fragmentClass = FragmentMyRecords.class;
             try {
@@ -166,31 +166,21 @@ public class HomeActivity extends AppCompatActivity
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
+//
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.home_fragment_holder, fragment).commit();
-
+//
+//            Vmr.setDbManager(new DbManager());
+//        }
             dbManager = Vmr.getDbManager();
-        }
 
         setupNavigationDrawer(toolbar);
 
-        try {
-            if (dbManager.getRecord(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)).getRecordId() == null) {
-                Record newRecord = new Record();
-                newRecord.setRecordName("Root");
-                newRecord.setRecordNodeRef(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
-                dbManager.addRecord(newRecord);
-            }
-        } catch (Exception e){
-            e.printStackTrace();
-            Intent restartApp
-                    = getBaseContext()
-                    .getPackageManager()
-                    .getLaunchIntentForPackage( getBaseContext().getPackageName() );
-            restartApp.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(restartApp);
-            finish();
+        if (dbManager.getRecord(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF)).getRecordId() == null) {
+            Record newRecord = new Record();
+            newRecord.setRecordName("Root");
+            newRecord.setRecordNodeRef(PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ROOT_NODE_REF));
+            dbManager.addRecord(newRecord);
         }
 
         HomeController homeController = new HomeController(this);
@@ -446,6 +436,7 @@ public class HomeActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
