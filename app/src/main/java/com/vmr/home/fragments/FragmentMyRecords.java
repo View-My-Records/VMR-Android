@@ -63,6 +63,7 @@ import com.vmr.home.fragments.dialog.ShareDialog;
 import com.vmr.home.interfaces.Interaction;
 import com.vmr.home.request.DownloadTask;
 import com.vmr.model.DeleteMessage;
+import com.vmr.model.RecordDetails;
 import com.vmr.model.VmrFolder;
 import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
@@ -1283,11 +1284,11 @@ public class FragmentMyRecords extends Fragment
 
         final RecordDetailsController recordDetailsController = new RecordDetailsController(new RecordDetailsController.OnFetchRecordDetailsListener() {
             @Override
-            public void onFetchRecordDetailsSuccess(JSONObject jsonObject) {
+            public void onFetchRecordDetailsSuccess(RecordDetails recordDetails) {
                 progressDialog.dismiss();
                 new AlertDialog
                     .Builder(getActivity())
-                    .setMessage(jsonObject.toString())
+                    .setMessage(recordDetails.getRecordName() + " details fetched")
                     .show();
             }
 

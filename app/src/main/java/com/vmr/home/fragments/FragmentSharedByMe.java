@@ -38,6 +38,7 @@ import com.vmr.home.controller.DownloadTaskController;
 import com.vmr.home.controller.HomeController;
 import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.request.DownloadTask;
+import com.vmr.model.RecordDetails;
 import com.vmr.model.VmrSharedItem;
 import com.vmr.network.VolleySingleton;
 import com.vmr.response_listener.VmrResponseListener;
@@ -47,8 +48,6 @@ import com.vmr.utils.FileUtils;
 import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
@@ -528,11 +527,11 @@ public class FragmentSharedByMe extends Fragment
 
         final RecordDetailsController recordDetailsController = new RecordDetailsController(new RecordDetailsController.OnFetchRecordDetailsListener() {
             @Override
-            public void onFetchRecordDetailsSuccess(JSONObject jsonObject) {
+            public void onFetchRecordDetailsSuccess(RecordDetails recordDetails) {
                 progressDialog.dismiss();
                 new AlertDialog
                         .Builder(getActivity())
-                        .setMessage(jsonObject.toString())
+                        .setMessage(recordDetails.getRecordName() + " details fetched")
                         .show();
             }
 

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/ivFileIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="8dp"
+        android:contentDescription="Icon"
+        android:src="@drawable/ic_folder" />
+
+    <TextView
+        android:id="@+id/tvFileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/ivFileIcon"
+        android:layout_toLeftOf="@+id/ivOverflow"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:ellipsize="end"
+        android:gravity="center_horizontal|end"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:text="File Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textStyle="bold" />
+
+</RelativeLayout>

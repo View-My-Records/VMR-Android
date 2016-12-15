@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_select"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:orderInCategory="100"
+        android:title="Upload"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_create_new_folder"
+        android:title="Create new folder"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_cancel"
+        android:title="Cancel"
+        app:showAsAction="never" />
+</menu>

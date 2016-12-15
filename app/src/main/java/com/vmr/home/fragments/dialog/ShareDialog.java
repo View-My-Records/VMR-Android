@@ -33,11 +33,11 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.debug.VmrDebug;
 import com.vmr.home.controller.RecordDetailsController;
 import com.vmr.home.controller.ShareRecordController;
+import com.vmr.model.RecordDetails;
 import com.vmr.utils.ErrorMessage;
 import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.Validator;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -57,7 +57,6 @@ public class ShareDialog extends DialogFragment
 
     private static final String NODE_REF = "NODE_REF";
     SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault()); //"31/10/2016 08:00:00"
-    TextView tvInvisibleError;
     private int READ_CONTACTS_REQUEST = 101;
     private String recordNodeRef;
     private Date shareExpiryDate;
@@ -247,23 +246,16 @@ public class ShareDialog extends DialogFragment
         RecordDetailsController recordDetailsController =
                 new RecordDetailsController(new RecordDetailsController.OnFetchRecordDetailsListener() {
             @Override
-            public void onFetchRecordDetailsSuccess(JSONObject jsonObject) {
+            public void onFetchRecordDetailsSuccess(RecordDetails recordDetails) {
                 VmrDebug.printLogI(ShareDialog.this.getClass(), "Record details");
                 progressDialog.dismiss();
-                VmrDebug.printLogI(ShareDialog.this.getClass(), jsonObject.toString());
-                Date recordExpiryDate = null;
+//                VmrDebug.printLogI(ShareDialog.this.getClass(), jsonObject.toString());
+
                 try {
-                    JSONArray properties = jsonObject.getJSONArray("Properties");
-                    for(int i = 0; i < properties.length(); i++){
-                        JSONObject p = properties.getJSONObject(i);
-                        if(p.getString("Name").equals("vmr_expirydate")){
-                            DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
-                            recordExpiryDate = df.parse(p.getString("Value"));
-                            break;
-                        }
-                    }
+                    DateFormat df = new SimpleDateFormat("EEE MMM dd kk:mm:ss z yyyy", Locale.ENGLISH);
+                    Date recordExpiryDate = df.parse(recordDetails.getProperties().get(RecordDetails.EXPIRYDATE));
                     if(ShareDialog.this.shareExpiryDate.before(recordExpiryDate)){
-                        DateFormat df = new SimpleDateFormat("dd-MM-yyyy kk:mm:ss ", Locale.ENGLISH);
+                        df = new SimpleDateFormat("dd-MM-yyyy kk:mm:ss ", Locale.ENGLISH);
                         String lifeSpan = df.format(ShareDialog.this.shareExpiryDate);
                         Record record = Vmr.getDbManager().getRecord(recordNodeRef);
 
@@ -287,6 +279,7 @@ public class ShareDialog extends DialogFragment
 
                 } catch (JSONException | ParseException e) {
                     e.printStackTrace();
+                    VmrDebug.printLogI(ShareDialog.this.getClass(), "Couldn't parse date string");
                 }
             }
 

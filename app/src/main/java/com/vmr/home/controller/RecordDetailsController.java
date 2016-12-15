@@ -4,10 +4,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.home.request.RecordDetailsRequest;
+import com.vmr.model.RecordDetails;
 import com.vmr.network.VolleySingleton;
 import com.vmr.utils.Constants;
-
-import org.json.JSONObject;
 
 import java.util.Map;
 
@@ -33,10 +32,10 @@ public class RecordDetailsController {
         RecordDetailsRequest request =
                 new RecordDetailsRequest(
                         formData,
-                        new Response.Listener<JSONObject>() {
+                        new Response.Listener<RecordDetails>() {
                             @Override
-                            public void onResponse(JSONObject jsonObject) {
-                                fetchRecordExpiryListener.onFetchRecordDetailsSuccess(jsonObject);
+                            public void onResponse(RecordDetails recordDetails) {
+                                fetchRecordExpiryListener.onFetchRecordDetailsSuccess(recordDetails);
                             }
                         },
                         new Response.ErrorListener() {
@@ -50,7 +49,7 @@ public class RecordDetailsController {
     }
 
     public interface OnFetchRecordDetailsListener {
-        void onFetchRecordDetailsSuccess(JSONObject jsonObject);
+        void onFetchRecordDetailsSuccess(RecordDetails recordDetails);
         void onFetchRecordDetailsFailure(VolleyError error);
     }
 }

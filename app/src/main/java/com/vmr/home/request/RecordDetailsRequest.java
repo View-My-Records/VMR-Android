@@ -3,6 +3,7 @@ package com.vmr.home.request;
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
+import com.vmr.model.RecordDetails;
 import com.vmr.network.PostLoginRequest;
 import com.vmr.network.error.FetchError;
 import com.vmr.utils.VmrURL;
@@ -15,13 +16,13 @@ import java.util.Map;
 /*
  * Created by abhijit on 8/29/16.
  */
-public class RecordDetailsRequest extends PostLoginRequest<JSONObject> {
+public class RecordDetailsRequest extends PostLoginRequest<RecordDetails> {
 
     private Map<String, String> formData;
 
     public RecordDetailsRequest(
             Map<String, String> formData,
-            Response.Listener<JSONObject> successListener,
+            Response.Listener<RecordDetails> successListener,
             Response.ErrorListener errorListener) {
         super(Method.POST, VmrURL.getShareRecordsUrl(), successListener, errorListener);
         this.formData = formData;
@@ -33,18 +34,20 @@ public class RecordDetailsRequest extends PostLoginRequest<JSONObject> {
     }
 
     @Override
-    protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+    protected Response<RecordDetails> parseNetworkResponse(NetworkResponse response) {
         String jsonString = new String(response.data);
 
         JSONObject jsonObject;
+        RecordDetails recordDetails;
         try {
             jsonObject = new JSONObject(jsonString);
+            recordDetails = RecordDetails.parseDetails(jsonObject);
 //            VmrDebug.printLogI(this.getClass(), jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
             return Response.error(new FetchError());
         }
 
-        return Response.success(jsonObject, getCacheEntry());
+        return Response.success(recordDetails, getCacheEntry());
     }
 }

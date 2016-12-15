@@ -48,7 +48,6 @@
                 android:text="Qwer!234" />
         </android.support.design.widget.TextInputLayout>
 
-
         <CheckBox
             android:id="@+id/cbIndividualRememberPassword"
             android:layout_width="wrap_content"
