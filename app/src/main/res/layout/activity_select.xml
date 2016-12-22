@@ -5,7 +5,7 @@
     android:id="@+id/activity_select"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vmr.share.select.SelectActivity">
+    tools:context=".screen.share.select.SelectActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

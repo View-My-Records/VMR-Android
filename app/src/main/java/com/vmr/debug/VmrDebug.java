@@ -16,19 +16,27 @@ public class VmrDebug {
     }
 
     public static void printLogD(Class c, String message){
-        Log.i(c.getSimpleName(), message);
+        Log.d(c.getSimpleName(), message);
     }
 
     public static void printLogD( String message){
-        Log.i("Debug:", message);
+        Log.d("Debug:", message);
+    }
+
+    public static void printLogE(Class c, String message){
+        Log.e(c.getSimpleName(), message);
+    }
+
+    public static void printLogE( String message){
+        Log.e("Debug:", message);
     }
 
     public static void printLogW(Class c, String message){
-        Log.i(c.getSimpleName(), message);
+        Log.w(c.getSimpleName(), message);
     }
 
-    public static void printLogW( String message){
-        Log.i("Warning:", message);
+    public static void printLogW(String message){
+        Log.w("Warning:", message);
     }
 
     public static void printLine(String message){

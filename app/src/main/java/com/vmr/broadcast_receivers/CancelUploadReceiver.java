@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.vmr.debug.VmrDebug;
-import com.vmr.utils.Constants;
+import com.vmr.network.controller.request.Constants;
 
 /*
  * Created by abhijit on 10/11/16.

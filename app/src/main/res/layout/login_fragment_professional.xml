@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login.fragment.FragmentLoginProfessional">
+    tools:context=".screen.login.fragment.FragmentLoginProfessional">
 
 
     <RelativeLayout
@@ -25,8 +25,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/etProfessionalPassword"
-                android:text="admin" />
+                android:nextFocusForward="@+id/etProfessionalPassword" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -45,8 +44,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="textPassword|textNoSuggestions"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/etProfessionalID"
-                android:text="Qwer!234" />
+                android:nextFocusForward="@+id/etProfessionalID" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -63,8 +61,7 @@
                 android:ems="15"
                 android:hint="@string/login_hint_professional_id"
                 android:imeOptions="actionDone"
-                android:inputType="text|textNoSuggestions"
-                android:text="proid" />
+                android:inputType="text|textNoSuggestions" />
         </android.support.design.widget.TextInputLayout>
 
 

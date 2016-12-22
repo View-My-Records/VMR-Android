@@ -7,7 +7,7 @@ package com.vmr.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.vmr.utils.Constants;
+import com.vmr.network.controller.request.Constants;
 
 import org.json.JSONException;
 import org.json.JSONObject;

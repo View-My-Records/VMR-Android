@@ -4,7 +4,7 @@
     android:id="@+id/activity_inbox"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.vmr.inbox.InboxActivity">
+    tools:context=".screen.inbox.InboxActivity">
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefreshLayout"

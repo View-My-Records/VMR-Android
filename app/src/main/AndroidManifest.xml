@@ -26,25 +26,33 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".login.LoginActivity"
+            android:name=".screen.login.LoginActivity"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
         <activity
-            android:name=".share.login.ShareLoginActivity"
+            android:name=".screen.share.login.ShareLoginActivity"
             android:label="Share to VMR"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
-                <action android:name="android.intent.action.SEND" />
-
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <data android:mimeType="*/*" />
+                <!--<data android:scheme="content" />-->
+                <!--<data android:scheme="file" />-->
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="*/*" />
+                <!--<data android:scheme="content" />-->
+                <!--<data android:scheme="file" />-->
             </intent-filter>
         </activity>
         <activity
-            android:name=".home.HomeActivity"
+            android:name=".screen.home.HomeActivity"
             android:configChanges="keyboard"
             android:label="@string/title_activity_home"
             android:launchMode="singleTop"
@@ -63,7 +71,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".home.activity.SearchResultActivity"
+            android:name=".screen.search.SearchResultActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
@@ -76,7 +84,7 @@
 
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".home.HomeActivity" />
+                android:value=".screen.home.HomeActivity" />
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
@@ -124,20 +132,20 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".home.HomeActivity"
+            android:parentActivityName=".screen.home.HomeActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmr.home.HomeActivity" />
+                android:value=".screen.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".inbox.InboxActivity"
+            android:name=".screen.inbox.InboxActivity"
             android:label="@string/title_activity_inbox"
-            android:parentActivityName=".home.HomeActivity"
+            android:parentActivityName=".screen.home.HomeActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmr.home.HomeActivity" />
+                android:value=".screen.home.HomeActivity" />
         </activity>
 
         <receiver
@@ -150,18 +158,18 @@
         </receiver>
 
         <activity
-            android:name=".home.activity.IndexActivity"
+            android:name=".screen.index.IndexActivity"
             android:label="@string/title_activity_index"
-            android:parentActivityName=".home.HomeActivity"
+            android:parentActivityName=".screen.home.HomeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustPan">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.vmr.home.HomeActivity" />
+                android:value=".screen.home.HomeActivity" />
         </activity>
         <activity
-            android:name=".splash.Splash"
+            android:name=".screen.splash.Splash"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -169,7 +177,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".share.select.SelectActivity" />
+        <activity android:name=".screen.share.select.SelectActivity" />
     </application>
 
 </manifest>

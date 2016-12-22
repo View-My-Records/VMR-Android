@@ -4,10 +4,14 @@ package com.vmr.db.upload_queue;
  * Created by abhijit on 10/11/16.
  */
 
+import android.net.Uri;
+
+import com.vmr.app.Vmr;
+import com.vmr.utils.FileUtils;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Date;
 
 public class UploadQueue {
@@ -20,7 +24,7 @@ public class UploadQueue {
 
     private int id;
     private String owner;
-    private String filePath;
+    private String fileUri;
     private String fileName;
     private String parentNodeRef;
     private String contentType;
@@ -28,13 +32,12 @@ public class UploadQueue {
     private Date createDate;
 
     public UploadQueue() {
-
     }
 
-    public UploadQueue(File file, String parentNodeRef) {
+    public UploadQueue(Uri fileUri, String parentNodeRef) throws FileNotFoundException {
         this.owner = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID);
-        this.filePath = file.getAbsolutePath();
-        this.fileName = file.getName();
+        this.fileUri = fileUri.toString();
+        this.fileName = FileUtils.getFileName(Vmr.getContext(), fileUri);
         this.parentNodeRef = parentNodeRef;
         this.contentType = "multipart/form-data";
         this.status = STATUS_PENDING;
@@ -57,12 +60,12 @@ public class UploadQueue {
         this.owner = owner;
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getFileUri() {
+        return fileUri;
     }
 
-    public void setFilePath(String filePath) {
-        this.filePath = filePath;
+    public void setFileUri(String fileUri) {
+        this.fileUri = fileUri;
     }
 
     public String getFileName() {

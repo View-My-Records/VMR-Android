@@ -87,7 +87,7 @@ public class UploadQueueDAO {
     public Long addUpload(UploadQueue uploadQueue){
         ContentValues contentValues = new ContentValues();
         contentValues.put(DbConstants.UPLOAD_OWNER, uploadQueue.getOwner());
-        contentValues.put(DbConstants.UPLOAD_FILE_PATH, uploadQueue.getFilePath());
+        contentValues.put(DbConstants.UPLOAD_FILE_PATH, uploadQueue.getFileUri());
         contentValues.put(DbConstants.UPLOAD_FILE_NAME, uploadQueue.getFileName());
         contentValues.put(DbConstants.UPLOAD_PARENT_NODE, uploadQueue.getParentNodeRef());
         contentValues.put(DbConstants.UPLOAD_CONTENT_TYPE, uploadQueue.getContentType());
@@ -132,7 +132,7 @@ public class UploadQueueDAO {
             upload = new UploadQueue();
             upload.setId(               c.getInt(    c.getColumnIndex(DbConstants.UPLOAD_ID)));
             upload.setOwner(            c.getString( c.getColumnIndex(DbConstants.UPLOAD_OWNER)));
-            upload.setFilePath(         c.getString( c.getColumnIndex(DbConstants.UPLOAD_FILE_PATH)));
+            upload.setFileUri(         c.getString( c.getColumnIndex(DbConstants.UPLOAD_FILE_PATH)));
             upload.setFileName(         c.getString( c.getColumnIndex(DbConstants.UPLOAD_FILE_NAME)));
             upload.setParentNodeRef(    c.getString( c.getColumnIndex(DbConstants.UPLOAD_PARENT_NODE)));
             upload.setContentType(      c.getString(    c.getColumnIndex(DbConstants.UPLOAD_CONTENT_TYPE)));

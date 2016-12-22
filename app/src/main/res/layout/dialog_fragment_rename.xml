@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
     <TextView
         android:id="@+id/tvNewItemName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="New name:"/>
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="New name:"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
     <EditText
         android:id="@+id/etNewItemName"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
+        android:layout_toEndOf="@+id/tvNewItemName"
+        android:layout_toRightOf="@+id/tvNewItemName"
         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
         android:inputType="text"
         android:maxLength="30"
         android:maxLines="1"
-        android:text="file/folder name" />
+        android:paddingLeft="4dp"
+        android:paddingStart="4dp"
+        android:text="new name" />
 
-</LinearLayout>
+</RelativeLayout>

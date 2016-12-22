@@ -8,7 +8,7 @@
     android:background="@android:color/transparent"
     android:fitsSystemWindows="true"
     app:insetForeground="@android:color/transparent"
-    tools:context="com.vmr.home.activity.SearchResultActivity">
+    tools:context=".screen.search.SearchResultActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"

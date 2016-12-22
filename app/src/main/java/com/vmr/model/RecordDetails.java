@@ -163,7 +163,7 @@ public class RecordDetails {
         JSONObject jsonObject;
         for (int i = 0; i < properties.length() - 1; i++) {
             jsonObject = properties.getJSONObject(i);
-            propertiesMap.put(jsonObject.getString("propertyName"), jsonObject.getString("propertyValue"));
+            propertiesMap.put(jsonObject.getString("Name"), jsonObject.getString("Value"));
         }
 
         return propertiesMap;

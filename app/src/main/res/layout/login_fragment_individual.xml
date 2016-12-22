@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".login.fragment.FragmentLoginIndividual">
+    tools:context=".screen.login.fragment.FragmentLoginIndividual">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -25,8 +25,7 @@
                 android:imeOptions="actionNext"
                 android:inputType="text|textNoSuggestions"
                 android:maxLines="1"
-                android:nextFocusForward="@+id/etIndividualPassword"
-                android:text="induser">
+                android:nextFocusForward="@+id/etIndividualPassword" >
             </AutoCompleteTextView>
         </android.support.design.widget.TextInputLayout>
 
@@ -43,9 +42,8 @@
                 android:ems="15"
                 android:hint="@string/login_hint_password"
                 android:imeOptions="actionDone"
-                android:inputType="textPassword|textNoSuggestions"
-                android:maxLines="1"
-                android:text="Qwer!234" />
+                android:inputType="textPassword"
+                android:maxLines="1" />
         </android.support.design.widget.TextInputLayout>
 
         <CheckBox
@@ -64,8 +62,6 @@
             android:layout_alignEnd="@+id/tilIndividualPassword"
             android:layout_alignRight="@+id/tilIndividualPassword"
             android:layout_below="@+id/cbIndividualRememberPassword"
-            android:layout_marginEnd="26dp"
-            android:layout_marginRight="26dp"
             android:background="@color/colorPrimary"
             android:text="Sign In"
             android:textColor="@android:color/white" />

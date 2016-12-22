@@ -1,24 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="8dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
     <TextView
         android:id="@+id/tvNewFolderName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Name:"/>
+        android:layout_width="56dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="Name:"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"/>
 
     <EditText
         android:id="@+id/etNewFolderName"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignBottom="@+id/tvNewFolderName"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/tvNewFolderName"
         android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890_ "
         android:inputType="text"
-        android:maxLength="30" />
+        android:maxLength="30"
+        android:maxLines="1" />
 
-</LinearLayout>
+</RelativeLayout>

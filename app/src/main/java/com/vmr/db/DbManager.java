@@ -1,6 +1,7 @@
 package com.vmr.db;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 
 import com.vmr.db.notification.Notification;
 import com.vmr.db.notification.NotificationDAO;
@@ -20,11 +21,11 @@ import com.vmr.db.user.DbUser;
 import com.vmr.db.user.UserDAO;
 import com.vmr.model.UserInfo;
 import com.vmr.model.VmrFolder;
-import com.vmr.utils.Constants;
+import com.vmr.network.controller.request.Constants;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
-import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -320,8 +321,8 @@ public class DbManager {
         return this.uploadQueueDAO.fetchAllPendingUploads();
     }
 
-    public void queueUpload(File file, String parentNodeRef) {
-        this.uploadQueueDAO.addUpload(new UploadQueue(file, parentNodeRef));
+    public void queueUpload(Uri fileUri, String parentNodeRef) throws FileNotFoundException {
+        this.uploadQueueDAO.addUpload(new UploadQueue(fileUri, parentNodeRef));
     }
 
     public void updateUploadSuccess(int uploadId) {

@@ -1,7 +1,11 @@
 package com.vmr.model;
 
-import java.io.File;
-import java.io.FileInputStream;
+import android.net.Uri;
+
+import com.vmr.app.Vmr;
+import com.vmr.utils.ContentUtil;
+
+import java.io.FileNotFoundException;
 
 /*
  * Created by abhijit on 9/12/16.
@@ -9,52 +13,34 @@ import java.io.FileInputStream;
 
 public class UploadPacket {
 
-    private String filePath;
+    private Uri fileUri;
     private String fileName ;
     private String contentType;
     private String parentNodeRef;
 
-    public UploadPacket(String filePath, String parentNodeRef) {
-        setFilePaths(filePath);
+    public UploadPacket(String fileUri, String parentNodeRef) throws FileNotFoundException {
+        setFileUri(Uri.parse(fileUri));
+//        setFilePaths(fileUri.getPath());
         setFileName();
         setContentType();
         setParentNodeRef(parentNodeRef);
     }
 
-    public byte[] getFileByteArray() {
-        FileInputStream fileInputStream=null;
-        File file = new File(filePath);
-        byte[] fileBytes = new byte[(int) file.length()];
-        try {
-            //convert file into array of bytes
-            fileInputStream = new FileInputStream(file);
-            fileInputStream.read(fileBytes);
-            fileInputStream.close();
-
-            for (byte fileByte : fileBytes) {
-                System.out.print((char) fileByte);
-            }
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-
-        return fileBytes;
+    public Uri getFileUri() {
+        return fileUri;
     }
 
-    public File getFile() {
-        return new File(filePath);
+    public void setFileUri(Uri fileUri) {
+        this.fileUri = fileUri;
     }
 
-    private void setFilePaths(String filePath) {
-        this.filePath =filePath;
-    }
 
     public String getFileName() {
         return fileName;
     }
 
-    public void setFileName() {
-        this.fileName = new File(filePath).getName();
+    public void setFileName() throws FileNotFoundException {
+        this.fileName = ContentUtil.getFileName(Vmr.getContext(), getFileUri());
     }
 
     public String getContentType() {

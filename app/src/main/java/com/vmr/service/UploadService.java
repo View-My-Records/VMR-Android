@@ -1,34 +1,31 @@
 package com.vmr.service;
-
-import android.app.IntentService;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Intent;
-import android.os.Build;
-import android.widget.Toast;
-
-import com.android.volley.VolleyError;
-import com.vmr.app.Vmr;
-import com.vmr.broadcast_receivers.CancelUploadReceiver;
-import com.vmr.db.upload_queue.UploadQueue;
-import com.vmr.home.controller.UploadController;
-import com.vmr.home.request.UploadRequest;
-import com.vmr.model.UploadPacket;
-import com.vmr.utils.Constants;
-
-import org.json.JSONObject;
-
-import java.util.List;
-import java.util.Random;
-
 /*
  * Created by abhijit on 9/12/16.
  */
 
-public class UploadService extends IntentService {
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.Intent;
+import android.os.Build;
 
-    private boolean currentUpload = false;
+import com.android.volley.VolleyError;
+import com.vmr.app.Vmr;
+import com.vmr.db.DbManager;
+import com.vmr.db.upload_queue.UploadQueue;
+import com.vmr.debug.VmrDebug;
+import com.vmr.model.UploadPacket;
+import com.vmr.network.controller.UploadController;
+import com.vmr.network.controller.request.Constants;
+import com.vmr.network.controller.request.UploadRequest;
+
+import org.json.JSONObject;
+
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Random;
+
+public class UploadService extends IntentService {
 
     public UploadService() {
         super("UploadService");
@@ -36,8 +33,13 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-        List<UploadQueue> uploadQueue = Vmr.getDbManager().getUploadQueue();
+        List<UploadQueue> uploadQueue;
+        try {
+            uploadQueue = Vmr.getDbManager().getUploadQueue();
+        } catch (Exception e) {
+            Vmr.setDbManager(new DbManager());
+            uploadQueue = Vmr.getDbManager().getUploadQueue();
+        }
 
         if(uploadQueue.size() > 0 ) {
             for(final UploadQueue upload : uploadQueue) {
@@ -46,9 +48,8 @@ public class UploadService extends IntentService {
                     @Override
                     public void onFileUploadSuccess(JSONObject jsonObject) {
                         if (jsonObject.has("files")) {
-                            UploadService.this.currentUpload = true;
                             Vmr.getDbManager().updateUploadSuccess(upload.getId());
-                            Toast.makeText(Vmr.getContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
+//                            Toast.makeText(Vmr.getContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                             Notification uploadCompleteNotification =
                                     new Notification.Builder(Vmr.getContext())
                                             .setContentTitle(upload.getFileName())
@@ -67,8 +68,7 @@ public class UploadService extends IntentService {
                     @Override
                     public void onFileUploadFailure(VolleyError error) {
 //                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
-                        Toast.makeText(Vmr.getContext(), "File upload failed", Toast.LENGTH_SHORT).show();
-                        UploadService.this.currentUpload = true;
+//                        Toast.makeText(Vmr.getContext(), "File upload failed", Toast.LENGTH_SHORT).show();
                         Vmr.getDbManager().updateUploadFailure(upload.getId());
                         Notification uploadFailedNotification =
                                 new Notification.Builder(Vmr.getContext())
@@ -85,8 +85,7 @@ public class UploadService extends IntentService {
 
                     @Override
                     public void onFileUploadCancel(VolleyError error) {
-                        Toast.makeText(Vmr.getContext(), "File upload canceled", Toast.LENGTH_SHORT).show();
-                        UploadService.this.currentUpload = true;
+//                        Toast.makeText(Vmr.getContext(), "File upload canceled", Toast.LENGTH_SHORT).show();
                         Vmr.getDbManager().updateUploadFailure(upload.getId());
                         Notification uploadFailedNotification =
                                 new Notification.Builder(Vmr.getContext())
@@ -102,26 +101,26 @@ public class UploadService extends IntentService {
                     }
                 });
 
-                UploadPacket uploadPacket = new UploadPacket(upload.getFilePath(), upload.getParentNodeRef());
-
-                Intent cancelUploadIntent = new Intent(this, CancelUploadReceiver.class);
-                cancelUploadIntent.putExtra(Constants.Request.FolderNavigation.UploadFile.TAG, upload.getId());
-                PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, cancelUploadIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                UploadPacket uploadPacket = null;
+                try {
+                    uploadPacket = new UploadPacket(upload.getFileUri(), upload.getParentNodeRef());
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    VmrDebug.printLogE(UploadService.this.getClass(), "File not found.");
+                }
 
                 final Notification.Builder downloadingNotification =
-                        new Notification.Builder(Vmr.getContext())
+                        new Notification.Builder(getApplicationContext())
                                 .setContentTitle(upload.getFileName())
                                 .setContentText("Uploading...")
                                 .setSmallIcon(android.R.drawable.stat_sys_upload)
-
                                 .setProgress(0,0,true)
-                                .setOngoing(true)
-                                .addAction(android.R.drawable.ic_menu_close_clear_cancel,
-                                            getApplicationContext().getResources().getString(android.R.string.cancel),
-                                            pIntent);
+                                .setOngoing(true);
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT_WATCH) {
                     downloadingNotification.setGroup(Constants.VMR_UPLOAD_NOTIFICATION_TAG);
                 }
+
                 final NotificationManager nm = (NotificationManager) Vmr.getContext().getSystemService(NOTIFICATION_SERVICE);
 
                 UploadRequest.UploadProgressListener progressListener = new UploadRequest.UploadProgressListener() {
@@ -130,7 +129,7 @@ public class UploadService extends IntentService {
                         if(progressPercent == 0) {
                             downloadingNotification.setProgress(0, 0, true);
                             downloadingNotification.setContentText("Uploading...");
-                        } else if( progressPercent == 100){
+                        } else if( progressPercent >= 100){
                             downloadingNotification.setProgress(0, 0, true);
                             downloadingNotification.setContentText("Finalizing...");
                         } else {
@@ -140,13 +139,15 @@ public class UploadService extends IntentService {
                         nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
                     }
                 };
-                uploadController.uploadFile(uploadPacket, upload.getId(), progressListener);
+                try {
+                    uploadController.uploadFile(uploadPacket, upload.getId(), progressListener);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    VmrDebug.printLogE(UploadService.this.getClass(), "File not found.");
+                }
                 Vmr.getDbManager().updateUploadStatusUploading(upload.getId());
                 nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
             }
-        } else {
-            Toast.makeText(Vmr.getContext(), "Upload queue empty", Toast.LENGTH_SHORT).show();
         }
-
     }
 }
