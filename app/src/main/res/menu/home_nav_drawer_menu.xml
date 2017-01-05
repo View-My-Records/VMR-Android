@@ -8,24 +8,30 @@
             android:title="My Records" />
         <item
             android:id="@+id/recently_accessed"
-            android:icon="@android:drawable/ic_menu_recent_history"
+            android:icon="@drawable/ic_history_black_24dp"
             android:title="Recently Accessed" />
         <item
             android:id="@+id/to_be_indexed"
             android:icon="@drawable/ic_to_be_indexed"
             android:title="To Be Indexed " />
 
+        <!--<item-->
+            <!--android:id="@+id/offline"-->
+            <!--android:icon="@drawable/ic_offline"-->
+            <!--android:title="Offline" />-->
+
         <item
-            android:id="@+id/offline"
-            android:icon="@drawable/ic_offline"
-            android:title="Offline" />
+            android:id="@+id/upload"
+            android:icon="@drawable/ic_cloud_upload_black_24dp"
+            android:title="Uploads" />
+
         <item
             android:id="@+id/reports"
             android:icon="@drawable/ic_reports"
             android:title="Reports" />
         <item
             android:id="@+id/trash"
-            android:icon="@android:drawable/ic_menu_delete"
+            android:icon="@drawable/ic_delete_black_24dp"
             android:title="Trash" />
     </group>
 

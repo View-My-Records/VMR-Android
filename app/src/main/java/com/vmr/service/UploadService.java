@@ -12,7 +12,7 @@ import android.os.Build;
 import com.android.volley.VolleyError;
 import com.vmr.app.Vmr;
 import com.vmr.db.DbManager;
-import com.vmr.db.upload_queue.UploadQueue;
+import com.vmr.db.upload_queue.UploadItem;
 import com.vmr.debug.VmrDebug;
 import com.vmr.model.UploadPacket;
 import com.vmr.network.controller.UploadController;
@@ -33,16 +33,16 @@ public class UploadService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        List<UploadQueue> uploadQueue;
+        List<UploadItem> uploadItem;
         try {
-            uploadQueue = Vmr.getDbManager().getUploadQueue();
+            uploadItem = Vmr.getDbManager().getUploadQueue();
         } catch (Exception e) {
             Vmr.setDbManager(new DbManager());
-            uploadQueue = Vmr.getDbManager().getUploadQueue();
+            uploadItem = Vmr.getDbManager().getUploadQueue();
         }
 
-        if(uploadQueue.size() > 0 ) {
-            for(final UploadQueue upload : uploadQueue) {
+        if(uploadItem.size() > 0 ) {
+            for(final UploadItem upload : uploadItem) {
                 final int notificationId = new Random().nextInt();
                 UploadController uploadController = new UploadController(new UploadController.OnFileUpload() {
                     @Override

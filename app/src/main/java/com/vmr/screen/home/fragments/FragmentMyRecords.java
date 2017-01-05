@@ -8,16 +8,19 @@ import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -103,10 +106,12 @@ public class FragmentMyRecords extends Fragment
         AddItemMenu.OnItemClickListener,
         RecordOptionsMenu.OnOptionClickListener {
 
+    private static final int PERMISSION_CODE_READ_STORAGE = 1;
+    private static final int PERMISSION_CODE_WRITE_STORAGE = 2;
+    private static final int PERMISSION_CODE_CAMERA = 3;
     private static int FILE_PICKER_INTENT = 100;
     private static int REQUEST_IMAGE_CAPTURE = 101;
     private static int REQUEST_INDEX_FILE = 102;
-
     private boolean DEBUG = true;
     // FragmentInteractionListener
     private OnFragmentInteractionListener fragmentInteractionListener;
@@ -387,7 +392,7 @@ public class FragmentMyRecords extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_CODE_WRITE_STORAGE);
                             }
                         })
                         .show();
@@ -430,7 +435,7 @@ public class FragmentMyRecords extends Fragment
                             .setAction("OK", new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                    PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_CODE_WRITE_STORAGE);
                                 }
                             })
                             .show();
@@ -443,7 +448,7 @@ public class FragmentMyRecords extends Fragment
                     .setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.CAMERA, 1);
+                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.CAMERA, PERMISSION_CODE_CAMERA);
                         }
                     })
                     .show();
@@ -471,23 +476,44 @@ public class FragmentMyRecords extends Fragment
     }
 
     @Override
-    public void onFileClick() {
+    public void onPickFileClick() {
         if(DEBUG) VmrDebug.printLogI(this.getClass(), "Upload file button clicked");
         if(PermissionHandler.checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             Intent intent = new Intent();
             intent.setType("*/*");
             intent.setAction(Intent.ACTION_GET_CONTENT);
             intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+            }
             startActivityForResult(intent, FILE_PICKER_INTENT);
         } else {
             Snackbar.make(getActivity().findViewById(R.id.clayout), "Application needs permission to write to SD Card", Snackbar.LENGTH_LONG)
                     .setAction("OK", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE, 1);
+                            PermissionHandler.requestPermission(getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE, PERMISSION_CODE_READ_STORAGE);
                         }
                     })
                     .show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_CODE_CAMERA:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onScanClick();
+                }
+                break;
+
+            case PERMISSION_CODE_READ_STORAGE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onPickFileClick();
+                }
+                break;
         }
     }
 
@@ -497,8 +523,19 @@ public class FragmentMyRecords extends Fragment
         Uri returnUri;
         if(resultCode == RESULT_OK){
             if(requestCode == FILE_PICKER_INTENT){
-                returnUri = data.getData();
-                onFilePicked(returnUri);
+//                returnUri = data.getData();
+                if (data != null) {
+                    ClipData clipData = data.getClipData();
+                    if (clipData != null) {
+                        for (int i = 0; i < clipData.getItemCount(); i++) {
+                            ClipData.Item item = clipData.getItemAt(i);
+                            Uri uri = item.getUri();
+                            VmrDebug.printLogE(this.getClass(), "Uri " + i + " : " + uri);
+                            onFilePicked(uri);
+                        }
+                        initiateUpload();
+                    }
+                }
             } else if(requestCode == REQUEST_IMAGE_CAPTURE){
                 returnUri = Uri.fromFile(photoFile);
                 onFilePicked(returnUri);
@@ -519,6 +556,9 @@ public class FragmentMyRecords extends Fragment
                     , Snackbar.LENGTH_LONG)
                     .show();
         }
+    }
+
+    private void initiateUpload(){
         Intent uploadIntent = new Intent(getActivity(), UploadService.class);
         getActivity().startService(uploadIntent);
     }
@@ -793,7 +833,7 @@ public class FragmentMyRecords extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                PermissionHandler.requestPermission(getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_CODE_WRITE_STORAGE);
                             }
                         })
                         .show();
@@ -1061,7 +1101,7 @@ public class FragmentMyRecords extends Fragment
                         .setAction("OK", new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                                PermissionHandler.requestPermission(getActivity(),Manifest.permission.WRITE_EXTERNAL_STORAGE, PERMISSION_CODE_WRITE_STORAGE);
                             }
                         })
                         .show();

@@ -59,6 +59,7 @@ import com.vmr.screen.home.fragments.FragmentSharedByMe;
 import com.vmr.screen.home.fragments.FragmentSharedWithMe;
 import com.vmr.screen.home.fragments.FragmentToBeIndexed;
 import com.vmr.screen.home.fragments.FragmentTrash;
+import com.vmr.screen.home.fragments.FragmentUpload;
 import com.vmr.screen.home.interfaces.Interaction;
 import com.vmr.screen.inbox.InboxActivity;
 import com.vmr.screen.login.LoginActivity;
@@ -83,6 +84,7 @@ public class HomeActivity extends AppCompatActivity
         FragmentSharedWithMe.OnFragmentInteractionListener,
         FragmentSharedByMe.OnFragmentInteractionListener,
         FragmentToBeIndexed.OnFragmentInteractionListener,
+        FragmentUpload.OnFragmentInteractionListener,
         FragmentTrash.OnFragmentInteractionListener,
         FragmentAbout.OnFragmentInteractionListener,
         FragmentHelp.OnFragmentInteractionListener,
@@ -344,9 +346,9 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.action_paste) {
             pasteClickListener.onPasteClick();
             return true;
-        } else if (id == R.id.action_layout) {
-            Toast.makeText(this, "This feature is not available yet.", Toast.LENGTH_SHORT).show();
-            return true;
+//        } else if (id == R.id.action_layout) {
+//            Toast.makeText(this, "This feature is not available yet.", Toast.LENGTH_SHORT).show();
+//            return true;
         } else if (id == R.id.action_settings) {
             Intent settingsIntent = new Intent(HomeActivity.this, SettingsActivity.class);
             settingsIntent.setAction(Intent.ACTION_VIEW);
@@ -374,10 +376,12 @@ public class HomeActivity extends AppCompatActivity
             fragmentClass = FragmentSharedWithMe.class;
         } else if (id == R.id.shared_by_me) {
             fragmentClass = FragmentSharedByMe.class;
-        } else if (id == R.id.offline) {
-            fragmentClass = FragmentOffline.class;
+//        } else if (id == R.id.offline) {
+//            fragmentClass = FragmentOffline.class;
         } else if (id == R.id.reports) {
             fragmentClass = FragmentReports.class;
+        } else if (id == R.id.upload) {
+            fragmentClass = FragmentUpload.class;
         } else if (id == R.id.trash) {
             fragmentClass = FragmentTrash.class;
         } else if (id == R.id.about) {

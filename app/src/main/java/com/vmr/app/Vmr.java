@@ -2,7 +2,6 @@ package com.vmr.app;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.util.Pair;
 
 import com.vmr.db.DbManager;
@@ -57,13 +56,9 @@ public class Vmr extends Application {
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-    }
-
-    @Override
     public void onCreate() {
         vmrInstance = this;
+        Vmr.dbManager = new DbManager();
         super.onCreate();
     }
 }

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/ivFileIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginRight="8dp"
+        android:contentDescription="Icon"
+        android:src="@drawable/ic_folder" />
+
+    <TextView
+        android:id="@+id/tvFileName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/tvFileUploadDate"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:maxLines="1"
+        android:text="File Name"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textStyle="bold" />
+
+    <ImageButton
+        android:id="@+id/ivActionDelete"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/tvFileName"
+        android:background="@android:color/transparent"
+        android:contentDescription="Overflow Menu"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_delete"
+        android:tint="@android:color/tertiary_text_dark" />
+
+    <ImageButton
+        android:id="@+id/ivActionRetry"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_alignTop="@+id/ivActionDelete"
+        android:layout_toLeftOf="@+id/ivActionDelete"
+        android:layout_toStartOf="@+id/ivActionDelete"
+        android:background="@android:color/transparent"
+        android:contentDescription="Overflow Menu"
+        android:padding="8dp"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_menu_rotate"
+        android:tint="@android:color/tertiary_text_dark" />
+
+    <ImageView
+        android:id="@+id/ivUploadStatus"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignBottom="@+id/ivActionRetry"
+        android:layout_alignEnd="@+id/ivFileIcon"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/ivFileIcon"
+        android:layout_below="@+id/ivFileIcon"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_status_success"
+        android:tint="@android:color/holo_green_dark" />
+
+    <TextView
+        android:id="@+id/tvFileUploadDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ivFileIcon"
+        android:layout_toEndOf="@+id/ivFileIcon"
+        android:layout_toLeftOf="@+id/ivActionRetry"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:text="Upload Date" />
+
+    <!--<ProgressBar-->
+        <!--android:id="@+id/progressbar"-->
+        <!--style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/ivStatus"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentStart="true" />-->
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivUploadStatus"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/tvUploadStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/view"
+        android:layout_below="@+id/tvFileUploadDate"
+        android:layout_toEndOf="@+id/ivFileIcon"
+        android:layout_toRightOf="@+id/ivFileIcon"
+        android:gravity="center_vertical"
+        android:text="TextView" />
+
+</RelativeLayout>

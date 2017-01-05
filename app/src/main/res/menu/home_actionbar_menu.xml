@@ -6,11 +6,11 @@
         android:orderInCategory="100"
         android:title="Paste"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/action_layout"
-        android:orderInCategory="100"
-        android:title="View"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/action_layout"-->
+        <!--android:orderInCategory="100"-->
+        <!--android:title="View"-->
+        <!--app:showAsAction="never" />-->
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"

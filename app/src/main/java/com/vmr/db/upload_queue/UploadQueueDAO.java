@@ -30,8 +30,8 @@ public class UploadQueueDAO {
         this.db = db;
     }
 
-    public List<UploadQueue> fetchAllUploads(){
-        List<UploadQueue> uploads = new ArrayList<>();
+    public List<UploadItem> fetchAllUploads(){
+        List<UploadItem> uploads = new ArrayList<>();
         Cursor c = db.query(
                 DbConstants.TABLE_UPLOAD_QUEUE, // Table Name
                 DbConstants.UPLOAD_COLUMNS, // Select columns
@@ -45,7 +45,7 @@ public class UploadQueueDAO {
         if (c.moveToFirst()) {
             VmrDebug.printLogI(this.getClass(), "Upload Queue retrieved");
             do {
-                UploadQueue upload = buildFromCursor(c);
+                UploadItem upload = buildFromCursor(c);
                 if (upload != null) {
                     uploads.add(upload);
                 }
@@ -57,13 +57,13 @@ public class UploadQueueDAO {
         return uploads;
     }
 
-    public List<UploadQueue> fetchAllPendingUploads(){
-        List<UploadQueue> uploads = new ArrayList<>();
+    public List<UploadItem> fetchAllPendingUploads(){
+        List<UploadItem> uploads = new ArrayList<>();
         Cursor c = db.query(
                 DbConstants.TABLE_UPLOAD_QUEUE, // Table Name
                 DbConstants.UPLOAD_COLUMNS, // Select columns
                 DbConstants.UPLOAD_OWNER + "=? AND " +  DbConstants.UPLOAD_STATUS + "=?", // where
-                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), String.valueOf(UploadQueue.STATUS_PENDING)}, // conditions
+                new String[]{ PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID), String.valueOf(UploadItem.STATUS_PENDING)}, // conditions
                 null, // group by
                 null, // having
                 DbConstants.UPLOAD_DATE + " DESC ", // order by
@@ -72,7 +72,7 @@ public class UploadQueueDAO {
         if (c.moveToFirst()) {
             VmrDebug.printLogI(this.getClass(), "Upload Queue retrieved");
             do {
-                UploadQueue upload = buildFromCursor(c);
+                UploadItem upload = buildFromCursor(c);
                 if (upload != null) {
                     uploads.add(upload);
                 }
@@ -84,16 +84,16 @@ public class UploadQueueDAO {
         return uploads;
     }
 
-    public Long addUpload(UploadQueue uploadQueue){
+    public Long addUpload(UploadItem uploadItem){
         ContentValues contentValues = new ContentValues();
-        contentValues.put(DbConstants.UPLOAD_OWNER, uploadQueue.getOwner());
-        contentValues.put(DbConstants.UPLOAD_FILE_PATH, uploadQueue.getFileUri());
-        contentValues.put(DbConstants.UPLOAD_FILE_NAME, uploadQueue.getFileName());
-        contentValues.put(DbConstants.UPLOAD_PARENT_NODE, uploadQueue.getParentNodeRef());
-        contentValues.put(DbConstants.UPLOAD_CONTENT_TYPE, uploadQueue.getContentType());
-        contentValues.put(DbConstants.UPLOAD_STATUS      , uploadQueue.getStatus());
+        contentValues.put(DbConstants.UPLOAD_OWNER, uploadItem.getOwner());
+        contentValues.put(DbConstants.UPLOAD_FILE_PATH, uploadItem.getFileUri());
+        contentValues.put(DbConstants.UPLOAD_FILE_NAME, uploadItem.getFileName());
+        contentValues.put(DbConstants.UPLOAD_PARENT_NODE, uploadItem.getParentNodeRef());
+        contentValues.put(DbConstants.UPLOAD_CONTENT_TYPE, uploadItem.getContentType());
+        contentValues.put(DbConstants.UPLOAD_STATUS      , uploadItem.getStatus());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        String date = sdf.format(uploadQueue.getCreationDate());
+        String date = sdf.format(uploadItem.getCreationDate());
         contentValues.put(DbConstants.UPLOAD_DATE, date);
         VmrDebug.printLogI(this.getClass(), "Upload queued");
         return db.insert(DbConstants.TABLE_UPLOAD_QUEUE, null, contentValues);
@@ -117,19 +117,19 @@ public class UploadQueueDAO {
     }
 
     // Delete record
-    public boolean deleteRecord(UploadQueue uploadQueue){
+    public boolean deleteRecord(UploadItem uploadItem){
         boolean result = db.delete(
                 DbConstants.TABLE_UPLOAD_QUEUE,
                 DbConstants.UPLOAD_ID + "=?",
-                new String[]{uploadQueue.getId() + ""}) > 0;
+                new String[]{uploadItem.getId() + ""}) > 0;
         VmrDebug.printLogI(this.getClass(), "Item deleted");
         return result;
     }
 
-    private UploadQueue buildFromCursor(Cursor c) {
-        UploadQueue upload = null;
+    private UploadItem buildFromCursor(Cursor c) {
+        UploadItem upload = null;
         if (c != null) {
-            upload = new UploadQueue();
+            upload = new UploadItem();
             upload.setId(               c.getInt(    c.getColumnIndex(DbConstants.UPLOAD_ID)));
             upload.setOwner(            c.getString( c.getColumnIndex(DbConstants.UPLOAD_OWNER)));
             upload.setFileUri(         c.getString( c.getColumnIndex(DbConstants.UPLOAD_FILE_PATH)));

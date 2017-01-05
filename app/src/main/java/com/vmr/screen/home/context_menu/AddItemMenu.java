@@ -43,7 +43,7 @@ public class AddItemMenu extends BottomSheetDialogFragment {
         uploadFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onFileClick();
+                itemClickListener.onPickFileClick();
                 dismiss();
             }
         });
@@ -65,7 +65,7 @@ public class AddItemMenu extends BottomSheetDialogFragment {
 
     public interface OnItemClickListener{
         void onScanClick();
-        void onFileClick();
+        void onPickFileClick();
         void onNewFolderClick();
         void onAddItemsMenuDismiss();
     }

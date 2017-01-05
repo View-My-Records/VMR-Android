@@ -1,11 +1,14 @@
 package com.vmr.screen.search;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -26,14 +29,16 @@ import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.vmr.R;
+import com.vmr.db.record.Record;
 import com.vmr.debug.VmrDebug;
 import com.vmr.model.Classification;
 import com.vmr.model.SearchResult;
-import com.vmr.network.controller.DownloadController;
+import com.vmr.network.controller.DownloadTaskController;
 import com.vmr.network.controller.SearchController;
-import com.vmr.network.controller.request.DownloadRequest;
-import com.vmr.screen.home.adapters.ResultAdapter;
+import com.vmr.network.controller.request.DownloadTask;
+import com.vmr.screen.search.adapter.ResultAdapter;
 import com.vmr.utils.FileUtils;
+import com.vmr.utils.PermissionHandler;
 import com.vmr.utils.PrefConstants;
 import com.vmr.utils.PrefUtils;
 
@@ -87,10 +92,10 @@ public class SearchResultActivity
         String[] parts;
         if(intentDataString != null) {
             parts = intentDataString.split("#");
-            location     =   parts[0];
-            nodeRef      =    parts[1];
-            recordName   = parts[2];
-            isFolder     =   parts[3];
+            location     =  parts[0];
+            nodeRef      =  parts[1];
+            recordName   =  parts[2];
+            isFolder     =  parts[3];
         }
         queryString = intent.getExtras().getString(SearchManager.QUERY);
 
@@ -156,6 +161,7 @@ public class SearchResultActivity
         mRecyclerView = (RecyclerView) findViewById(R.id.rvSearchResults);
         mTextViewNoResults = (TextView) findViewById(R.id.tvNoResults);
         mTextViewResultCount = (TextView) findViewById(R.id.tvResultCount);
+        mSwipeRefreshLayout.setDistanceToTriggerSync(50);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -168,19 +174,6 @@ public class SearchResultActivity
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         mRecyclerView.setAdapter(resultAdapter);
     }
-
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-//            queryString = intent.getExtras().getString(SearchManager.QUERY);
-//            Toast.makeText(this, "Searching by: "+ queryString, Toast.LENGTH_SHORT).show();
-//            initiateSearch();
-//        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-//            String uri = intent.getDataString();
-//            Toast.makeText(this, "Suggestion: "+ uri, Toast.LENGTH_SHORT).show();
-//        }
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -232,65 +225,101 @@ public class SearchResultActivity
     }
 
     private void getFile(final SearchResult result){
-        final ProgressDialog downloadProgress = new ProgressDialog(this);
-        downloadProgress.setMessage("Receiving file...");
-        downloadProgress.show();
-        DownloadController dlController = new DownloadController(new DownloadController.OnFileDownload() {
-            @Override
-            public void onFileDownloadSuccess(File file) {
-                downloadProgress.dismiss();
-                try {
-                    if (file != null) {
-                        final File tempFile = new File(SearchResultActivity.this.getExternalCacheDir(), result.getRecordName());
-                        if (tempFile.exists())
-                            tempFile.delete();
-                            FileUtils.copyFile(file, tempFile);
+        final Record record = Record.getRecordObjectForResult(result);
 
-                            Intent openFileIntent = new Intent();
-                            openFileIntent.setAction(Intent.ACTION_VIEW);
-                            openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                            Uri fileUri = Uri.fromFile(tempFile);
-                            openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                            VmrDebug.printLogI(SearchResultActivity.this.getClass(), FileUtils.getMimeType(tempFile.getAbsolutePath()));
-                            try {
-                                startActivity(openFileIntent);
-                                VmrDebug.printLogI(SearchResultActivity.this.getClass(), "File opened.");
-                            } catch (ActivityNotFoundException e) {
-                                Toast.makeText(SearchResultActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
-                            }
-                    } else {
-                        VmrDebug.printLogI(SearchResultActivity.this.getClass(), "null file");
+        if(PermissionHandler.checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            final DownloadTaskController downloadTaskController;
+
+            final ProgressDialog downloadProgress = new ProgressDialog(this);
+            downloadProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            downloadProgress.setMessage("Downloading " + record.getRecordName());
+            downloadProgress.setCancelable(true);
+            downloadProgress.setCanceledOnTouchOutside(true);
+            downloadProgress.setMax(100);
+            downloadProgress.setIndeterminate(true);
+
+            DownloadTask.ProgressListener progressListener
+                    = new DownloadTask.ProgressListener() {
+                @Override
+                public void onDownloadStarted() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+//                            downloadProgress.setIndeterminate(false);
+                            downloadProgress.setMessage("Downloading " + record.getRecordName());
+                        }
+                    });
+                }
+
+                @Override
+                public void onDownloadFailed() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadProgress.setMessage("Downloading failed");
+                        }
+                    });
+                }
+
+                @Override
+                public void onDownloadCanceled() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            downloadProgress.setMessage("Downloading canceled");
+                        }
+                    });
+                }
+
+                @Override
+                public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
+                    downloadProgress.setProgress(progressPercent);
+                }
+
+                @Override
+                public void onDownloadFinish(File file) {
+                    downloadProgress.dismiss();
+                    Intent openFileIntent = new Intent(Intent.ACTION_VIEW);
+                    openFileIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    Uri fileUri = Uri.fromFile(file);
+                    openFileIntent.setDataAndType(fileUri, FileUtils.getMimeType(file.getAbsolutePath()));
+                    try {
+                        startActivity(openFileIntent);
+                    } catch (ActivityNotFoundException e) {
+                        Toast.makeText(SearchResultActivity.this, "No application to view this file", Toast.LENGTH_SHORT).show();
                     }
-                } catch (Exception e) {
-                    VmrDebug.printLogI(this.getClass(), "File download failed");
-                    e.printStackTrace();
                 }
+            };
+            downloadTaskController = new DownloadTaskController(record, progressListener);
 
-            }
+            downloadProgress.setButton(DialogInterface.BUTTON_NEGATIVE,
+                    getResources().getString(android.R.string.cancel),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            downloadTaskController.cancelFileDownload();
+                        }
+                    });
 
-            @Override
-            public void onFileDownloadFailure(VolleyError error) {
-                Toast.makeText(SearchResultActivity.this, "Couldn't download the file.", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        VmrDebug.printLogI(this.getClass(), "Downloading...");
-        downloadProgress.setMessage("Receiving file...");
-        downloadProgress.setCanceledOnTouchOutside(false);
-        DownloadRequest.DownloadProgressListener progressListener = new DownloadRequest.DownloadProgressListener() {
-            @Override
-            public void onDownloadProgress(long fileLength, long transferred, int progressPercent) {
-                if(progressPercent == 100){
-                    downloadProgress.setProgress(progressPercent);
-                    downloadProgress.setMessage("Finalizing...");
-                } else {
-                    downloadProgress.setProgress(progressPercent);
-                    downloadProgress.setMessage("Downloading... " + progressPercent + "%");
+            downloadProgress.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                @Override
+                public void onCancel(DialogInterface dialogInterface) {
+                    downloadTaskController.cancelFileDownload();
                 }
-            }
-        };
-        dlController.downloadFile(result, progressListener);
-        downloadProgress.show();
+            });
+
+            downloadProgress.show();
+            downloadTaskController.downloadFile();
+        } else {
+            Snackbar.make(findViewById(android.R.id.content), "Application needs permission to write to SD Card", Snackbar.LENGTH_SHORT)
+                    .setAction("OK", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            PermissionHandler.requestPermission(SearchResultActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE, 1);
+                        }
+                    })
+                    .show();
+        }
     }
 
     @Override

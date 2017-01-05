@@ -71,8 +71,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         loginController = new LoginController(this);
-        dbManager = new DbManager();
-        Vmr.setDbManager(dbManager);
+        dbManager = Vmr.getDbManager();
 
         if(PrefUtils.getSharedPreference(PrefConstants.BASE_URL).equals("NA")) {
             PrefUtils.setSharedPreference(PrefConstants.BASE_URL, Constants.Url.DEFAULT_BASE_URL);

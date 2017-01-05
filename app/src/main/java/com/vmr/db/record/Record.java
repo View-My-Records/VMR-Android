@@ -7,6 +7,7 @@ package com.vmr.db.record;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.vmr.model.SearchResult;
 import com.vmr.model.VmrFile;
 import com.vmr.model.VmrFolder;
 import com.vmr.model.VmrItem;
@@ -122,6 +123,18 @@ public class Record implements Parcelable {
             recordList.add(record);
         }
         return recordList;
+    }
+
+    public static Record getRecordObjectForResult(SearchResult result) {
+        Record record = new Record();
+        record.setRecordName(result.getRecordName());
+        record.setFileCategory(result.getCategory());
+        record.setCreatedDate(result.getCreated());
+        record.setCreatedBy(result.getOwner());
+        record.setRecordNodeRef(result.getNodeRef());
+        record.setRecordDocType(result.getDoctype());
+        record.setFileMimeType(result.getMimeType());
+        return record;
     }
 
     public String getRecordId() {

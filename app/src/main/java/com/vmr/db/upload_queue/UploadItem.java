@@ -14,7 +14,7 @@ import com.vmr.utils.PrefUtils;
 import java.io.FileNotFoundException;
 import java.util.Date;
 
-public class UploadQueue {
+public class UploadItem {
 
     public static final int STATUS_PENDING      = 0;
     public static final int STATUS_UPLOADING    = 1;
@@ -31,10 +31,10 @@ public class UploadQueue {
     private int status;
     private Date createDate;
 
-    public UploadQueue() {
+    public UploadItem() {
     }
 
-    public UploadQueue(Uri fileUri, String parentNodeRef) throws FileNotFoundException {
+    public UploadItem(Uri fileUri, String parentNodeRef) throws FileNotFoundException {
         this.owner = PrefUtils.getSharedPreference(PrefConstants.VMR_LOGGED_USER_ID);
         this.fileUri = fileUri.toString();
         this.fileName = FileUtils.getFileName(Vmr.getContext(), fileUri);

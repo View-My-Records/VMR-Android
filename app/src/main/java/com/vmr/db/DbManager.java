@@ -15,7 +15,7 @@ import com.vmr.db.shared.SharedRecord;
 import com.vmr.db.shared.SharedRecordDAO;
 import com.vmr.db.trash.TrashRecord;
 import com.vmr.db.trash.TrashRecordDAO;
-import com.vmr.db.upload_queue.UploadQueue;
+import com.vmr.db.upload_queue.UploadItem;
 import com.vmr.db.upload_queue.UploadQueueDAO;
 import com.vmr.db.user.DbUser;
 import com.vmr.db.user.UserDAO;
@@ -317,24 +317,28 @@ public class DbManager {
         this.notificationDAO.updateMessageReadFlag(inboxId);
     }
 
-    public List<UploadQueue> getUploadQueue() {
+    public List<UploadItem> getUploadQueue() {
         return this.uploadQueueDAO.fetchAllPendingUploads();
     }
 
+    public List<UploadItem> getAllUploads() {
+        return this.uploadQueueDAO.fetchAllUploads();
+    }
+
     public void queueUpload(Uri fileUri, String parentNodeRef) throws FileNotFoundException {
-        this.uploadQueueDAO.addUpload(new UploadQueue(fileUri, parentNodeRef));
+        this.uploadQueueDAO.addUpload(new UploadItem(fileUri, parentNodeRef));
     }
 
     public void updateUploadSuccess(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_SUCCESS);
+        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_SUCCESS);
     }
 
     public void updateUploadFailure(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_FAILED);
+        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_FAILED);
     }
 
     public void updateUploadStatusUploading(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadQueue.STATUS_UPLOADING);
+        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_UPLOADING);
     }
 
     public TrashRecord getTrashRecord(String nodeRef) {

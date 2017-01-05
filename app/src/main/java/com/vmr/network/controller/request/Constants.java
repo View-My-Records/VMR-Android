@@ -410,6 +410,7 @@ public abstract class Constants {
         public static final String TO_BE_INDEXED = "To Be Indexed";
         public static final String OFFLINE = "Offline";
         public static final String REPORTS = "Reports";
+        public static final String UPLOAD = "Uploads";
         public static final String TRASH = "Trash";
         public static final String SHARED_WITH_ME = "Shared With Me";
         public static final String SHARED_BY_ME = "Shared By Me";
