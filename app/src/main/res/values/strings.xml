@@ -143,6 +143,15 @@
     <string name="title_activity_index">Indexing</string>
     <string name="email_address">E-mail Address</string>
     <string name="corporate_id">ID</string>
+    <string name="volley_info">Android volley is a networking library was introduced to make networking calls much easier, faster without writing tons of code. By default all the volley network calls works asynchronously, so we don’t have to worry about using asynctask anymore.</string>
+    <string name="volley_title">Volley</string>
+    <string name="volley_link"><a href="https://developer.android.com/training/volley/index.html">Volley Documentation</a></string>
+    <string name="firebase_title">Firebase</string>
+    <string name="firebase_info">Firebase is a mobile and web application platform with tools and infrastructure designed to help developers build high-quality apps. Firebase is made up of complementary features that developers can mix-and-match to fit their needs.</string>
+    <string name="firebase_link"><a href="https://firebase.google.com/">Firebase</a></string>
+    <string name="chip_title">Android Chips Edit Text</string>
+    <string name="chip_info">Chips in your AutoCompleteTextView on Android</string>
+    <string name="chip_link"><a href="https://github.com/klinker41/android-chips">Github</a></string>
 
 
 </resources>

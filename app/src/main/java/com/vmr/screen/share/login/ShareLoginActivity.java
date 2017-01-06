@@ -174,7 +174,7 @@ public class ShareLoginActivity extends AppCompatActivity
             });
             settingsDialog.show(fm, "Settings");
             return true;
-        } else if (id == R.id.action_about) {
+        } else if (id == R.id.action_version) {
             new AlertDialog.Builder(this)
                     .setTitle("About")
                     .setMessage("Version Code: \n\t" + BuildConfig.VERSION_CODE + "\n\n"

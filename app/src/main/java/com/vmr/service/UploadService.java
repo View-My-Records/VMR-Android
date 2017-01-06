@@ -21,7 +21,6 @@ import com.vmr.network.controller.request.UploadRequest;
 
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Random;
 
@@ -48,7 +47,7 @@ public class UploadService extends IntentService {
                     @Override
                     public void onFileUploadSuccess(JSONObject jsonObject) {
                         if (jsonObject.has("files")) {
-                            Vmr.getDbManager().updateUploadSuccess(upload.getId());
+                            Vmr.getDbManager().updateUploadStatus(upload, UploadItem.STATUS_SUCCESS);
 //                            Toast.makeText(Vmr.getContext(), "File uploaded successfully.", Toast.LENGTH_SHORT).show();
                             Notification uploadCompleteNotification =
                                     new Notification.Builder(Vmr.getContext())
@@ -69,7 +68,7 @@ public class UploadService extends IntentService {
                     public void onFileUploadFailure(VolleyError error) {
 //                Toast.makeText(Vmr.getContext(), ErrorMessage.show(error), Toast.LENGTH_SHORT).show();
 //                        Toast.makeText(Vmr.getContext(), "File upload failed", Toast.LENGTH_SHORT).show();
-                        Vmr.getDbManager().updateUploadFailure(upload.getId());
+                        Vmr.getDbManager().updateUploadStatus(upload, UploadItem.STATUS_FAILED);
                         Notification uploadFailedNotification =
                                 new Notification.Builder(Vmr.getContext())
                                         .setContentTitle(upload.getFileName())
@@ -86,7 +85,7 @@ public class UploadService extends IntentService {
                     @Override
                     public void onFileUploadCancel(VolleyError error) {
 //                        Toast.makeText(Vmr.getContext(), "File upload canceled", Toast.LENGTH_SHORT).show();
-                        Vmr.getDbManager().updateUploadFailure(upload.getId());
+                        Vmr.getDbManager().updateUploadStatus(upload, UploadItem.STATUS_ERROR);
                         Notification uploadFailedNotification =
                                 new Notification.Builder(Vmr.getContext())
                                         .setContentTitle(upload.getFileName())
@@ -104,7 +103,7 @@ public class UploadService extends IntentService {
                 UploadPacket uploadPacket = null;
                 try {
                     uploadPacket = new UploadPacket(upload.getFileUri(), upload.getParentNodeRef());
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     VmrDebug.printLogE(UploadService.this.getClass(), "File not found.");
                 }
@@ -141,11 +140,11 @@ public class UploadService extends IntentService {
                 };
                 try {
                     uploadController.uploadFile(uploadPacket, upload.getId(), progressListener);
-                } catch (FileNotFoundException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                     VmrDebug.printLogE(UploadService.this.getClass(), "File not found.");
                 }
-                Vmr.getDbManager().updateUploadStatusUploading(upload.getId());
+                Vmr.getDbManager().updateUploadStatus(upload, UploadItem.STATUS_UPLOADING);
                 nm.notify(upload.getFileName(), notificationId ,downloadingNotification.build());
             }
         }

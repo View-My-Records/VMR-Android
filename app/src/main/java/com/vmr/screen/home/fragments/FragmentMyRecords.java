@@ -523,8 +523,12 @@ public class FragmentMyRecords extends Fragment
         Uri returnUri;
         if(resultCode == RESULT_OK){
             if(requestCode == FILE_PICKER_INTENT){
-//                returnUri = data.getData();
-                if (data != null) {
+                VmrDebug.printLogE(this.getClass(), "File picked ");
+                returnUri = data.getData();
+                if(returnUri != null) {
+                    onFilePicked(returnUri);
+                    initiateUpload();
+                } else {
                     ClipData clipData = data.getClipData();
                     if (clipData != null) {
                         for (int i = 0; i < clipData.getItemCount(); i++) {
@@ -539,6 +543,7 @@ public class FragmentMyRecords extends Fragment
             } else if(requestCode == REQUEST_IMAGE_CAPTURE){
                 returnUri = Uri.fromFile(photoFile);
                 onFilePicked(returnUri);
+                initiateUpload();
             } else if(requestCode == REQUEST_INDEX_FILE){
                 refreshFolder();
             }
@@ -546,7 +551,7 @@ public class FragmentMyRecords extends Fragment
     }
 
     private void onFilePicked(Uri selectedFileUri){
-        VmrDebug.printLogI(this.getClass(), "File URI :" + selectedFileUri);
+        VmrDebug.printLogE(this.getClass(), "File URI :" + selectedFileUri);
         try {
             dbManager.queueUpload(selectedFileUri, recordStack.peek());
         } catch (FileNotFoundException e) {

@@ -56,10 +56,14 @@
                 android:id="@+id/about"
                 android:icon="@drawable/ic_about"
                 android:title="About" />
+            <!--<item-->
+                <!--android:id="@+id/help"-->
+                <!--android:icon="@drawable/ic_about"-->
+                <!--android:title="Help" />-->
             <item
-                android:id="@+id/help"
+                android:id="@+id/licences"
                 android:icon="@drawable/ic_about"
-                android:title="Help" />
+                android:title="Licences" />
         </menu>
     </item>
 

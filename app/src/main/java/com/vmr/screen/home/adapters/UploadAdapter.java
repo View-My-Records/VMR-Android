@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.vmr.R;
+import com.vmr.app.Vmr;
 import com.vmr.db.upload_queue.UploadItem;
 import com.vmr.utils.FileUtils;
 
@@ -73,7 +74,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
 
         holder.setupStatus(uploadItem);
         holder.setupActions(uploadItem);
-        holder.bind(uploadItem, itemClickListener);
+        holder.bind(uploadItem,position, itemClickListener);
     }
 
     @Override
@@ -89,14 +90,14 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
 
     public interface OnItemClickListener {
         void onItemClick(UploadItem uploadItem);
-        void onDeleteClick(UploadItem uploadItem);
+        void onDeleteClick(UploadItem uploadItem, int position);
         void onRetryClick(UploadItem uploadItem);
     }
 
     class UploadViewHolder extends RecyclerView.ViewHolder {
         private TextView itemUploadDate;
-        private ImageView itemImage ;
-        private TextView itemName ;
+        private ImageView itemImage;
+        private TextView itemName;
         private ImageView ivUploadStatus;
         private TextView tvUploadStatus;
         private ImageButton itemActionDelete;
@@ -144,11 +145,11 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
                     ivUploadStatus.setColorFilter(Color.GRAY);
                     tvUploadStatus.setText("Queued");
                     break;
-                case UploadItem.STATUS_UPLOADING:
-                    ivUploadStatus.setImageResource(R.drawable.ic_status_pending);
-                    ivUploadStatus.setColorFilter(Color.GRAY);
-                    tvUploadStatus.setText("Uploading");
-                    break;
+//                case UploadItem.STATUS_UPLOADING:
+//                    ivUploadStatus.setImageResource(R.drawable.ic_status_pending);
+//                    ivUploadStatus.setColorFilter(Color.GRAY);
+//                    tvUploadStatus.setText("Uploading");
+//                    break;
                 default:
                     ivUploadStatus.setImageResource(R.drawable.ic_status_canceled);
                     ivUploadStatus.setColorFilter(Color.RED);
@@ -157,7 +158,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
             }
         }
 
-        public void setupActions(UploadItem uploadItem) {
+        void setupActions(UploadItem uploadItem) {
             if(uploadItem.getStatus() == UploadItem.STATUS_SUCCESS ){
                 itemActionDelete.setVisibility(View.VISIBLE);
                 itemActionRetry.setVisibility(View.GONE);
@@ -167,7 +168,7 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
             }
         }
 
-        void bind(final UploadItem item, final OnItemClickListener listener) {
+        void bind(final UploadItem item, final int position, final OnItemClickListener listener) {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
                     listener.onItemClick(item);
@@ -175,7 +176,11 @@ public class UploadAdapter extends RecyclerView.Adapter<UploadAdapter.UploadView
             });
             itemActionDelete.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    listener.onDeleteClick(item);
+                    listener.onDeleteClick(item, position);
+                    Vmr.getDbManager().deleteUpload(item);
+                    uploadItems.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, uploadItems.size());
                 }
             });
             itemActionRetry.setOnClickListener(new View.OnClickListener() {

@@ -19,8 +19,20 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_about"
+        android:id="@+id/action_version"
         android:orderInCategory="103"
+        android:title="Version"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="104"
         android:title="About"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_help"
+        android:orderInCategory="105"
+        android:title="Help"
         app:showAsAction="never"/>
 </menu>

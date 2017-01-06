@@ -172,27 +172,26 @@ public class SelectActivity
     }
 
     private void handleUpload(String parentNodeRef) {
-        if(numberOfFiles == 1){
-            initiateUpload(uri, parentNodeRef);
-        } else if(numberOfFiles > 1) {
-            for(int i=0; i < numberOfFiles; i++){
-                initiateUpload(uriList.get(i), parentNodeRef);
-            }
-        }
-        Toast.makeText(Vmr.getContext(), "Upload started", Toast.LENGTH_SHORT).show();
-        finish();
-    }
-
-    private void initiateUpload(Uri selectedFileUri, String parentNodeRef){
-        VmrDebug.printLogI(this.getClass(), "File URI :" + selectedFileUri);
         try {
-            dbManager.queueUpload(selectedFileUri, parentNodeRef);
+            if (numberOfFiles == 1) {
+                dbManager.queueUpload(uri, parentNodeRef);
+            } else if (numberOfFiles > 1) {
+                for (int i = 0; i < numberOfFiles; i++) {
+                    dbManager.queueUpload(uriList.get(i), parentNodeRef);
+                }
+            }
+            initiateUpload();
+            Toast.makeText(Vmr.getContext(), "Upload started", Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(Vmr.getContext(), "Couldn't find the file", Toast.LENGTH_SHORT).show();
         }
+        finish();
+    }
+
+    private void initiateUpload(){
         Intent uploadIntent = new Intent(this, UploadService.class);
-        startService(uploadIntent);
+        Vmr.getContext().startService(uploadIntent);
     }
 
     private void createNewFolder() {

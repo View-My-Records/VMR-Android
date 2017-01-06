@@ -6,6 +6,7 @@ import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.ViewPager;
@@ -130,7 +131,7 @@ public class LoginActivity extends AppCompatActivity
             });
             settingsDialog.show(fm, "Settings");
             return true;
-        } else if (id == R.id.action_about) {
+        } else if (id == R.id.action_version) {
             new AlertDialog.Builder(this)
                     .setTitle("About")
                     .setMessage("Version Code: \n\t" + BuildConfig.VERSION_CODE + "\n\n"
@@ -141,6 +142,16 @@ public class LoginActivity extends AppCompatActivity
             forgotPasswordHandler();
         } else if (id == R.id.action_forgot_username) {
             forgotUsernameHandler();
+        } else if (id == R.id.action_help){
+            String url = "https://www.viewmyrecords.com/";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+        } else if (id == R.id.action_about){
+            String url = "https://www.viewmyrecords.com/";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
         }
 
         return super.onOptionsItemSelected(item);

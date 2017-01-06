@@ -1,6 +1,7 @@
 package com.vmr.screen.home;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
@@ -60,6 +61,7 @@ import com.vmr.screen.home.fragments.FragmentSharedWithMe;
 import com.vmr.screen.home.fragments.FragmentToBeIndexed;
 import com.vmr.screen.home.fragments.FragmentTrash;
 import com.vmr.screen.home.fragments.FragmentUpload;
+import com.vmr.screen.home.fragments.dialog.LicencesDialog;
 import com.vmr.screen.home.interfaces.Interaction;
 import com.vmr.screen.inbox.InboxActivity;
 import com.vmr.screen.login.LoginActivity;
@@ -288,11 +290,10 @@ public class HomeActivity extends AppCompatActivity
     public void onBackPressed() {
 
         VmrDebug.printLogI(this.getClass(), "Back pressed");
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout_home);
 
-        assert drawer != null;
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
+        assert mDrawerLayout != null;
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
             return;
         } else if (backPressedOnce) {
             super.onBackPressed();
@@ -385,9 +386,20 @@ public class HomeActivity extends AppCompatActivity
         } else if (id == R.id.trash) {
             fragmentClass = FragmentTrash.class;
         } else if (id == R.id.about) {
-            fragmentClass = FragmentAbout.class;
-        } else if (id == R.id.help) {
-            fragmentClass = FragmentHelp.class;
+//            fragmentClass = FragmentAbout.class;
+            String url = "https://www.viewmyrecords.com/";
+            Intent i = new Intent(Intent.ACTION_VIEW);
+            i.setData(Uri.parse(url));
+            startActivity(i);
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+//        } else if (id == R.id.help) {
+//            fragmentClass = FragmentHelp.class;
+        } else if (id == R.id.licences) {
+            DialogFragment newFragment = LicencesDialog.newInstance();
+            newFragment.show(getFragmentManager(), "dialog");
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
         } else if (id == R.id.log_out) {
             Intent restartApp
                     = new Intent(this, LoginActivity.class);

@@ -329,18 +329,6 @@ public class DbManager {
         this.uploadQueueDAO.addUpload(new UploadItem(fileUri, parentNodeRef));
     }
 
-    public void updateUploadSuccess(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_SUCCESS);
-    }
-
-    public void updateUploadFailure(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_FAILED);
-    }
-
-    public void updateUploadStatusUploading(int uploadId) {
-        this.uploadQueueDAO.updateUpload(uploadId, UploadItem.STATUS_UPLOADING);
-    }
-
     public TrashRecord getTrashRecord(String nodeRef) {
         return this.trashRecordDAO.getTrashRecord(nodeRef);
     }
@@ -359,5 +347,13 @@ public class DbManager {
 
     public void closeConnection() {
         database.releaseReference();
+    }
+
+    public void deleteUpload(UploadItem uploadItem) {
+        this.uploadQueueDAO.deleteRecord(uploadItem);
+    }
+
+    public void updateUploadStatus(UploadItem uploadItem, int status) {
+        this.uploadQueueDAO.updateUpload(uploadItem.getId(), status);
     }
 }

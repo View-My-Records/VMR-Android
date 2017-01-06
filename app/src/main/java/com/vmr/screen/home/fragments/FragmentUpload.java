@@ -1,6 +1,9 @@
 package com.vmr.screen.home.fragments;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,6 +21,8 @@ import com.vmr.db.upload_queue.UploadItem;
 import com.vmr.debug.VmrDebug;
 import com.vmr.network.controller.request.Constants;
 import com.vmr.screen.home.adapters.UploadAdapter;
+import com.vmr.service.UploadService;
+import com.vmr.utils.ContentUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,8 +70,7 @@ public class FragmentUpload extends Fragment implements UploadAdapter.OnItemClic
     @Override
     public void onStart() {
         super.onStart();
-        uploadItems = dbManager.getAllUploads();
-        uploadAdapter.updateDataset(uploadItems);
+        updateDataset();
     }
 
     @Override
@@ -83,9 +87,7 @@ public class FragmentUpload extends Fragment implements UploadAdapter.OnItemClic
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                uploadItems = dbManager.getAllUploads();
-                uploadAdapter.updateDataset(uploadItems);
-                mSwipeRefreshLayout.setRefreshing(false);
+                updateDataset();
             }
         });
 
@@ -95,19 +97,53 @@ public class FragmentUpload extends Fragment implements UploadAdapter.OnItemClic
         mRecyclerView.setAdapter(uploadAdapter);
     }
 
+    private void updateDataset(){
+        uploadItems = dbManager.getAllUploads();
+        uploadAdapter.updateDataset(uploadItems);
+        mSwipeRefreshLayout.setRefreshing(false);
+        if(uploadItems.size() == 0){
+            mTextView.setVisibility(View.VISIBLE);
+            mRecyclerView.setVisibility(View.GONE);
+        } else {
+            mTextView.setVisibility(View.GONE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
     @Override
     public void onItemClick(UploadItem uploadItem) {
 
     }
 
     @Override
-    public void onDeleteClick(UploadItem uploadItem) {
+    public void onDeleteClick(UploadItem uploadItem, int position) {
         VmrDebug.printLogE(this.getClass(), "Delete : " + uploadItem.getFileName());
     }
 
     @Override
-    public void onRetryClick(UploadItem uploadItem) {
+    public void onRetryClick(final UploadItem uploadItem) {
         VmrDebug.printLogE(this.getClass(), "Retry : " + uploadItem.getFileName());
+        try {
+            ContentUtil.getFileName(Vmr.getContext(), Uri.parse(uploadItem.getFileUri()));
+            dbManager.updateUploadStatus(uploadItem, UploadItem.STATUS_PENDING);
+            initiateUpload();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Snackbar snackbar = Snackbar.make(getActivity().findViewById(android.R.id.content), "File is no longer accessible", Snackbar.LENGTH_SHORT);
+            snackbar.setAction("Delete", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    dbManager.deleteUpload(uploadItem);
+                    updateDataset();
+                }
+            });
+            snackbar.show();
+        }
+    }
+
+    private void initiateUpload(){
+        Intent uploadIntent = new Intent(getActivity(), UploadService.class);
+        getActivity().startService(uploadIntent);
     }
 
     public interface OnFragmentInteractionListener {
