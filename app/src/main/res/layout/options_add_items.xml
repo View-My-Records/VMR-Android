@@ -9,33 +9,64 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_centerInParent="true"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:background="@android:color/transparent"
-        android:padding="15dp"
+        android:padding="24dp"
         android:scaleType="centerCrop"
         android:src="@drawable/file"
         android:text="File" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ibCamera"
+        android:layout_alignEnd="@+id/ibCamera"
+        android:layout_alignLeft="@+id/ibCamera"
+        android:layout_alignRight="@+id/ibCamera"
+        android:layout_alignStart="@+id/ibCamera"
+        android:gravity="center"
+        android:text="Camera" />
     <ImageButton
         android:id="@+id/ibCamera"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_toLeftOf="@id/ibUpload"
         android:layout_toStartOf="@id/ibUpload"
         android:background="@android:color/transparent"
-        android:padding="15dp"
+        android:padding="24dp"
         android:scaleType="centerCrop"
         android:src="@drawable/camera" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ibUpload"
+        android:layout_alignEnd="@+id/ibUpload"
+        android:layout_alignLeft="@+id/ibUpload"
+        android:layout_alignRight="@+id/ibUpload"
+        android:layout_alignStart="@+id/ibUpload"
+        android:gravity="center"
+        android:text="File" />
     <ImageButton
         android:id="@+id/ibNewFolder"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_margin="20dp"
+        android:layout_margin="10dp"
         android:layout_toEndOf="@id/ibUpload"
         android:layout_toRightOf="@id/ibUpload"
         android:background="@android:color/transparent"
-        android:padding="15dp"
+        android:padding="24dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_folder" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/ibNewFolder"
+        android:layout_alignEnd="@+id/ibNewFolder"
+        android:layout_alignLeft="@+id/ibNewFolder"
+        android:layout_alignRight="@+id/ibNewFolder"
+        android:layout_alignStart="@+id/ibNewFolder"
+        android:gravity="center"
+        android:text="New Folder" />
 
 </RelativeLayout>

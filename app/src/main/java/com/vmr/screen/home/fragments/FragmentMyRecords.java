@@ -460,7 +460,9 @@ public class FragmentMyRecords extends Fragment
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
 
         // File Directory
-        File mediaStorageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM);
+        File mediaStorageDir = getActivity().getExternalCacheDir();
+        if(mediaStorageDir == null)
+            mediaStorageDir = getActivity().getCacheDir();
 
         // File name
         String fileName = "IMG_"+ timeStamp;

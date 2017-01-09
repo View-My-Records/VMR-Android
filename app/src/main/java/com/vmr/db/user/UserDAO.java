@@ -47,7 +47,7 @@ public class UserDAO {
             contentValues.put(DbConstants.USER_FIRST_NAME, userInfo.getFirstName());
             contentValues.put(DbConstants.USER_LAST_NAME, userInfo.getLastName());
             contentValues.put(DbConstants.USER_LOGGED_IN_USER_ID, userInfo.getLoggedinUserId());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             String date = sdf.format(userInfo.getLastLoginTime());
             contentValues.put(DbConstants.USER_LAST_LOGIN, date);
             return db.insert(DbConstants.TABLE_USER, null, contentValues);
